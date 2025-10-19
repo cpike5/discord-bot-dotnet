@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toast Notifications - Component Prototype</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Demo container styles */
+    .demo-container {
+      padding: var(--space-8);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .demo-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .demo-section h2 {
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .demo-section p {
+      margin-bottom: var(--space-6);
+      color: var(--text-secondary);
+    }
+
+    .button-group {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .demo-button {
+      padding: var(--btn-padding-md);
+      border: none;
+      border-radius: var(--btn-border-radius);
+      font-weight: var(--btn-font-weight);
+      cursor: pointer;
+      transition: var(--btn-transition);
+      font-size: var(--text-sm);
+    }
+
+    .demo-button.success {
+      background-color: var(--color-success);
+      color: var(--text-on-dark);
+    }
+
+    .demo-button.error {
+      background-color: var(--color-rose);
+      color: var(--text-on-dark);
+    }
+
+    .demo-button.warning {
+      background-color: var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .demo-button.info {
+      background-color: var(--color-lavender);
+      color: var(--text-primary);
+    }
+
+    .demo-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ============================================
+       TOAST CONTAINER
+       ============================================ */
+    /* Fixed container positioned in top-right corner */
+    .toast-container {
+      position: fixed;
+      top: var(--space-4);
+      right: var(--space-4);
+      z-index: var(--z-toast);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      min-width: 320px;
+      max-width: 420px;
+    }
+
+    /* ============================================
+       TOAST BASE STYLES
+       ============================================ */
+    /* Base toast component with common styles */
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      background-color: var(--surface-card);
+      border-left: 4px solid;
+      animation: slideIn 0.3s ease-out;
+      position: relative;
+    }
+
+    /* Slide in animation from the right */
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Slide out animation to the right */
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    .toast.dismissing {
+      animation: slideOut 0.3s ease-in forwards;
+    }
+
+    /* ============================================
+       TOAST VARIANTS
+       ============================================ */
+    /* Success variant - sage color */
+    .toast.success {
+      border-left-color: var(--color-success);
+    }
+
+    .toast.success .toast-icon {
+      color: var(--color-success);
+    }
+
+    /* Error variant - rose color */
+    .toast.error {
+      border-left-color: var(--color-rose);
+    }
+
+    .toast.error .toast-icon {
+      color: var(--color-rose);
+    }
+
+    /* Warning variant - gold color */
+    .toast.warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .toast.warning .toast-icon {
+      color: var(--color-warning);
+    }
+
+    /* Info variant - lavender color */
+    .toast.info {
+      border-left-color: var(--color-lavender);
+    }
+
+    .toast.info .toast-icon {
+      color: var(--color-lavender);
+    }
+
+    /* ============================================
+       TOAST CONTENT
+       ============================================ */
+    /* Icon container */
+    .toast-icon {
+      flex-shrink: 0;
+      width: var(--size-icon-md);
+      height: var(--size-icon-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+    }
+
+    /* Content area with title and message */
+    .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .toast-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .toast-message {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+    }
+
+    /* Close button */
+    .toast-close {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+      font-size: var(--text-lg);
+      line-height: 1;
+      padding: 0;
+    }
+
+    .toast-close:hover {
+      background-color: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    /* ============================================
+       STATIC EXAMPLES FOR DEMO
+       ============================================ */
+    .static-examples {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Header -->
+    <div class="demo-section">
+      <h1>Toast Notifications</h1>
+      <p>Toast notifications provide brief, temporary feedback about actions or events. They appear in the top-right corner and can auto-dismiss or be manually closed.</p>
+    </div>
+
+    <!-- Interactive Demo -->
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <p>Click the buttons below to trigger different toast notifications:</p>
+      <div class="button-group">
+        <button class="demo-button success" onclick="showToast('success')">Show Success Toast</button>
+        <button class="demo-button error" onclick="showToast('error')">Show Error Toast</button>
+        <button class="demo-button warning" onclick="showToast('warning')">Show Warning Toast</button>
+        <button class="demo-button info" onclick="showToast('info')">Show Info Toast</button>
+      </div>
+    </div>
+
+    <!-- Static Examples -->
+    <div class="demo-section">
+      <h2>Toast Variants</h2>
+      <p>Examples of all toast notification variants with different states:</p>
+
+      <div class="static-examples">
+        <!-- Success Toast -->
+        <div class="toast success">
+          <div class="toast-icon">✓</div>
+          <div class="toast-content">
+            <div class="toast-title">Success</div>
+            <div class="toast-message">Your changes have been saved successfully.</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Error Toast -->
+        <div class="toast error">
+          <div class="toast-icon">✕</div>
+          <div class="toast-content">
+            <div class="toast-title">Error</div>
+            <div class="toast-message">Failed to save changes. Please try again.</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Warning Toast -->
+        <div class="toast warning">
+          <div class="toast-icon">⚠</div>
+          <div class="toast-content">
+            <div class="toast-title">Warning</div>
+            <div class="toast-message">This action may have unintended consequences.</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Info Toast -->
+        <div class="toast info">
+          <div class="toast-icon">ⓘ</div>
+          <div class="toast-content">
+            <div class="toast-title">Information</div>
+            <div class="toast-message">New features are now available. Check them out!</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Toast with longer message -->
+        <div class="toast success">
+          <div class="toast-icon">✓</div>
+          <div class="toast-content">
+            <div class="toast-title">Configuration Updated</div>
+            <div class="toast-message">Your bot configuration has been updated. The changes will take effect immediately for new commands.</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Toast without title -->
+        <div class="toast info">
+          <div class="toast-icon">ⓘ</div>
+          <div class="toast-content">
+            <div class="toast-message">Your session will expire in 5 minutes.</div>
+          </div>
+          <button class="toast-close" aria-label="Close">&times;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container (positioned top-right) -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    /**
+     * Toast notification messages for different types
+     */
+    const toastMessages = {
+      success: {
+        icon: '✓',
+        title: 'Success',
+        message: 'Operation completed successfully!'
+      },
+      error: {
+        icon: '✕',
+        title: 'Error',
+        message: 'Something went wrong. Please try again.'
+      },
+      warning: {
+        icon: '⚠',
+        title: 'Warning',
+        message: 'Please review your changes before proceeding.'
+      },
+      info: {
+        icon: 'ⓘ',
+        title: 'Info',
+        message: 'This is an informational message.'
+      }
+    };
+
+    /**
+     * Creates and displays a toast notification
+     * @param {string} type - The toast type (success, error, warning, info)
+     */
+    function showToast(type) {
+      const container = document.getElementById('toastContainer');
+      const config = toastMessages[type];
+
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="toast-icon">${config.icon}</div>
+        <div class="toast-content">
+          <div class="toast-title">${config.title}</div>
+          <div class="toast-message">${config.message}</div>
+        </div>
+        <button class="toast-close" aria-label="Close">&times;</button>
+      `;
+
+      // Add to container
+      container.appendChild(toast);
+
+      // Close button handler
+      const closeBtn = toast.querySelector('.toast-close');
+      closeBtn.addEventListener('click', () => {
+        dismissToast(toast);
+      });
+
+      // Auto-dismiss after 5 seconds
+      setTimeout(() => {
+        dismissToast(toast);
+      }, 5000);
+    }
+
+    /**
+     * Dismisses a toast notification with animation
+     * @param {HTMLElement} toast - The toast element to dismiss
+     */
+    function dismissToast(toast) {
+      // Skip if already dismissing
+      if (toast.classList.contains('dismissing')) {
+        return;
+      }
+
+      // Add dismissing class to trigger animation
+      toast.classList.add('dismissing');
+
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+
+    /**
+     * Add click handlers to static example close buttons
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      const staticToasts = document.querySelectorAll('.static-examples .toast-close');
+      staticToasts.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const toast = e.target.closest('.toast');
+          toast.style.opacity = '0.5';
+          setTimeout(() => {
+            toast.style.opacity = '1';
+          }, 200);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

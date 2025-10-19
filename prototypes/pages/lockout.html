@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Locked - Discord Bot</title>
+    <link rel="stylesheet" href="../css/tokens.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+            background: linear-gradient(135deg, var(--surface-primary) 0%, var(--color-neutral-800) 100%);
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-xl);
+            padding: var(--space-8);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+        }
+
+        .lockout-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-6);
+            background: rgba(211, 47, 81, 0.1);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .auth-header h1 {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            color: var(--color-danger);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .message {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-8);
+        }
+
+        .info-box {
+            background: var(--color-neutral-50);
+            border-left: 4px solid var(--color-warning);
+            padding: var(--space-4);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-8);
+            text-align: left;
+        }
+
+        .info-box h3 {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-left: var(--space-5);
+        }
+
+        .info-box li {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--btn-padding-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            font-family: var(--font-primary);
+            border: none;
+            border-radius: var(--btn-border-radius);
+            cursor: pointer;
+            transition: var(--btn-transition);
+            text-decoration: none;
+            margin: var(--space-2);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--text-on-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--color-neutral-100);
+            color: var(--text-primary);
+            border: 1px solid var(--color-neutral-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-neutral-200);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .auth-links {
+            margin-top: var(--space-6);
+        }
+
+        .auth-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: var(--space-6);
+            }
+
+            .auth-header h1 {
+                font-size: var(--text-2xl);
+            }
+
+            .lockout-icon {
+                width: 64px;
+                height: 64px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="lockout-icon">
+                🔒
+            </div>
+
+            <div class="auth-header">
+                <h1>Account Locked</h1>
+            </div>
+
+            <p class="message">
+                This account has been locked out due to multiple failed login attempts. Please try again later.
+            </p>
+
+            <div class="info-box">
+                <h3>Why was my account locked?</h3>
+                <ul>
+                    <li>Multiple incorrect password attempts were detected</li>
+                    <li>This is a security measure to protect your account</li>
+                    <li>Your account will be automatically unlocked after a waiting period</li>
+                </ul>
+            </div>
+
+            <div>
+                <a href="forgot-password.html" class="btn btn-primary">Reset Password</a>
+                <a href="login.html" class="btn btn-secondary">Back to Login</a>
+            </div>
+
+            <div class="auth-links">
+                <p style="color: var(--text-secondary); font-size: var(--text-sm); margin-bottom: var(--space-2);">
+                    Need help? <a href="#">Contact Support</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

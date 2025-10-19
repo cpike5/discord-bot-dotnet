@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Components - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Demo container styles */
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-8);
+    }
+
+    .demo-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .demo-section h2 {
+      margin-bottom: var(--space-6);
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: var(--space-3);
+    }
+
+    .demo-section h3 {
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-4);
+      color: var(--text-secondary);
+      font-size: var(--text-lg);
+    }
+
+    .demo-group {
+      display: flex;
+      gap: var(--space-4);
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+
+    /* Button Base Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-family: var(--font-primary);
+      font-weight: var(--btn-font-weight);
+      border: none;
+      border-radius: var(--btn-border-radius);
+      cursor: pointer;
+      transition: var(--btn-transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Button Variants - Primary (Rose) */
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: var(--text-on-primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    .btn-primary:active {
+      background-color: var(--color-primary-active);
+    }
+
+    /* Button Variants - Secondary (Lavender) */
+    .btn-secondary {
+      background-color: var(--color-secondary);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-secondary-hover);
+    }
+
+    .btn-secondary:active {
+      background-color: var(--color-secondary-active);
+    }
+
+    /* Button Variants - Danger */
+    .btn-danger {
+      background-color: var(--color-danger);
+      color: var(--text-on-primary);
+    }
+
+    .btn-danger:hover {
+      background-color: var(--color-danger-hover);
+    }
+
+    .btn-danger:active {
+      background-color: var(--color-danger-active);
+    }
+
+    /* Button Variants - Outline */
+    .btn-outline {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--color-primary);
+      color: var(--text-on-primary);
+    }
+
+    .btn-outline:active {
+      background-color: var(--color-primary-active);
+      border-color: var(--color-primary-active);
+    }
+
+    /* Button Variants - Ghost */
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-primary);
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--surface-hover);
+    }
+
+    .btn-ghost:active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button Sizes */
+    .btn-sm {
+      padding: var(--btn-padding-sm);
+      font-size: var(--text-sm);
+      min-height: var(--size-input-sm);
+    }
+
+    .btn-md {
+      padding: var(--btn-padding-md);
+      font-size: var(--text-base);
+      min-height: var(--size-input-md);
+    }
+
+    .btn-lg {
+      padding: var(--btn-padding-lg);
+      font-size: var(--text-lg);
+      min-height: var(--size-input-lg);
+    }
+
+    /* Button States - Disabled */
+    .btn:disabled,
+    .btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Button States - Loading */
+    .btn.loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.6s linear infinite;
+      color: var(--text-on-primary);
+    }
+
+    .btn-secondary.loading::after,
+    .btn-ghost.loading::after {
+      color: var(--text-primary);
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Icon Buttons */
+    .btn-icon {
+      padding: var(--space-3);
+      aspect-ratio: 1;
+    }
+
+    /* Full Width Button */
+    .btn-full {
+      width: 100%;
+    }
+
+    /* Button with Icon */
+    .btn-icon-left svg,
+    .btn-icon-right svg {
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+    }
+
+    /* Demo helper */
+    .state-label {
+      display: block;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--space-2);
+      text-align: center;
+    }
+
+    .demo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Button Components</h1>
+    <p style="color: var(--text-secondary); margin-top: var(--space-2); margin-bottom: var(--space-8);">
+      Button components with variants, sizes, and states using design tokens.
+    </p>
+
+    <!-- PRIMARY BUTTONS -->
+    <section class="demo-section">
+      <h2>Primary Buttons (Rose)</h2>
+
+      <h3>Sizes</h3>
+      <div class="demo-group">
+        <button class="btn btn-primary btn-sm">Small Button</button>
+        <button class="btn btn-primary btn-md">Medium Button</button>
+        <button class="btn btn-primary btn-lg">Large Button</button>
+      </div>
+
+      <h3>States</h3>
+      <div class="demo-group">
+        <div class="demo-item">
+          <button class="btn btn-primary btn-md">Default</button>
+          <span class="state-label">Default</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-primary btn-md" style="background-color: var(--color-primary-hover);">Hover</button>
+          <span class="state-label">Hover</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-primary btn-md" style="background-color: var(--color-primary-active);">Active</button>
+          <span class="state-label">Active</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-primary btn-md" disabled>Disabled</button>
+          <span class="state-label">Disabled</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-primary btn-md loading">Loading</button>
+          <span class="state-label">Loading</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECONDARY BUTTONS -->
+    <section class="demo-section">
+      <h2>Secondary Buttons (Lavender)</h2>
+
+      <h3>Sizes</h3>
+      <div class="demo-group">
+        <button class="btn btn-secondary btn-sm">Small Button</button>
+        <button class="btn btn-secondary btn-md">Medium Button</button>
+        <button class="btn btn-secondary btn-lg">Large Button</button>
+      </div>
+
+      <h3>States</h3>
+      <div class="demo-group">
+        <div class="demo-item">
+          <button class="btn btn-secondary btn-md">Default</button>
+          <span class="state-label">Default</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-secondary btn-md" style="background-color: var(--color-secondary-hover);">Hover</button>
+          <span class="state-label">Hover</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-secondary btn-md" style="background-color: var(--color-secondary-active);">Active</button>
+          <span class="state-label">Active</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-secondary btn-md" disabled>Disabled</button>
+          <span class="state-label">Disabled</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-secondary btn-md loading">Loading</button>
+          <span class="state-label">Loading</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DANGER BUTTONS -->
+    <section class="demo-section">
+      <h2>Danger Buttons</h2>
+
+      <h3>Sizes</h3>
+      <div class="demo-group">
+        <button class="btn btn-danger btn-sm">Delete</button>
+        <button class="btn btn-danger btn-md">Delete Account</button>
+        <button class="btn btn-danger btn-lg">Remove Server</button>
+      </div>
+
+      <h3>States</h3>
+      <div class="demo-group">
+        <div class="demo-item">
+          <button class="btn btn-danger btn-md">Default</button>
+          <span class="state-label">Default</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-danger btn-md" style="background-color: var(--color-danger-hover);">Hover</button>
+          <span class="state-label">Hover</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-danger btn-md" style="background-color: var(--color-danger-active);">Active</button>
+          <span class="state-label">Active</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-danger btn-md" disabled>Disabled</button>
+          <span class="state-label">Disabled</span>
+        </div>
+        <div class="demo-item">
+          <button class="btn btn-danger btn-md loading">Loading</button>
+          <span class="state-label">Loading</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTLINE BUTTONS -->
+    <section class="demo-section">
+      <h2>Outline Buttons</h2>
+
+      <div class="demo-group">
+        <button class="btn btn-outline btn-sm">Small Outline</button>
+        <button class="btn btn-outline btn-md">Medium Outline</button>
+        <button class="btn btn-outline btn-lg">Large Outline</button>
+        <button class="btn btn-outline btn-md" disabled>Disabled</button>
+      </div>
+    </section>
+
+    <!-- GHOST BUTTONS -->
+    <section class="demo-section">
+      <h2>Ghost Buttons</h2>
+
+      <div class="demo-group">
+        <button class="btn btn-ghost btn-sm">Small Ghost</button>
+        <button class="btn btn-ghost btn-md">Medium Ghost</button>
+        <button class="btn btn-ghost btn-lg">Large Ghost</button>
+        <button class="btn btn-ghost btn-md" disabled>Disabled</button>
+      </div>
+    </section>
+
+    <!-- BUTTONS WITH ICONS -->
+    <section class="demo-section">
+      <h2>Buttons with Icons</h2>
+
+      <h3>Icon Left</h3>
+      <div class="demo-group">
+        <button class="btn btn-primary btn-md btn-icon-left">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Add Item
+        </button>
+        <button class="btn btn-secondary btn-md btn-icon-left">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          </svg>
+          Edit
+        </button>
+        <button class="btn btn-danger btn-md btn-icon-left">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          Delete
+        </button>
+      </div>
+
+      <h3>Icon Right</h3>
+      <div class="demo-group">
+        <button class="btn btn-primary btn-md btn-icon-right">
+          Continue
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+        <button class="btn btn-secondary btn-md btn-icon-right">
+          Download
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+        </button>
+      </div>
+
+      <h3>Icon Only</h3>
+      <div class="demo-group">
+        <button class="btn btn-primary btn-sm btn-icon" aria-label="Add">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </button>
+        <button class="btn btn-secondary btn-md btn-icon" aria-label="Edit">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          </svg>
+        </button>
+        <button class="btn btn-danger btn-lg btn-icon" aria-label="Delete">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+        </button>
+        <button class="btn btn-ghost btn-md btn-icon" aria-label="Settings">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- FULL WIDTH BUTTONS -->
+    <section class="demo-section">
+      <h2>Full Width Buttons</h2>
+
+      <div style="max-width: 400px;">
+        <button class="btn btn-primary btn-md btn-full" style="margin-bottom: var(--space-3);">
+          Submit Form
+        </button>
+        <button class="btn btn-secondary btn-md btn-full" style="margin-bottom: var(--space-3);">
+          Cancel
+        </button>
+        <button class="btn btn-outline btn-md btn-full">
+          Learn More
+        </button>
+      </div>
+    </section>
+
+    <!-- BUTTON GROUPS -->
+    <section class="demo-section">
+      <h2>Button Groups</h2>
+
+      <div class="demo-group">
+        <button class="btn btn-primary btn-md">Save</button>
+        <button class="btn btn-secondary btn-md">Cancel</button>
+      </div>
+
+      <div class="demo-group">
+        <button class="btn btn-outline btn-sm">Yes</button>
+        <button class="btn btn-outline btn-sm">No</button>
+        <button class="btn btn-outline btn-sm">Maybe</button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

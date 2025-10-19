@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Component - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Tab Container */
+    .tabs {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      border-bottom: 2px solid var(--border-light);
+      background: var(--color-neutral-50);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Individual Tab Button */
+    .tab-button {
+      flex: 0 0 auto;
+      padding: var(--space-4) var(--space-6);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .tab-button:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+    }
+
+    /* Active Tab with Rose Underline */
+    .tab-button.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      font-weight: var(--font-semibold);
+      background: var(--surface-card);
+    }
+
+    /* Tab with Icon */
+    .tab-button-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Tab with Badge/Count */
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 var(--space-1);
+      background: var(--color-neutral-300);
+      color: var(--text-primary);
+      border-radius: 10px;
+      font-size: 0.625rem;
+      font-weight: var(--font-bold);
+      margin-left: var(--space-2);
+    }
+
+    .tab-button.active .tab-badge {
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+    }
+
+    /* Tab Content Container */
+    .tab-content {
+      padding: var(--space-6);
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Tab Panel Content Styles */
+    .tab-panel h3 {
+      margin-top: 0;
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+      font-size: var(--text-xl);
+    }
+
+    .tab-panel p {
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Vertical Tabs Variant */
+    .tabs-vertical {
+      display: flex;
+    }
+
+    .tabs-vertical .tab-nav {
+      flex-direction: column;
+      border-bottom: none;
+      border-right: 2px solid var(--border-light);
+      min-width: 200px;
+      background: var(--color-neutral-50);
+    }
+
+    .tabs-vertical .tab-button {
+      text-align: left;
+      border-bottom: none;
+      border-right: 3px solid transparent;
+      padding: var(--space-3) var(--space-5);
+    }
+
+    .tabs-vertical .tab-button.active {
+      border-right-color: var(--color-primary);
+      border-bottom-color: transparent;
+    }
+
+    .tabs-vertical .tab-content {
+      flex: 1;
+    }
+
+    /* Compact Tabs Variant */
+    .tabs-compact .tab-button {
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-sm);
+    }
+
+    .tabs-compact .tab-content {
+      padding: var(--space-4);
+    }
+
+    /* Pill Style Tabs */
+    .tabs-pills .tab-nav {
+      border-bottom: none;
+      background: var(--surface-card);
+      padding: var(--space-3);
+      gap: var(--space-2);
+    }
+
+    .tabs-pills .tab-button {
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-4);
+    }
+
+    .tabs-pills .tab-button.active {
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+      border: none;
+    }
+
+    .tabs-pills .tab-button:hover {
+      background: var(--color-neutral-100);
+    }
+
+    .tabs-pills .tab-button.active:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Full Width Tabs */
+    .tabs-fullwidth .tab-button {
+      flex: 1 1 0;
+      text-align: center;
+    }
+
+    /* Example Content Cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-4);
+      margin-top: var(--space-6);
+    }
+
+    .stat-card {
+      padding: var(--space-5);
+      background: var(--color-neutral-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    .stat-value {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+    }
+
+    /* Settings Form Example */
+    .form-group {
+      margin-bottom: var(--space-5);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      max-width: 400px;
+      padding: var(--input-padding);
+      border: var(--input-border);
+      border-radius: var(--input-radius);
+      font-size: var(--text-base);
+      font-family: var(--font-primary);
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .form-checkbox input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .button {
+      padding: var(--btn-padding-md);
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+      border: none;
+      border-radius: var(--btn-border-radius);
+      font-weight: var(--btn-font-weight);
+      cursor: pointer;
+      transition: var(--btn-transition);
+      font-size: var(--text-base);
+    }
+
+    .button:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Disabled Tab */
+    .tab-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tab-button:disabled:hover {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Standard Tabs with Rose Underline -->
+  <section class="section">
+    <h2 class="section-title">Standard Tabs with Rose Active Indicator</h2>
+    <p class="section-description">
+      Default horizontal tab navigation with rose-colored underline for the active tab.
+    </p>
+
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-button active">Overview</button>
+        <button class="tab-button">Commands</button>
+        <button class="tab-button">Settings</button>
+        <button class="tab-button">Members</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>Overview</h3>
+          <p>
+            Welcome to your Discord bot dashboard. Here you can view statistics, manage settings,
+            and monitor bot activity across all connected guilds.
+          </p>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Guilds</div>
+              <div class="stat-value">47</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Members</div>
+              <div class="stat-value">12,834</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Commands Today</div>
+              <div class="stat-value">8,945</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Uptime</div>
+              <div class="stat-value">99.2%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs with Icons -->
+  <section class="section">
+    <h2 class="section-title">Tabs with Icons</h2>
+    <p class="section-description">
+      Tabs enhanced with icons for better visual identification.
+    </p>
+
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-button active">
+          <span class="tab-button-icon">
+            <span>📊</span>
+            <span>Dashboard</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>⚙️</span>
+            <span>Settings</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>👥</span>
+            <span>Users</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>📝</span>
+            <span>Logs</span>
+          </span>
+        </button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>Dashboard</h3>
+          <p>
+            Monitor your bot's performance and activity in real-time. View key metrics and
+            recent events across all your Discord guilds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs with Badges/Counts -->
+  <section class="section">
+    <h2 class="section-title">Tabs with Notification Badges</h2>
+    <p class="section-description">
+      Tabs displaying counts or notification indicators for pending items.
+    </p>
+
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-button active">
+          All Messages
+        </button>
+        <button class="tab-button">
+          Unread
+          <span class="tab-badge">12</span>
+        </button>
+        <button class="tab-button">
+          Flagged
+          <span class="tab-badge">3</span>
+        </button>
+        <button class="tab-button">
+          Archive
+        </button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>All Messages</h3>
+          <p>
+            Displaying all messages from across your Discord guilds. Use the tabs above to
+            filter by unread status or view flagged items.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compact Tabs -->
+  <section class="section">
+    <h2 class="section-title">Compact Tabs</h2>
+    <p class="section-description">
+      Smaller tabs with reduced padding for space-constrained layouts.
+    </p>
+
+    <div class="tabs tabs-compact">
+      <div class="tab-nav">
+        <button class="tab-button active">General</button>
+        <button class="tab-button">Moderation</button>
+        <button class="tab-button">Music</button>
+        <button class="tab-button">Fun</button>
+        <button class="tab-button">Utility</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>General Commands</h3>
+          <p>
+            Basic commands available to all users: /help, /info, /ping, /stats, /invite
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full Width Tabs -->
+  <section class="section">
+    <h2 class="section-title">Full-Width Tabs</h2>
+    <p class="section-description">
+      Tabs that expand to fill the available width equally.
+    </p>
+
+    <div class="tabs tabs-fullwidth">
+      <div class="tab-nav">
+        <button class="tab-button active">Active</button>
+        <button class="tab-button">Pending</button>
+        <button class="tab-button">Completed</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>Active Tasks</h3>
+          <p>
+            Currently running background tasks and scheduled jobs. Monitor progress and
+            view execution logs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pill Style Tabs -->
+  <section class="section">
+    <h2 class="section-title">Pill Style Tabs</h2>
+    <p class="section-description">
+      Alternative styling with rounded pill-shaped buttons instead of underlines.
+    </p>
+
+    <div class="tabs tabs-pills">
+      <div class="tab-nav">
+        <button class="tab-button active">Overview</button>
+        <button class="tab-button">Analytics</button>
+        <button class="tab-button">Reports</button>
+        <button class="tab-button">Export</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>Overview</h3>
+          <p>
+            Quick summary of your bot's performance metrics and recent activity across all channels.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vertical Tabs -->
+  <section class="section">
+    <h2 class="section-title">Vertical Tabs</h2>
+    <p class="section-description">
+      Side-by-side layout with vertical navigation on the left and content on the right.
+    </p>
+
+    <div class="tabs tabs-vertical">
+      <div class="tab-nav">
+        <button class="tab-button active">
+          <span class="tab-button-icon">
+            <span>🔧</span>
+            <span>General</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>🔔</span>
+            <span>Notifications</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>🔒</span>
+            <span>Privacy</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>🎨</span>
+            <span>Appearance</span>
+          </span>
+        </button>
+        <button class="tab-button">
+          <span class="tab-button-icon">
+            <span>⚡</span>
+            <span>Advanced</span>
+          </span>
+        </button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>General Settings</h3>
+          <p>Configure basic bot settings and preferences.</p>
+
+          <form style="margin-top: var(--space-6);">
+            <div class="form-group">
+              <label class="form-label" for="bot-name">Bot Name</label>
+              <input type="text" id="bot-name" class="form-input" value="My Discord Bot">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prefix">Command Prefix</label>
+              <input type="text" id="prefix" class="form-input" value="/">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="language">Default Language</label>
+              <select id="language" class="form-select">
+                <option>English</option>
+                <option>Spanish</option>
+                <option>French</option>
+                <option>German</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-checkbox">
+                <input type="checkbox" checked>
+                <span>Enable command logging</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-checkbox">
+                <input type="checkbox">
+                <span>Enable automatic updates</span>
+              </label>
+            </div>
+
+            <button type="button" class="button">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs with Disabled Tab -->
+  <section class="section">
+    <h2 class="section-title">Tabs with Disabled State</h2>
+    <p class="section-description">
+      Some tabs can be disabled when features are unavailable or require permissions.
+    </p>
+
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-button active">Basic</button>
+        <button class="tab-button">Intermediate</button>
+        <button class="tab-button" disabled>
+          <span class="tab-button-icon">
+            <span>👑</span>
+            <span>Premium</span>
+          </span>
+        </button>
+        <button class="tab-button" disabled>
+          <span class="tab-button-icon">
+            <span>🔒</span>
+            <span>Locked</span>
+          </span>
+        </button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>Basic Features</h3>
+          <p>
+            These features are available to all users. Upgrade to Premium to unlock additional
+            functionality and advanced features.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scrollable Tabs (Many Items) -->
+  <section class="section">
+    <h2 class="section-title">Scrollable Tabs</h2>
+    <p class="section-description">
+      When there are many tabs, the navigation becomes horizontally scrollable on smaller screens.
+    </p>
+
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-button active">January</button>
+        <button class="tab-button">February</button>
+        <button class="tab-button">March</button>
+        <button class="tab-button">April</button>
+        <button class="tab-button">May</button>
+        <button class="tab-button">June</button>
+        <button class="tab-button">July</button>
+        <button class="tab-button">August</button>
+        <button class="tab-button">September</button>
+        <button class="tab-button">October</button>
+        <button class="tab-button">November</button>
+        <button class="tab-button">December</button>
+      </div>
+      <div class="tab-content">
+        <div class="tab-panel active">
+          <h3>January Statistics</h3>
+          <p>
+            Bot activity and usage statistics for January 2025. Scroll horizontally to view
+            other months.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

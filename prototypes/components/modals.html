@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal Component - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Demo Button */
+    .demo-btn {
+      padding: var(--btn-padding-md);
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+      border: none;
+      border-radius: var(--btn-border-radius);
+      font-weight: var(--btn-font-weight);
+      cursor: pointer;
+      transition: var(--btn-transition);
+      font-size: var(--text-base);
+      margin-right: var(--space-3);
+    }
+
+    .demo-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--modal-overlay);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-modal);
+      padding: var(--space-4);
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Modal Container */
+    .modal {
+      background: var(--modal-bg);
+      border-radius: var(--modal-radius);
+      box-shadow: var(--modal-shadow);
+      max-width: var(--modal-max-width);
+      width: 100%;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Modal Header */
+    .modal-header {
+      padding: var(--modal-padding);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: var(--text-2xl);
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: var(--space-2);
+      line-height: 1;
+      transition: var(--transition-fast);
+      border-radius: var(--radius-sm);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    /* Modal Body */
+    .modal-body {
+      padding: var(--modal-padding);
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-body p {
+      margin: 0 0 var(--space-4);
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+    }
+
+    .modal-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+      padding: var(--modal-padding);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+    }
+
+    .modal-btn {
+      padding: var(--btn-padding-md);
+      border-radius: var(--btn-border-radius);
+      font-weight: var(--btn-font-weight);
+      cursor: pointer;
+      transition: var(--btn-transition);
+      font-size: var(--text-base);
+      border: none;
+    }
+
+    .modal-btn-primary {
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+    }
+
+    .modal-btn-primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .modal-btn-secondary {
+      background: var(--color-neutral-200);
+      color: var(--text-primary);
+    }
+
+    .modal-btn-secondary:hover {
+      background: var(--color-neutral-300);
+    }
+
+    .modal-btn-danger {
+      background: var(--color-danger);
+      color: var(--text-on-primary);
+    }
+
+    .modal-btn-danger:hover {
+      background: var(--color-danger-hover);
+    }
+
+    /* Modal Size Variants */
+    .modal-sm {
+      max-width: 400px;
+    }
+
+    .modal-lg {
+      max-width: 800px;
+    }
+
+    .modal-xl {
+      max-width: 1200px;
+    }
+
+    .modal-full {
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+
+    /* Form Elements in Modal */
+    .form-group {
+      margin-bottom: var(--space-5);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--input-padding);
+      border: var(--input-border);
+      border-radius: var(--input-radius);
+      font-size: var(--input-font-size);
+      font-family: var(--font-primary);
+      transition: var(--transition-fast);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border: var(--input-border-focus);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-help {
+      display: block;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--space-2);
+    }
+
+    /* Alert Box in Modal */
+    .alert {
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-5);
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .alert-warning {
+      background: rgba(254, 215, 102, 0.1);
+      border: 1px solid var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .alert-danger {
+      background: rgba(210, 47, 81, 0.1);
+      border: 1px solid var(--color-danger);
+      color: var(--text-primary);
+    }
+
+    .alert-icon {
+      font-size: var(--text-xl);
+      flex-shrink: 0;
+    }
+
+    .alert-content h4 {
+      margin: 0 0 var(--space-2);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+    }
+
+    .alert-content p {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+
+    /* Responsive Behavior */
+    @media (max-width: 640px) {
+      .modal {
+        max-width: 100%;
+        border-radius: 0;
+        max-height: 100vh;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
+    }
+
+    /* Static Examples Container */
+    .modal-example {
+      background: var(--surface-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .example-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <!-- Standard Modal -->
+  <section class="section">
+    <h2 class="section-title">Standard Modal (Medium)</h2>
+    <p class="section-description">
+      Default modal with header, body, and footer. Maximum width of 600px.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Default Modal (600px max width)</div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit Guild Settings</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Configure your Discord guild settings below. Changes will be applied immediately after saving.
+          </p>
+          <p>
+            Make sure to review all settings before confirming, as some changes may affect all members.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Cancel</button>
+          <button class="modal-btn modal-btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Small Modal -->
+  <section class="section">
+    <h2 class="section-title">Small Modal</h2>
+    <p class="section-description">
+      Compact modal for simple confirmations or short messages. Maximum width of 400px.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Small Modal (400px max width)</div>
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h3 class="modal-title">Confirm Action</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Are you sure you want to proceed with this action?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">No</button>
+          <button class="modal-btn modal-btn-primary">Yes</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Large Modal with Form -->
+  <section class="section">
+    <h2 class="section-title">Large Modal with Form</h2>
+    <p class="section-description">
+      Large modal for complex forms and detailed content. Maximum width of 800px.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Large Modal (800px max width)</div>
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <h3 class="modal-title">Create New Command</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label class="form-label" for="command-name">Command Name</label>
+              <input
+                type="text"
+                id="command-name"
+                class="form-input"
+                placeholder="e.g., /greet"
+              >
+              <span class="form-help">Choose a unique name for your command</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="command-description">Description</label>
+              <textarea
+                id="command-description"
+                class="form-input form-textarea"
+                placeholder="Describe what this command does..."
+              ></textarea>
+              <span class="form-help">This will be shown in the help menu</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="command-response">Response</label>
+              <textarea
+                id="command-response"
+                class="form-input form-textarea"
+                placeholder="Enter the command response..."
+              ></textarea>
+              <span class="form-help">Use {user} for the username, {guild} for guild name</span>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Cancel</button>
+          <button class="modal-btn modal-btn-primary">Create Command</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Danger/Destructive Modal -->
+  <section class="section">
+    <h2 class="section-title">Destructive Action Modal</h2>
+    <p class="section-description">
+      Modal for dangerous actions with warning indicators and danger button styling.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Destructive Action Modal</div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Guild</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <h4>This action cannot be undone</h4>
+              <p>
+                Deleting this guild will permanently remove all associated data, members, and settings.
+              </p>
+            </div>
+          </div>
+          <p>
+            Please type the guild name <strong>"Awesome Gaming"</strong> to confirm deletion.
+          </p>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-input"
+              placeholder="Type guild name to confirm"
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Cancel</button>
+          <button class="modal-btn modal-btn-danger">Delete Forever</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal with Warning -->
+  <section class="section">
+    <h2 class="section-title">Modal with Warning Alert</h2>
+    <p class="section-description">
+      Modal displaying important warnings or notices to the user.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Warning Modal</div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Update Bot Permissions</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning">
+            <div class="alert-icon">⚡</div>
+            <div class="alert-content">
+              <h4>Important Notice</h4>
+              <p>
+                Changing bot permissions may affect existing commands and features. Some functionality may be temporarily unavailable.
+              </p>
+            </div>
+          </div>
+          <p>
+            The bot requires the following permissions to function properly:
+          </p>
+          <ul style="margin: var(--space-3) 0; padding-left: var(--space-6);">
+            <li style="margin-bottom: var(--space-2);">Send Messages</li>
+            <li style="margin-bottom: var(--space-2);">Manage Messages</li>
+            <li style="margin-bottom: var(--space-2);">Embed Links</li>
+            <li style="margin-bottom: var(--space-2);">Add Reactions</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Cancel</button>
+          <button class="modal-btn modal-btn-primary">Update Permissions</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal without Footer -->
+  <section class="section">
+    <h2 class="section-title">Modal without Footer</h2>
+    <p class="section-description">
+      Simplified modal with only header and body, useful for information display.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Info Modal (No Footer)</div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Command Details</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <strong>Command:</strong> /play
+          </p>
+          <p>
+            <strong>Description:</strong> Plays a song from YouTube in your voice channel
+          </p>
+          <p>
+            <strong>Usage:</strong> /play [song name or URL]
+          </p>
+          <p>
+            <strong>Example:</strong> /play never gonna give you up
+          </p>
+          <p>
+            <strong>Cooldown:</strong> 3 seconds
+          </p>
+          <p>
+            <strong>Required Permissions:</strong> Connect, Speak
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scrollable Modal -->
+  <section class="section">
+    <h2 class="section-title">Scrollable Modal with Long Content</h2>
+    <p class="section-description">
+      Modal with scrollable body for lengthy content. Max height is 90vh.
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Scrollable Content Modal</div>
+      <div class="modal" style="max-height: 500px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Terms of Service</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <h4 style="margin-bottom: var(--space-3);">1. Acceptance of Terms</h4>
+          <p>
+            By accessing and using this Discord bot, you accept and agree to be bound by the terms and provision of this agreement.
+          </p>
+
+          <h4 style="margin: var(--space-6) 0 var(--space-3);">2. Use License</h4>
+          <p>
+            Permission is granted to temporarily use this bot for personal, non-commercial transitory viewing only.
+          </p>
+          <p>
+            This is the grant of a license, not a transfer of title, and under this license you may not:
+          </p>
+          <ul style="margin: var(--space-3) 0; padding-left: var(--space-6);">
+            <li style="margin-bottom: var(--space-2);">Modify or copy the materials</li>
+            <li style="margin-bottom: var(--space-2);">Use the materials for any commercial purpose</li>
+            <li style="margin-bottom: var(--space-2);">Attempt to reverse engineer any software</li>
+            <li style="margin-bottom: var(--space-2);">Remove any copyright or other proprietary notations</li>
+          </ul>
+
+          <h4 style="margin: var(--space-6) 0 var(--space-3);">3. Disclaimer</h4>
+          <p>
+            The materials on this bot are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim all other warranties.
+          </p>
+
+          <h4 style="margin: var(--space-6) 0 var(--space-3);">4. Limitations</h4>
+          <p>
+            In no event shall we or our suppliers be liable for any damages arising out of the use or inability to use the materials on this bot.
+          </p>
+
+          <h4 style="margin: var(--space-6) 0 var(--space-3);">5. Privacy Policy</h4>
+          <p>
+            We collect minimal data necessary for bot functionality. Your data will never be sold to third parties.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Decline</button>
+          <button class="modal-btn modal-btn-primary">Accept</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full-Width Modal -->
+  <section class="section">
+    <h2 class="section-title">Full-Width Modal</h2>
+    <p class="section-description">
+      Nearly full-screen modal for maximum content display (95vw x 95vh).
+    </p>
+
+    <div class="modal-example">
+      <div class="example-label">Full-Width Modal (95vw)</div>
+      <div class="modal modal-full" style="max-height: 600px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Command Analytics Dashboard</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: var(--text-lg); text-align: center; padding: var(--space-16);">
+            This full-width modal would contain charts, graphs, and detailed analytics data.
+          </p>
+          <p style="text-align: center; color: var(--text-tertiary);">
+            Content area is maximized to 95% of viewport width and height.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary">Export Data</button>
+          <button class="modal-btn modal-btn-primary">Close</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JavaScript for Modal Functionality -->
+  <script>
+    // Modal functionality
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        // Restore body scroll
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal when clicking outside of modal content
+    window.addEventListener('click', function(event) {
+      if (event.target.classList.contains('modal-overlay')) {
+        event.target.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const visibleModals = document.querySelectorAll('.modal-overlay[style*="display: flex"]');
+        visibleModals.forEach(modal => {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        });
+      }
+    });
+
+    // Add click handlers to all close buttons
+    document.addEventListener('DOMContentLoaded', function() {
+      const closeButtons = document.querySelectorAll('.modal-close');
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const modal = this.closest('.modal-overlay');
+          if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Component - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Page Layout Container */
+    .page-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Base Styles */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface-primary); /* Slate background */
+      color: var(--text-on-dark);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      box-shadow: var(--shadow-md);
+      z-index: var(--z-sticky);
+    }
+
+    /* Logo Area */
+    .sidebar-logo {
+      padding: var(--space-6) var(--space-4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .sidebar-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--text-on-primary);
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-text {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--text-on-dark);
+    }
+
+    /* Navigation Container */
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--space-4) 0;
+    }
+
+    /* Nav Section */
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-title {
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-2);
+    }
+
+    /* Nav Items */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--nav-item-padding);
+      margin: 0 var(--space-2);
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      border-radius: var(--nav-item-radius);
+      transition: var(--transition-fast);
+      cursor: pointer;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+    }
+
+    .nav-item:hover {
+      background: var(--nav-item-hover-bg);
+      color: var(--text-on-dark);
+    }
+
+    /* Active Nav Item */
+    .nav-item.active {
+      background: var(--nav-item-active-bg);
+      color: var(--text-on-dark);
+      font-weight: var(--font-semibold);
+      position: relative;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 70%;
+      background: var(--color-primary);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Nav Item Icon */
+    .nav-icon {
+      font-size: var(--text-lg);
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* Nav Item with Badge */
+    .nav-badge {
+      margin-left: auto;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 var(--space-1);
+      background: var(--color-danger);
+      color: var(--text-on-primary);
+      border-radius: 10px;
+      font-size: 0.625rem;
+      font-weight: var(--font-bold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item.active .nav-badge {
+      background: var(--color-primary);
+    }
+
+    /* Sidebar Footer */
+    .sidebar-footer {
+      padding: var(--space-4);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .sidebar-user:hover {
+      background: var(--nav-item-hover-bg);
+    }
+
+    .sidebar-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--color-neutral-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: var(--text-on-dark);
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-on-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: var(--text-xs);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: var(--space-8);
+      background: var(--surface-secondary);
+    }
+
+    /* Demo Section Styles */
+    .demo-section {
+      background: var(--surface-card);
+      padding: var(--space-8);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-8);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .demo-title {
+      margin-top: 0;
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .demo-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Collapsible Nav Group */
+    .nav-group {
+      margin-bottom: var(--space-2);
+    }
+
+    .nav-group-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--nav-item-padding);
+      margin: 0 var(--space-2);
+      color: rgba(255, 255, 255, 0.8);
+      background: transparent;
+      border: none;
+      border-radius: var(--nav-item-radius);
+      transition: var(--transition-fast);
+      cursor: pointer;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      width: calc(100% - var(--space-4));
+    }
+
+    .nav-group-toggle:hover {
+      background: var(--nav-item-hover-bg);
+      color: var(--text-on-dark);
+    }
+
+    .nav-group-icon {
+      font-size: var(--text-xs);
+      transition: var(--transition-fast);
+    }
+
+    .nav-group.expanded .nav-group-icon {
+      transform: rotate(90deg);
+    }
+
+    .nav-group-items {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .nav-group.expanded .nav-group-items {
+      max-height: 500px;
+    }
+
+    .nav-group-items .nav-item {
+      padding-left: calc(var(--space-4) + 24px + var(--space-3));
+      font-size: var(--text-sm);
+    }
+
+    /* Compact Sidebar Variant */
+    .sidebar-compact {
+      width: 60px;
+    }
+
+    .sidebar-compact .sidebar-logo-text,
+    .sidebar-compact .nav-section-title,
+    .sidebar-compact .nav-item span:not(.nav-icon),
+    .sidebar-compact .nav-badge,
+    .sidebar-compact .sidebar-user-info {
+      display: none;
+    }
+
+    .sidebar-compact .nav-item,
+    .sidebar-compact .nav-group-toggle {
+      justify-content: center;
+      padding: var(--space-3);
+    }
+
+    .sidebar-compact .sidebar-logo {
+      justify-content: center;
+    }
+
+    /* Responsive Behavior */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-out;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Example 1: Full Sidebar with Active States -->
+  <div class="page-layout">
+    <aside class="sidebar">
+      <!-- Logo Area -->
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">DB</div>
+        <div class="sidebar-logo-text">Discord Bot</div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <!-- Main Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="#" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Messages</span>
+            <span class="nav-badge">12</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">🏰</span>
+            <span>Guilds</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span>Members</span>
+          </a>
+        </div>
+
+        <!-- Management Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">Management</div>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span>Commands</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">🔌</span>
+            <span>Plugins</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">🎨</span>
+            <span>Themes</span>
+          </a>
+        </div>
+
+        <!-- System Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">System</div>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span>Logs</span>
+            <span class="nav-badge">3</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">📈</span>
+            <span>Analytics</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Footer with User Info -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">JD</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">John Doe</div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="demo-section">
+        <h1 class="demo-title">Standard Sidebar - 200px Width</h1>
+        <p class="demo-description">
+          This is the default sidebar layout with slate background (#555B6E), navigation items with icons,
+          active state indicators, and a fixed 200px width. The active item has a rose-colored left border
+          and enhanced background.
+        </p>
+
+        <h2>Features Demonstrated:</h2>
+        <ul style="color: var(--text-secondary); line-height: var(--leading-normal);">
+          <li>Slate background color (#555B6E - from design tokens)</li>
+          <li>Logo area at the top with brand icon and name</li>
+          <li>Organized navigation sections with labels</li>
+          <li>Nav items with icons and text labels</li>
+          <li>Active state with rose left border and enhanced background</li>
+          <li>Hover states with subtle background change</li>
+          <li>Badge/count indicators on some items</li>
+          <li>User profile section in footer</li>
+          <li>Fixed 200px width as specified in design tokens</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Example 2: Sidebar with Collapsible Groups -->
+  <div class="page-layout" style="margin-top: var(--space-16);">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">DB</div>
+        <div class="sidebar-logo-text">Discord Bot</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <a href="#" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Features</div>
+
+          <!-- Collapsible Group -->
+          <div class="nav-group expanded">
+            <button class="nav-group-toggle">
+              <span class="nav-group-icon">▶</span>
+              <span class="nav-icon">🎵</span>
+              <span>Music</span>
+            </button>
+            <div class="nav-group-items">
+              <a href="#" class="nav-item">
+                <span>Queue</span>
+              </a>
+              <a href="#" class="nav-item">
+                <span>Playlists</span>
+              </a>
+              <a href="#" class="nav-item">
+                <span>Settings</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Collapsible Group -->
+          <div class="nav-group">
+            <button class="nav-group-toggle">
+              <span class="nav-group-icon">▶</span>
+              <span class="nav-icon">🛡️</span>
+              <span>Moderation</span>
+            </button>
+            <div class="nav-group-items">
+              <a href="#" class="nav-item">
+                <span>Auto-Mod</span>
+              </a>
+              <a href="#" class="nav-item">
+                <span>Banned Users</span>
+              </a>
+              <a href="#" class="nav-item">
+                <span>Filters</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">AD</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Admin User</div>
+            <div class="sidebar-user-role">Owner</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="demo-section">
+        <h1 class="demo-title">Sidebar with Collapsible Navigation Groups</h1>
+        <p class="demo-description">
+          This variant includes collapsible navigation groups for organizing related items.
+          Click the group headers to expand/collapse sub-items.
+        </p>
+
+        <h2>Additional Features:</h2>
+        <ul style="color: var(--text-secondary); line-height: var(--leading-normal);">
+          <li>Collapsible navigation groups with expand/collapse icons</li>
+          <li>Nested sub-navigation items with indentation</li>
+          <li>Smooth animations for group expansion</li>
+          <li>Maintains all standard sidebar features</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Example 3: Compact Sidebar -->
+  <div class="page-layout" style="margin-top: var(--space-16);">
+    <aside class="sidebar sidebar-compact">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">DB</div>
+        <div class="sidebar-logo-text">Discord Bot</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <a href="#" class="nav-item" title="Dashboard">
+            <span class="nav-icon">📊</span>
+          </a>
+          <a href="#" class="nav-item active" title="Messages">
+            <span class="nav-icon">💬</span>
+          </a>
+          <a href="#" class="nav-item" title="Guilds">
+            <span class="nav-icon">🏰</span>
+          </a>
+          <a href="#" class="nav-item" title="Members">
+            <span class="nav-icon">👥</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <a href="#" class="nav-item" title="Commands">
+            <span class="nav-icon">⚙️</span>
+          </a>
+          <a href="#" class="nav-item" title="Plugins">
+            <span class="nav-icon">🔌</span>
+          </a>
+          <a href="#" class="nav-item" title="Themes">
+            <span class="nav-icon">🎨</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <a href="#" class="nav-item" title="Logs">
+            <span class="nav-icon">📝</span>
+            <span class="nav-badge">3</span>
+          </a>
+          <a href="#" class="nav-item" title="Analytics">
+            <span class="nav-icon">📈</span>
+          </a>
+          <a href="#" class="nav-item" title="Settings">
+            <span class="nav-icon">⚙️</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">JD</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">John Doe</div>
+            <div class="sidebar-user-role">Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" style="margin-left: 60px;">
+      <div class="demo-section">
+        <h1 class="demo-title">Compact Sidebar - 60px Width</h1>
+        <p class="demo-description">
+          Space-saving variant that shows only icons. Text labels are hidden, and icons are centered.
+          Tooltips (title attributes) provide context on hover.
+        </p>
+
+        <h2>Compact Features:</h2>
+        <ul style="color: var(--text-secondary); line-height: var(--leading-normal);">
+          <li>Reduced width (60px) for maximum screen space</li>
+          <li>Icon-only navigation items</li>
+          <li>Centered layout</li>
+          <li>Tooltips on hover for accessibility</li>
+          <li>Maintains active state styling</li>
+          <li>Logo shows only icon, text is hidden</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Example 4: Sidebar States Overview -->
+  <div class="page-layout" style="margin-top: var(--space-16);">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">DB</div>
+        <div class="sidebar-logo-text">Discord Bot</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">States Demo</div>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">📄</span>
+            <span>Default State</span>
+          </a>
+          <a href="#" class="nav-item active">
+            <span class="nav-icon">✓</span>
+            <span>Active State</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">⚠️</span>
+            <span>With Warning Badge</span>
+            <span class="nav-badge">!</span>
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">🔔</span>
+            <span>With Count Badge</span>
+            <span class="nav-badge">24</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">TS</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Test User</div>
+            <div class="sidebar-user-role">Moderator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="demo-section">
+        <h1 class="demo-title">Sidebar States Overview</h1>
+        <p class="demo-description">
+          Comprehensive demonstration of all navigation item states and variations.
+        </p>
+
+        <h2>State Specifications:</h2>
+        <ul style="color: var(--text-secondary); line-height: var(--leading-normal);">
+          <li><strong>Default:</strong> White text at 80% opacity, transparent background</li>
+          <li><strong>Hover:</strong> Full white text, 10% white background overlay</li>
+          <li><strong>Active:</strong> Full white text, 15% white background, rose left border (3px)</li>
+          <li><strong>With Badge:</strong> Count or notification indicator aligned to the right</li>
+          <li><strong>Section Titles:</strong> 50% opacity, uppercase, smaller font size</li>
+        </ul>
+
+        <h2>Color Tokens Used:</h2>
+        <ul style="color: var(--text-secondary); line-height: var(--leading-normal);">
+          <li><strong>Background:</strong> var(--surface-primary) / var(--color-slate) - #555B6E</li>
+          <li><strong>Active Border:</strong> var(--color-primary) / var(--color-rose) - #DA4167</li>
+          <li><strong>Text:</strong> var(--text-on-dark) - #FFFFFF</li>
+          <li><strong>Width:</strong> var(--sidebar-width) - 200px</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Add simple interactivity for collapsible groups
+    document.querySelectorAll('.nav-group-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const group = this.closest('.nav-group');
+        group.classList.toggle('expanded');
+      });
+    });
+
+    // Hover effect demonstration (already handled by CSS)
+    // Active state demonstration (already handled by CSS)
+  </script>
+</body>
+</html>

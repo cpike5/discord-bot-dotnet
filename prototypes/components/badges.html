@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge Component - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Badge Display Grid */
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      align-items: center;
+      background: var(--surface-card);
+      padding: var(--space-6);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      margin-bottom: var(--space-6);
+    }
+
+    .badge-label {
+      width: 100%;
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Base Badge Styles */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--badge-padding);
+      border-radius: var(--badge-radius);
+      font-size: var(--badge-font-size);
+      font-weight: var(--badge-font-weight);
+      line-height: 1;
+      white-space: nowrap;
+      transition: var(--transition-fast);
+    }
+
+    /* Badge Color Variants */
+    .badge-success {
+      background: var(--color-success);
+      color: var(--text-on-primary);
+    }
+
+    .badge-warning {
+      background: var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .badge-danger {
+      background: var(--color-danger);
+      color: var(--text-on-primary);
+    }
+
+    .badge-info {
+      background: var(--color-info);
+      color: var(--text-primary);
+    }
+
+    .badge-primary {
+      background: var(--color-primary);
+      color: var(--text-on-primary);
+    }
+
+    .badge-secondary {
+      background: var(--color-neutral-200);
+      color: var(--text-primary);
+    }
+
+    .badge-dark {
+      background: var(--color-slate);
+      color: var(--text-on-dark);
+    }
+
+    .badge-light {
+      background: var(--color-neutral-100);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+    }
+
+    /* Badge Size Variants */
+    .badge-sm {
+      padding: 2px var(--space-2);
+      font-size: 0.625rem; /* 10px */
+    }
+
+    .badge-md {
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--badge-font-size); /* 12px - default */
+    }
+
+    .badge-lg {
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-sm); /* 14px */
+    }
+
+    /* Badge with Icon */
+    .badge-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .badge-icon-only {
+      padding: var(--space-1);
+      aspect-ratio: 1;
+      font-size: var(--text-sm);
+    }
+
+    /* Badge Outline Variants */
+    .badge-outline {
+      background: transparent;
+      border: 1px solid currentColor;
+    }
+
+    .badge-outline.badge-success {
+      color: var(--color-success);
+      border-color: var(--color-success);
+    }
+
+    .badge-outline.badge-warning {
+      color: var(--color-warning);
+      border-color: var(--color-warning);
+    }
+
+    .badge-outline.badge-danger {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+
+    .badge-outline.badge-info {
+      color: var(--color-info);
+      border-color: var(--color-info);
+    }
+
+    .badge-outline.badge-primary {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    /* Badge Dot Variant */
+    .badge-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: transparent;
+      color: var(--text-primary);
+      padding: var(--space-1) var(--space-3);
+      font-weight: var(--font-medium);
+    }
+
+    .badge-dot::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .badge-dot.badge-success::before {
+      background: var(--color-success);
+    }
+
+    .badge-dot.badge-warning::before {
+      background: var(--color-warning);
+    }
+
+    .badge-dot.badge-danger::before {
+      background: var(--color-danger);
+    }
+
+    .badge-dot.badge-info::before {
+      background: var(--color-info);
+    }
+
+    .badge-dot.badge-primary::before {
+      background: var(--color-primary);
+    }
+
+    /* Pill Badge (Squared Corners) */
+    .badge-pill {
+      border-radius: var(--radius-sm);
+    }
+
+    /* Removable Badge */
+    .badge-removable {
+      padding-right: var(--space-2);
+      gap: var(--space-2);
+    }
+
+    .badge-remove {
+      background: transparent;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      margin-left: var(--space-1);
+      font-size: 1em;
+      line-height: 1;
+      opacity: 0.7;
+      transition: var(--transition-fast);
+    }
+
+    .badge-remove:hover {
+      opacity: 1;
+    }
+
+    /* Interactive Badge (Clickable) */
+    .badge-interactive {
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .badge-interactive:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+    }
+
+    .badge-interactive:active {
+      transform: translateY(0);
+    }
+
+    /* Numeric Badge */
+    .badge-count {
+      min-width: 20px;
+      height: 20px;
+      padding: 0 var(--space-1);
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.625rem;
+      font-weight: var(--font-bold);
+    }
+
+    /* Example Card for Demonstrations */
+    .demo-card {
+      background: var(--surface-card);
+      padding: var(--space-6);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      margin-bottom: var(--space-6);
+    }
+
+    .demo-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .demo-card-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      margin: 0;
+    }
+
+    .demo-card-body {
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+    }
+
+    /* Tag List */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    /* User List with Badges */
+    .user-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .user-item:last-child {
+      border-bottom: none;
+    }
+
+    .user-name {
+      font-weight: var(--font-medium);
+    }
+  </style>
+</head>
+<body>
+  <!-- Standard Badge Colors -->
+  <section class="section">
+    <h2 class="section-title">Badge Color Variants</h2>
+    <p class="section-description">
+      Standard badge colors using the design system palette: sage (success), gold (warning), rose (danger), and lavender (info).
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Color Variants (Medium Size - Default)</span>
+      <span class="badge badge-success badge-md">Success / Sage</span>
+      <span class="badge badge-warning badge-md">Warning / Gold</span>
+      <span class="badge badge-danger badge-md">Danger / Rose</span>
+      <span class="badge badge-info badge-md">Info / Lavender</span>
+      <span class="badge badge-primary badge-md">Primary / Rose</span>
+      <span class="badge badge-secondary badge-md">Secondary</span>
+      <span class="badge badge-dark badge-md">Dark / Slate</span>
+      <span class="badge badge-light badge-md">Light</span>
+    </div>
+  </section>
+
+  <!-- Badge Sizes -->
+  <section class="section">
+    <h2 class="section-title">Badge Sizes</h2>
+    <p class="section-description">
+      Three size options: small (10px), medium (12px - default), and large (14px).
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Success Badges</span>
+      <span class="badge badge-success badge-sm">Small</span>
+      <span class="badge badge-success badge-md">Medium</span>
+      <span class="badge badge-success badge-lg">Large</span>
+    </div>
+
+    <div class="badge-grid">
+      <span class="badge-label">Warning Badges</span>
+      <span class="badge badge-warning badge-sm">Small</span>
+      <span class="badge badge-warning badge-md">Medium</span>
+      <span class="badge badge-warning badge-lg">Large</span>
+    </div>
+
+    <div class="badge-grid">
+      <span class="badge-label">Danger Badges</span>
+      <span class="badge badge-danger badge-sm">Small</span>
+      <span class="badge badge-danger badge-md">Medium</span>
+      <span class="badge badge-danger badge-lg">Large</span>
+    </div>
+
+    <div class="badge-grid">
+      <span class="badge-label">Info Badges</span>
+      <span class="badge badge-info badge-sm">Small</span>
+      <span class="badge badge-info badge-md">Medium</span>
+      <span class="badge badge-info badge-lg">Large</span>
+    </div>
+  </section>
+
+  <!-- Badges with Icons -->
+  <section class="section">
+    <h2 class="section-title">Badges with Icons</h2>
+    <p class="section-description">
+      Badges can include icons or emoji for additional context.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Icon Badges</span>
+      <span class="badge badge-success badge-md badge-icon">
+        <span>✓</span>
+        <span>Verified</span>
+      </span>
+      <span class="badge badge-warning badge-md badge-icon">
+        <span>⚡</span>
+        <span>Premium</span>
+      </span>
+      <span class="badge badge-danger badge-md badge-icon">
+        <span>✗</span>
+        <span>Banned</span>
+      </span>
+      <span class="badge badge-info badge-md badge-icon">
+        <span>🛡️</span>
+        <span>Moderator</span>
+      </span>
+      <span class="badge badge-primary badge-md badge-icon">
+        <span>👑</span>
+        <span>Admin</span>
+      </span>
+    </div>
+
+    <div class="badge-grid">
+      <span class="badge-label">Icon-Only Badges</span>
+      <span class="badge badge-success badge-md badge-icon-only" title="Online">●</span>
+      <span class="badge badge-warning badge-md badge-icon-only" title="Away">●</span>
+      <span class="badge badge-danger badge-md badge-icon-only" title="Busy">●</span>
+      <span class="badge badge-info badge-md badge-icon-only" title="Offline">●</span>
+    </div>
+  </section>
+
+  <!-- Outline Badges -->
+  <section class="section">
+    <h2 class="section-title">Outline Badge Variants</h2>
+    <p class="section-description">
+      Transparent background with colored border and text for a lighter appearance.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Outline Badges</span>
+      <span class="badge badge-outline badge-success badge-md">Success</span>
+      <span class="badge badge-outline badge-warning badge-md">Warning</span>
+      <span class="badge badge-outline badge-danger badge-md">Danger</span>
+      <span class="badge badge-outline badge-info badge-md">Info</span>
+      <span class="badge badge-outline badge-primary badge-md">Primary</span>
+    </div>
+  </section>
+
+  <!-- Dot Badges -->
+  <section class="section">
+    <h2 class="section-title">Dot Badge Variants</h2>
+    <p class="section-description">
+      Status indicators with a colored dot for subtle emphasis.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Status Indicators</span>
+      <span class="badge badge-dot badge-success">Online</span>
+      <span class="badge badge-dot badge-warning">Away</span>
+      <span class="badge badge-dot badge-danger">Busy</span>
+      <span class="badge badge-dot badge-info">Offline</span>
+      <span class="badge badge-dot badge-primary">Streaming</span>
+    </div>
+  </section>
+
+  <!-- Pill Badges (Squared) -->
+  <section class="section">
+    <h2 class="section-title">Pill Badges (Less Rounded)</h2>
+    <p class="section-description">
+      Alternative styling with squared corners instead of fully rounded.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Pill Style</span>
+      <span class="badge badge-success badge-md badge-pill">Active</span>
+      <span class="badge badge-warning badge-md badge-pill">Pending</span>
+      <span class="badge badge-danger badge-md badge-pill">Error</span>
+      <span class="badge badge-info badge-md badge-pill">Processing</span>
+    </div>
+  </section>
+
+  <!-- Removable Badges -->
+  <section class="section">
+    <h2 class="section-title">Removable Badges</h2>
+    <p class="section-description">
+      Badges with a close button for tags or filters that can be removed.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Tags with Remove</span>
+      <span class="badge badge-primary badge-md badge-removable badge-icon">
+        <span>JavaScript</span>
+        <button class="badge-remove" aria-label="Remove">&times;</button>
+      </span>
+      <span class="badge badge-info badge-md badge-removable badge-icon">
+        <span>C#</span>
+        <button class="badge-remove" aria-label="Remove">&times;</button>
+      </span>
+      <span class="badge badge-success badge-md badge-removable badge-icon">
+        <span>Docker</span>
+        <button class="badge-remove" aria-label="Remove">&times;</button>
+      </span>
+      <span class="badge badge-warning badge-md badge-removable badge-icon">
+        <span>Azure</span>
+        <button class="badge-remove" aria-label="Remove">&times;</button>
+      </span>
+    </div>
+  </section>
+
+  <!-- Interactive Badges -->
+  <section class="section">
+    <h2 class="section-title">Interactive/Clickable Badges</h2>
+    <p class="section-description">
+      Badges that respond to hover and click actions.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Clickable Badges (Hover to see effect)</span>
+      <span class="badge badge-success badge-md badge-interactive">✓ Active Guild</span>
+      <span class="badge badge-warning badge-md badge-interactive">⚠️ 3 Warnings</span>
+      <span class="badge badge-danger badge-md badge-interactive">✗ 5 Errors</span>
+      <span class="badge badge-info badge-md badge-interactive">ℹ️ 12 Messages</span>
+    </div>
+  </section>
+
+  <!-- Numeric Count Badges -->
+  <section class="section">
+    <h2 class="section-title">Numeric Count Badges</h2>
+    <p class="section-description">
+      Small circular badges for displaying counts and notifications.
+    </p>
+
+    <div class="badge-grid">
+      <span class="badge-label">Notification Counts</span>
+      <span class="badge badge-danger badge-count">5</span>
+      <span class="badge badge-danger badge-count">12</span>
+      <span class="badge badge-danger badge-count">99+</span>
+      <span class="badge badge-primary badge-count">3</span>
+      <span class="badge badge-success badge-count">✓</span>
+    </div>
+  </section>
+
+  <!-- Real-World Usage Examples -->
+  <section class="section">
+    <h2 class="section-title">Real-World Usage Examples</h2>
+    <p class="section-description">
+      How badges appear in actual UI components.
+    </p>
+
+    <!-- Guild Status Card -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h3 class="demo-card-title">Awesome Gaming Community</h3>
+        <span class="badge badge-success badge-md">Active</span>
+      </div>
+      <div class="demo-card-body">
+        <p>1,234 members • Last activity: 2 minutes ago</p>
+        <div class="tag-list" style="margin-top: var(--space-4);">
+          <span class="badge badge-light badge-sm">Gaming</span>
+          <span class="badge badge-light badge-sm">Community</span>
+          <span class="badge badge-light badge-sm">English</span>
+          <span class="badge badge-warning badge-sm badge-icon">
+            <span>⭐</span>
+            <span>Featured</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Command Stats Card -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h3 class="demo-card-title">Command Statistics</h3>
+      </div>
+      <div class="demo-card-body">
+        <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
+          <span class="badge badge-success badge-lg badge-icon">
+            <span>✓</span>
+            <span>8,945 Success</span>
+          </span>
+          <span class="badge badge-danger badge-lg badge-icon">
+            <span>✗</span>
+            <span>124 Errors</span>
+          </span>
+          <span class="badge badge-info badge-lg">98.6% Uptime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- User List Card -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h3 class="demo-card-title">Server Members</h3>
+      </div>
+      <ul class="user-list">
+        <li class="user-item">
+          <span class="user-name">@alice_wonder</span>
+          <div style="display: flex; gap: var(--space-2);">
+            <span class="badge badge-primary badge-sm badge-icon">
+              <span>👑</span>
+              <span>Admin</span>
+            </span>
+            <span class="badge badge-dot badge-success">Online</span>
+          </div>
+        </li>
+        <li class="user-item">
+          <span class="user-name">@bob_builder</span>
+          <div style="display: flex; gap: var(--space-2);">
+            <span class="badge badge-info badge-sm badge-icon">
+              <span>🛡️</span>
+              <span>Mod</span>
+            </span>
+            <span class="badge badge-dot badge-success">Online</span>
+          </div>
+        </li>
+        <li class="user-item">
+          <span class="user-name">@charlie_dev</span>
+          <div style="display: flex; gap: var(--space-2);">
+            <span class="badge badge-warning badge-sm badge-icon">
+              <span>⚡</span>
+              <span>Premium</span>
+            </span>
+            <span class="badge badge-dot badge-warning">Away</span>
+          </div>
+        </li>
+        <li class="user-item">
+          <span class="user-name">@diana_artist</span>
+          <div style="display: flex; gap: var(--space-2);">
+            <span class="badge badge-secondary badge-sm">Member</span>
+            <span class="badge badge-dot badge-info">Offline</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empty States - Component Prototype</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Demo container styles */
+    .demo-container {
+      padding: var(--space-8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .demo-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .demo-section h2 {
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .demo-section p {
+      margin-bottom: var(--space-6);
+      color: var(--text-secondary);
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-8);
+    }
+
+    /* ============================================
+       EMPTY STATE COMPONENT
+       ============================================ */
+    /* Container for empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      background-color: var(--surface-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      min-height: 400px;
+    }
+
+    /* Compact variant for smaller spaces */
+    .empty-state.compact {
+      min-height: 300px;
+      padding: var(--space-8) var(--space-6);
+    }
+
+    /* ============================================
+       EMPTY STATE ICON
+       ============================================ */
+    /* Icon/illustration container */
+    .empty-state-icon {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: var(--space-6);
+      background-color: var(--color-neutral-50);
+      border-radius: 50%;
+      color: var(--text-tertiary);
+    }
+
+    .empty-state.compact .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+    }
+
+    /* Colored icon variants */
+    .empty-state-icon.primary {
+      background-color: rgba(218, 65, 103, 0.1);
+      color: var(--color-primary);
+    }
+
+    .empty-state-icon.success {
+      background-color: rgba(135, 179, 141, 0.1);
+      color: var(--color-success);
+    }
+
+    .empty-state-icon.info {
+      background-color: rgba(211, 196, 227, 0.2);
+      color: var(--color-lavender);
+    }
+
+    .empty-state-icon.warning {
+      background-color: rgba(254, 215, 102, 0.2);
+      color: var(--color-warning);
+    }
+
+    /* ============================================
+       EMPTY STATE CONTENT
+       ============================================ */
+    /* Content container */
+    .empty-state-content {
+      max-width: 400px;
+    }
+
+    /* Title */
+    .empty-state-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .empty-state.compact .empty-state-title {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Message/description */
+    .empty-state-message {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-base);
+      margin-bottom: var(--space-6);
+    }
+
+    .empty-state.compact .empty-state-message {
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    /* ============================================
+       EMPTY STATE ACTIONS
+       ============================================ */
+    /* Action buttons container */
+    .empty-state-actions {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Primary action button */
+    .empty-state-button {
+      padding: var(--btn-padding-md);
+      background-color: var(--color-primary);
+      color: var(--text-on-primary);
+      border: none;
+      border-radius: var(--btn-border-radius);
+      font-weight: var(--font-semibold);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-decoration: none;
+    }
+
+    .empty-state-button:hover {
+      background-color: var(--color-primary-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .empty-state-button:active {
+      transform: translateY(0);
+    }
+
+    /* Secondary action button */
+    .empty-state-button.secondary {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+    }
+
+    .empty-state-button.secondary:hover {
+      background-color: rgba(218, 65, 103, 0.05);
+      transform: translateY(-1px);
+    }
+
+    /* Text link style */
+    .empty-state-link {
+      color: var(--color-primary);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-3);
+      transition: var(--transition-fast);
+    }
+
+    .empty-state-link:hover {
+      color: var(--color-primary-hover);
+      text-decoration: underline;
+    }
+
+    /* ============================================
+       EMPTY STATE VARIANTS
+       ============================================ */
+    /* Search results empty state */
+    .empty-state.search {
+      background-color: var(--color-neutral-50);
+      border-style: dashed;
+    }
+
+    /* Error state */
+    .empty-state.error .empty-state-icon {
+      background-color: rgba(210, 47, 81, 0.1);
+      color: var(--color-danger);
+    }
+
+    /* ============================================
+       INLINE EMPTY STATE
+       ============================================ */
+    /* Smaller inline variant */
+    .empty-state-inline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: var(--space-6);
+    }
+
+    .empty-state-inline .inline-icon {
+      font-size: 32px;
+      margin-bottom: var(--space-3);
+      color: var(--text-tertiary);
+    }
+
+    .empty-state-inline .inline-message {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    /* ============================================
+       DEMO SPECIFIC STYLES
+       ============================================ */
+    .demo-wrapper {
+      background-color: var(--color-neutral-50);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+    }
+
+    .demo-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Header -->
+    <div class="demo-section">
+      <h1>Empty States</h1>
+      <p>Empty states provide guidance when there's no content to display. They explain why content is missing and help users take action.</p>
+    </div>
+
+    <!-- Primary Examples -->
+    <div class="demo-section">
+      <h2>Common Empty States</h2>
+      <div class="examples-grid">
+
+        <!-- No Data -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              📊
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Data Yet</h3>
+              <p class="empty-state-message">
+                You haven't configured any commands yet. Get started by creating your first bot command.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  ➕ Create Command
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Search Results -->
+        <div>
+          <div class="empty-state search">
+            <div class="empty-state-icon">
+              🔍
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Results Found</h3>
+              <p class="empty-state-message">
+                We couldn't find any commands matching "admin". Try adjusting your search terms.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button secondary">
+                  Clear Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty List -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon primary">
+              📝
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Messages</h3>
+              <p class="empty-state-message">
+                Your bot hasn't received any messages yet. Make sure it's online and has the proper permissions.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  Check Bot Status
+                </button>
+                <button class="empty-state-button secondary">
+                  View Documentation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Specialized States -->
+    <div class="demo-section">
+      <h2>Specialized States</h2>
+      <div class="examples-grid">
+
+        <!-- Error State -->
+        <div>
+          <div class="empty-state error">
+            <div class="empty-state-icon">
+              ⚠️
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">Failed to Load</h3>
+              <p class="empty-state-message">
+                We couldn't load your bot data. Please check your connection and try again.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  🔄 Retry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permission Required -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon warning">
+              🔒
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">Permission Required</h3>
+              <p class="empty-state-message">
+                You need administrator permissions to access this section.
+              </p>
+              <a href="#" class="empty-state-link">
+                Request Access →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed/Success State -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon success">
+              ✓
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">All Caught Up!</h3>
+              <p class="empty-state-message">
+                You've reviewed all pending notifications. Nice work!
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Discord Bot Specific Examples -->
+    <div class="demo-section">
+      <h2>Discord Bot Specific</h2>
+      <div class="examples-grid">
+
+        <!-- No Servers -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon info">
+              🤖
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Servers Connected</h3>
+              <p class="empty-state-message">
+                Your bot isn't connected to any Discord servers yet. Add it to a server to get started.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  Add to Server
+                </button>
+                <button class="empty-state-button secondary">
+                  Setup Guide
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Active Users -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              👥
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Active Users</h3>
+              <p class="empty-state-message">
+                No users are currently interacting with your bot. Check back later for activity stats.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Commands Configured -->
+        <div>
+          <div class="empty-state">
+            <div class="empty-state-icon primary">
+              ⚡
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Commands Configured</h3>
+              <p class="empty-state-message">
+                Create custom commands to add functionality to your Discord bot.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  ➕ Create First Command
+                </button>
+              </div>
+              <a href="#" class="empty-state-link">
+                Browse Command Templates →
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Compact Variants -->
+    <div class="demo-section">
+      <h2>Compact Variants</h2>
+      <p>Smaller empty states for limited spaces:</p>
+      <div class="examples-grid">
+
+        <!-- Compact No Data -->
+        <div>
+          <div class="empty-state compact">
+            <div class="empty-state-icon">
+              📋
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Items</h3>
+              <p class="empty-state-message">
+                No items to display in this category.
+              </p>
+              <div class="empty-state-actions">
+                <button class="empty-state-button">
+                  Add Item
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Search -->
+        <div>
+          <div class="empty-state compact search">
+            <div class="empty-state-icon">
+              🔍
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Matches</h3>
+              <p class="empty-state-message">
+                Try different search terms.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Inline Variants -->
+    <div class="demo-section">
+      <h2>Inline Empty States</h2>
+      <p>Minimal empty states for inline use in lists or tables:</p>
+
+      <div class="demo-wrapper">
+        <div class="demo-label">Empty Table Section</div>
+        <div style="background: white; padding: var(--space-6); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+          <div class="empty-state-inline">
+            <div class="inline-icon">📭</div>
+            <div class="inline-message">No messages in this channel</div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="demo-wrapper">
+        <div class="demo-label">Empty List</div>
+        <div style="background: white; padding: var(--space-6); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+          <div class="empty-state-inline">
+            <div class="inline-icon">🔔</div>
+            <div class="inline-message">No notifications at this time</div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="demo-wrapper">
+        <div class="demo-label">Empty Dashboard Widget</div>
+        <div style="background: white; padding: var(--space-6); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+          <div class="empty-state-inline">
+            <div class="inline-icon">📊</div>
+            <div class="inline-message">No data available for this time period</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Implementation Notes -->
+    <div class="demo-section">
+      <h2>Implementation Notes</h2>
+      <ul style="color: var(--text-secondary); line-height: var(--leading-lg); margin-left: var(--space-6);">
+        <li><strong>Icon:</strong> Use a relevant emoji or illustration that represents the empty state</li>
+        <li><strong>Title:</strong> Clear, concise heading that describes what's missing</li>
+        <li><strong>Message:</strong> Explain why the content is empty and what the user can do</li>
+        <li><strong>Action:</strong> Provide a clear call-to-action button when appropriate</li>
+        <li><strong>Tone:</strong> Be helpful and encouraging, not discouraging</li>
+        <li><strong>Context:</strong> Tailor the message to the specific situation (first-time vs no results)</li>
+        <li><strong>Variants:</strong> Use compact or inline versions for limited spaces</li>
+        <li><strong>Colors:</strong> Use colored backgrounds to emphasize state (info, warning, error)</li>
+      </ul>
+
+      <h3 style="margin-top: var(--space-6); margin-bottom: var(--space-3);">When to Use Empty States</h3>
+      <ul style="color: var(--text-secondary); line-height: var(--leading-lg); margin-left: var(--space-6);">
+        <li>First-time user experience (no data created yet)</li>
+        <li>No search or filter results</li>
+        <li>Completed items (inbox zero, all tasks done)</li>
+        <li>Permission or access restrictions</li>
+        <li>Error or failed data loading</li>
+        <li>Temporary states (no notifications, no active users)</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Add click handlers to demonstrate button interactions
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = document.querySelectorAll('.empty-state-button, .empty-state-link');
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Empty state action clicked:', button.textContent.trim());
+
+          // Provide visual feedback
+          const originalText = button.textContent;
+          button.textContent = '✓ Clicked!';
+          setTimeout(() => {
+            button.textContent = originalText;
+          }, 1000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

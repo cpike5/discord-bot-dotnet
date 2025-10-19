@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Message Components - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Demo container styles */
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-8);
+    }
+
+    .demo-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .demo-section h2 {
+      margin-bottom: var(--space-6);
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: var(--space-3);
+    }
+
+    .demo-section h3 {
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-4);
+      color: var(--text-secondary);
+      font-size: var(--text-lg);
+    }
+
+    .demo-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Validation Message Base */
+    .validation-message {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      border: 1px solid transparent;
+      transition: var(--transition-base);
+    }
+
+    .validation-message-icon {
+      flex-shrink: 0;
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+      margin-top: 2px; /* Align with text baseline */
+    }
+
+    .validation-message-content {
+      flex: 1;
+    }
+
+    .validation-message-title {
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .validation-message-text {
+      margin: 0;
+    }
+
+    /* Error State */
+    .validation-message-error {
+      background-color: rgba(194, 51, 93, 0.1);
+      border-color: var(--color-danger);
+      color: var(--color-danger);
+    }
+
+    .validation-message-error .validation-message-icon {
+      color: var(--color-danger);
+    }
+
+    /* Success State */
+    .validation-message-success {
+      background-color: rgba(135, 179, 141, 0.1);
+      border-color: var(--color-success);
+      color: var(--color-success);
+    }
+
+    .validation-message-success .validation-message-icon {
+      color: var(--color-success);
+    }
+
+    /* Warning State */
+    .validation-message-warning {
+      background-color: rgba(254, 215, 102, 0.15);
+      border-color: var(--color-warning);
+      color: #8B7400; /* Darker gold for better readability */
+    }
+
+    .validation-message-warning .validation-message-icon {
+      color: #8B7400;
+    }
+
+    /* Info State */
+    .validation-message-info {
+      background-color: rgba(211, 196, 227, 0.2);
+      border-color: var(--color-info);
+      color: #6B5B7E; /* Darker lavender for better readability */
+    }
+
+    .validation-message-info .validation-message-icon {
+      color: #6B5B7E;
+    }
+
+    /* Variant: Solid Background */
+    .validation-message-solid.validation-message-error {
+      background-color: var(--color-danger);
+      border-color: var(--color-danger);
+      color: var(--text-on-primary);
+    }
+
+    .validation-message-solid.validation-message-error .validation-message-icon {
+      color: var(--text-on-primary);
+    }
+
+    .validation-message-solid.validation-message-success {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+      color: var(--text-on-primary);
+    }
+
+    .validation-message-solid.validation-message-success .validation-message-icon {
+      color: var(--text-on-primary);
+    }
+
+    .validation-message-solid.validation-message-warning {
+      background-color: var(--color-warning);
+      border-color: var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .validation-message-solid.validation-message-warning .validation-message-icon {
+      color: var(--text-primary);
+    }
+
+    .validation-message-solid.validation-message-info {
+      background-color: var(--color-info);
+      border-color: var(--color-info);
+      color: var(--text-primary);
+    }
+
+    .validation-message-solid.validation-message-info .validation-message-icon {
+      color: var(--text-primary);
+    }
+
+    /* Variant: Minimal (No Background) */
+    .validation-message-minimal {
+      background-color: transparent;
+      border: none;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    /* Variant: With Close Button */
+    .validation-message-dismissible {
+      position: relative;
+      padding-right: var(--space-10);
+    }
+
+    .validation-message-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: currentColor;
+      opacity: 0.7;
+      transition: var(--transition-fast);
+    }
+
+    .validation-message-close:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .validation-message-close svg {
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+    }
+
+    /* Inline Validation */
+    .validation-inline {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      margin-top: var(--space-2);
+    }
+
+    .validation-inline-icon {
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+      flex-shrink: 0;
+    }
+
+    .validation-inline-error {
+      color: var(--color-danger);
+    }
+
+    .validation-inline-success {
+      color: var(--color-success);
+    }
+
+    .validation-inline-warning {
+      color: #8B7400;
+    }
+
+    .validation-inline-info {
+      color: #6B5B7E;
+    }
+
+    /* List of Validation Messages */
+    .validation-list {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-2) 0 0 0;
+    }
+
+    .validation-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      padding: var(--space-1) 0;
+      font-size: var(--text-sm);
+    }
+
+    .validation-list li::before {
+      content: '•';
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+
+    /* Demo specific */
+    .demo-box {
+      background-color: var(--surface-card);
+      padding: var(--space-6);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+
+    .form-demo {
+      max-width: 600px;
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-primary);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-base);
+    }
+
+    .form-group.error .form-input {
+      border-color: var(--color-danger);
+    }
+
+    .form-group.success .form-input {
+      border-color: var(--color-success);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Validation Message Components</h1>
+    <p style="color: var(--text-secondary); margin-top: var(--space-2); margin-bottom: var(--space-8);">
+      Validation message components with error, success, warning, and info states with icons.
+    </p>
+
+    <!-- ERROR MESSAGES -->
+    <section class="demo-section">
+      <h2>Error Messages</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-error">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Please enter a valid email address.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-error">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Validation Failed</div>
+            <p class="validation-message-text">Your form contains errors. Please correct the highlighted fields and try again.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-error">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Password Requirements Not Met</div>
+            <p class="validation-message-text">Your password must meet the following criteria:</p>
+            <ul class="validation-list">
+              <li>At least 8 characters long</li>
+              <li>Contains at least one uppercase letter</li>
+              <li>Contains at least one number</li>
+              <li>Contains at least one special character</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUCCESS MESSAGES -->
+    <section class="demo-section">
+      <h2>Success Messages</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-success">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Your changes have been saved successfully.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-success">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Account Created</div>
+            <p class="validation-message-text">Your account has been created successfully. You can now log in with your credentials.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-success">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Bot Command Created</div>
+            <p class="validation-message-text">The command "/welcome" has been successfully added to your server.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WARNING MESSAGES -->
+    <section class="demo-section">
+      <h2>Warning Messages</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-warning">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Your API rate limit is nearly exceeded. Consider upgrading your plan.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-warning">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Scheduled Maintenance</div>
+            <p class="validation-message-text">The server will undergo maintenance on Saturday, October 21st from 2:00 AM to 4:00 AM EST. Some features may be unavailable during this time.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-warning">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Unsaved Changes</div>
+            <p class="validation-message-text">You have unsaved changes. Make sure to save before leaving this page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFO MESSAGES -->
+    <section class="demo-section">
+      <h2>Info Messages</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-info">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">You can use slash commands to interact with the bot.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-info">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">Pro Tip</div>
+            <p class="validation-message-text">Use keyboard shortcuts to navigate faster. Press "?" to view all available shortcuts.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-info">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+          </svg>
+          <div class="validation-message-content">
+            <div class="validation-message-title">New Features Available</div>
+            <p class="validation-message-text">We've added custom emoji support and reaction roles. Check out the documentation to learn more.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOLID VARIANT -->
+    <section class="demo-section">
+      <h2>Solid Background Variant</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-solid validation-message-error">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">An error occurred while processing your request.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-solid validation-message-success">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Your settings have been updated successfully.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-solid validation-message-warning">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">This action cannot be undone. Please proceed with caution.</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-solid validation-message-info">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Your free trial expires in 7 days.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MINIMAL VARIANT -->
+    <section class="demo-section">
+      <h2>Minimal Variant (No Background)</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-minimal validation-message-error">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Invalid email format</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-minimal validation-message-success">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Username is available</p>
+          </div>
+        </div>
+
+        <div class="validation-message validation-message-minimal validation-message-warning">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Password strength: Medium</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DISMISSIBLE MESSAGES -->
+    <section class="demo-section">
+      <h2>Dismissible Messages</h2>
+
+      <div class="demo-group">
+        <div class="validation-message validation-message-error validation-message-dismissible">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Failed to connect to the server. Please check your internet connection.</p>
+          </div>
+          <button class="validation-message-close" aria-label="Dismiss">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="validation-message validation-message-success validation-message-dismissible">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Your profile has been updated successfully.</p>
+          </div>
+          <button class="validation-message-close" aria-label="Dismiss">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="validation-message validation-message-info validation-message-dismissible">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">We use cookies to improve your experience. By continuing, you agree to our cookie policy.</p>
+          </div>
+          <button class="validation-message-close" aria-label="Dismiss">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INLINE VALIDATION -->
+    <section class="demo-section">
+      <h2>Inline Validation Messages</h2>
+
+      <div class="demo-box form-demo">
+        <div class="form-group error">
+          <label class="form-label" for="email-error">Email Address</label>
+          <input type="email" id="email-error" class="form-input" value="invalid-email">
+          <div class="validation-inline validation-inline-error">
+            <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <div class="form-group success">
+          <label class="form-label" for="username-success">Username</label>
+          <input type="text" id="username-success" class="form-input" value="cool_username">
+          <div class="validation-inline validation-inline-success">
+            <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Username is available</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password-warning">Password</label>
+          <input type="password" id="password-warning" class="form-input" value="password123">
+          <div class="validation-inline validation-inline-warning">
+            <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <span>Password strength: Weak</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="server-name">Server Name</label>
+          <input type="text" id="server-name" class="form-input" placeholder="My Awesome Server">
+          <div class="validation-inline validation-inline-info">
+            <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Choose a unique name for your server</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTEXTUAL USAGE EXAMPLE -->
+    <section class="demo-section">
+      <h2>Contextual Usage Example</h2>
+
+      <div class="demo-box" style="max-width: 700px;">
+        <h3 style="margin-top: 0; margin-bottom: var(--space-4);">Account Settings</h3>
+
+        <div class="validation-message validation-message-info" style="margin-bottom: var(--space-6);">
+          <svg class="validation-message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="validation-message-content">
+            <p class="validation-message-text">Make sure to save your changes before leaving this page.</p>
+          </div>
+        </div>
+
+        <form>
+          <div class="form-group success">
+            <label class="form-label" for="display-name">Display Name</label>
+            <input type="text" id="display-name" class="form-input" value="John Doe">
+            <div class="validation-inline validation-inline-success">
+              <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>Display name updated</span>
+            </div>
+          </div>
+
+          <div class="form-group error">
+            <label class="form-label" for="email-address">Email Address</label>
+            <input type="email" id="email-address" class="form-input" value="john@invalid">
+            <div class="validation-inline validation-inline-error">
+              <svg class="validation-inline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>Please enter a valid email address</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

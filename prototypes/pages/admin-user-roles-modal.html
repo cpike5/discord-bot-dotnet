@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage User Roles Modal - Discord Bot Admin</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-modal);
+      padding: var(--space-4);
+    }
+
+    .modal {
+      background: var(--surface-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--color-neutral-200);
+    }
+
+    .modal-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .modal-subtitle {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .modal-body {
+      padding: var(--space-6);
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: var(--space-6);
+      border-top: 1px solid var(--color-neutral-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+    }
+
+    /* User Info */
+    .user-info-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: white;
+      font-size: var(--text-lg);
+    }
+
+    .user-details {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .user-email {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .discord-username {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    /* Current Roles Section */
+    .section-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .current-roles {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+      padding: var(--space-4);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      min-height: 50px;
+      align-items: center;
+    }
+
+    .current-roles.empty::before {
+      content: "No roles assigned";
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      font-style: italic;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      border-radius: var(--radius-full);
+    }
+
+    .badge.admin {
+      background: rgba(218, 65, 103, 0.1);
+      color: var(--color-primary);
+    }
+
+    .badge.moderator {
+      background: rgba(211, 196, 227, 0.15);
+      color: var(--color-info);
+    }
+
+    .badge.premium {
+      background: rgba(247, 191, 81, 0.15);
+      color: var(--color-gold);
+    }
+
+    .badge.user {
+      background: var(--color-neutral-100);
+      color: var(--text-secondary);
+    }
+
+    /* Role Selection */
+    .role-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .role-option {
+      background: var(--bg-secondary);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: start;
+      gap: var(--space-3);
+    }
+
+    .role-option:hover {
+      border-color: var(--color-neutral-300);
+      background: white;
+    }
+
+    .role-option.selected {
+      border-color: var(--color-primary);
+      background: rgba(218, 65, 103, 0.05);
+    }
+
+    .role-option input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+    }
+
+    .role-option-content {
+      flex: 1;
+    }
+
+    .role-option-title {
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .role-option-description {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .system-badge {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      background: var(--color-neutral-100);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .warning-badge {
+      font-size: var(--text-xs);
+      color: var(--color-danger);
+      background: rgba(211, 47, 81, 0.1);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Alert Box */
+    .alert {
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+
+    .alert.warning {
+      background: rgba(247, 191, 81, 0.1);
+      border-left: 4px solid var(--color-gold);
+      color: var(--text-primary);
+    }
+
+    .alert.info {
+      background: rgba(211, 196, 227, 0.1);
+      border-left: 4px solid var(--color-info);
+      color: var(--text-primary);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: var(--btn-padding-md);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      font-family: var(--font-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .btn-primary:disabled {
+      background: var(--color-neutral-300);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--color-neutral-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-neutral-100);
+    }
+
+    /* Changes Preview */
+    .changes-preview {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .changes-preview-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .changes-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .change-item {
+      font-size: var(--text-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .change-item.add {
+      color: var(--color-success);
+    }
+
+    .change-item.remove {
+      color: var(--color-danger);
+    }
+
+    @media (max-width: 768px) {
+      .modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="modal-overlay">
+    <div class="modal">
+      <!-- Header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Manage User Roles</h2>
+        <p class="modal-subtitle">Assign or revoke roles for this user</p>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- User Info -->
+        <div class="user-info-card">
+          <div class="user-avatar">JS</div>
+          <div class="user-details">
+            <div class="user-name">Jane Smith</div>
+            <div class="user-email">jane.smith@example.com</div>
+            <div class="discord-username">Discord: @janesmith • 234567890123456789</div>
+          </div>
+        </div>
+
+        <!-- Current Roles -->
+        <div class="section-label">Current Roles</div>
+        <div class="current-roles" id="current-roles">
+          <span class="badge moderator">Moderator</span>
+          <span class="badge premium">Premium</span>
+        </div>
+
+        <!-- Alert for Server Admin -->
+        <div class="alert info" style="display: none;" id="server-admin-alert">
+          <strong>ℹ️ Discord Server Administrator</strong><br>
+          This user is a Discord server administrator and has been automatically granted the Admin role. This cannot be revoked while they maintain server admin status.
+        </div>
+
+        <!-- Role Options -->
+        <div class="section-label">Available Roles</div>
+        <div class="role-options">
+          <!-- Admin Role -->
+          <label class="role-option" id="admin-option">
+            <input type="checkbox" name="role" value="admin" onchange="handleRoleChange()">
+            <div class="role-option-content">
+              <div class="role-option-title">
+                Administrator
+                <span class="warning-badge">Requires Confirmation</span>
+              </div>
+              <div class="role-option-description">
+                Full access to all features, user management, and system configuration. Can execute all <code>/admin</code> commands.
+              </div>
+            </div>
+          </label>
+
+          <!-- Moderator Role -->
+          <label class="role-option selected" id="moderator-option">
+            <input type="checkbox" name="role" value="moderator" checked onchange="handleRoleChange()">
+            <div class="role-option-content">
+              <div class="role-option-title">
+                Moderator
+                <span class="system-badge">System Role</span>
+              </div>
+              <div class="role-option-description">
+                Content moderation capabilities. Can execute <code>/moderate</code> commands and manage invite codes.
+              </div>
+            </div>
+          </label>
+
+          <!-- Premium Role -->
+          <label class="role-option selected" id="premium-option">
+            <input type="checkbox" name="role" value="premium" checked onchange="handleRoleChange()">
+            <div class="role-option-content">
+              <div class="role-option-title">
+                Premium
+                <span class="system-badge">System Role</span>
+              </div>
+              <div class="role-option-description">
+                Access to premium features and exclusive bot commands. Can execute <code>/premium</code> commands.
+              </div>
+            </div>
+          </label>
+
+          <!-- User Role -->
+          <label class="role-option" id="user-option">
+            <input type="checkbox" name="role" value="user" onchange="handleRoleChange()">
+            <div class="role-option-content">
+              <div class="role-option-title">
+                User
+                <span class="system-badge">System Role</span>
+              </div>
+              <div class="role-option-description">
+                Standard user access. Can view own profile and execute basic commands like <code>/help</code> and <code>/profile</code>.
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Changes Preview -->
+        <div class="changes-preview" id="changes-preview" style="display: none;">
+          <div class="changes-preview-title">Pending Changes</div>
+          <div class="changes-list" id="changes-list">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Warning for Admin Assignment -->
+        <div class="alert warning" id="admin-warning" style="display: none;">
+          <strong>⚠️ Warning: Admin Role Assignment</strong><br>
+          You are about to grant administrator privileges to this user. Admins have full access to all system features and can manage other users. This action will be logged in the audit trail.
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="alert('Modal closed without saving')">Cancel</button>
+        <button class="btn btn-primary" id="save-button" onclick="showConfirmation()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal (nested, shown when admin is assigned) -->
+  <div class="modal-overlay" id="confirm-modal" style="display: none; z-index: 10001;">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2 class="modal-title">Confirm Admin Role Assignment</h2>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: var(--space-4); color: var(--text-primary);">
+          Are you sure you want to grant <strong>Administrator</strong> privileges to <strong>Jane Smith</strong>?
+        </p>
+        <div class="alert warning">
+          This will give the user full system access including:
+          <ul style="margin-top: var(--space-2); margin-left: var(--space-5);">
+            <li>User and role management</li>
+            <li>All administrative bot commands</li>
+            <li>System configuration access</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="hideConfirmation()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmSave()">Yes, Grant Admin Access</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial state
+    const initialRoles = new Set(['moderator', 'premium']);
+    const currentRoles = new Set(['moderator', 'premium']);
+
+    function handleRoleChange() {
+      // Update currentRoles based on checkboxes
+      currentRoles.clear();
+      document.querySelectorAll('input[name="role"]:checked').forEach(checkbox => {
+        currentRoles.add(checkbox.value);
+      });
+
+      // Update selected class on role options
+      document.querySelectorAll('.role-option').forEach(option => {
+        const checkbox = option.querySelector('input[type="checkbox"]');
+        if (checkbox.checked) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+
+      // Show/hide admin warning
+      const adminWarning = document.getElementById('admin-warning');
+      const hasAdmin = currentRoles.has('admin');
+      const hadAdmin = initialRoles.has('admin');
+      adminWarning.style.display = (hasAdmin && !hadAdmin) ? 'block' : 'none';
+
+      // Calculate and show changes
+      updateChangesPreview();
+    }
+
+    function updateChangesPreview() {
+      const changesPreview = document.getElementById('changes-preview');
+      const changesList = document.getElementById('changes-list');
+      const saveButton = document.getElementById('save-button');
+
+      // Calculate added and removed roles
+      const added = [...currentRoles].filter(role => !initialRoles.has(role));
+      const removed = [...initialRoles].filter(role => !currentRoles.has(role));
+
+      if (added.length === 0 && removed.length === 0) {
+        changesPreview.style.display = 'none';
+        saveButton.disabled = true;
+        return;
+      }
+
+      changesPreview.style.display = 'block';
+      saveButton.disabled = false;
+
+      // Build changes list
+      let html = '';
+      added.forEach(role => {
+        html += `<div class="change-item add">✓ Add <strong>${capitalizeRole(role)}</strong> role</div>`;
+      });
+      removed.forEach(role => {
+        html += `<div class="change-item remove">✗ Remove <strong>${capitalizeRole(role)}</strong> role</div>`;
+      });
+
+      changesList.innerHTML = html;
+    }
+
+    function capitalizeRole(role) {
+      return role.charAt(0).toUpperCase() + role.slice(1);
+    }
+
+    function showConfirmation() {
+      // If assigning admin role, show confirmation
+      if (currentRoles.has('admin') && !initialRoles.has('admin')) {
+        document.getElementById('confirm-modal').style.display = 'flex';
+      } else {
+        confirmSave();
+      }
+    }
+
+    function hideConfirmation() {
+      document.getElementById('confirm-modal').style.display = 'none';
+    }
+
+    function confirmSave() {
+      alert('Roles updated successfully!\n\nAdded: ' +
+        [...currentRoles].filter(r => !initialRoles.has(r)).map(capitalizeRole).join(', ') +
+        '\nRemoved: ' +
+        [...initialRoles].filter(r => !currentRoles.has(r)).map(capitalizeRole).join(', '));
+      hideConfirmation();
+    }
+
+    // Initialize on load
+    handleRoleChange();
+  </script>
+</body>
+</html>

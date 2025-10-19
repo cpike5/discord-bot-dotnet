@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Components - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Demo container styles */
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-8);
+    }
+
+    .demo-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .demo-section h2 {
+      margin-bottom: var(--space-6);
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: var(--space-3);
+    }
+
+    .demo-section h3 {
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-4);
+      color: var(--text-secondary);
+      font-size: var(--text-lg);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Form Group */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Form Label */
+    .form-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .form-label.required::after {
+      content: '*';
+      color: var(--color-danger);
+      margin-left: var(--space-1);
+    }
+
+    /* Input Container (for icon support) */
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-container-icon-left .form-input {
+      padding-left: var(--space-10);
+    }
+
+    .input-container-icon-right .form-input {
+      padding-right: var(--space-10);
+    }
+
+    .input-icon {
+      position: absolute;
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    .input-icon-left {
+      left: var(--space-3);
+    }
+
+    .input-icon-right {
+      right: var(--space-3);
+    }
+
+    /* Form Input Base */
+    .form-input {
+      width: 100%;
+      padding: var(--input-padding);
+      font-family: var(--font-primary);
+      font-size: var(--input-font-size);
+      color: var(--text-primary);
+      background-color: var(--input-bg);
+      border: var(--input-border);
+      border-radius: var(--input-radius);
+      transition: var(--transition-base);
+      outline: none;
+    }
+
+    .form-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    /* Input States - Focus */
+    .form-input:focus {
+      border: var(--input-border-focus);
+      box-shadow: 0 0 0 3px rgba(218, 65, 103, 0.1);
+    }
+
+    /* Input States - Error */
+    .form-group.error .form-label {
+      color: var(--color-danger);
+    }
+
+    .form-group.error .form-input {
+      border-color: var(--color-danger);
+    }
+
+    .form-group.error .form-input:focus {
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(211, 47, 81, 0.1);
+    }
+
+    .form-group.error .input-icon {
+      color: var(--color-danger);
+    }
+
+    /* Input States - Success */
+    .form-group.success .form-label {
+      color: var(--color-success);
+    }
+
+    .form-group.success .form-input {
+      border-color: var(--color-success);
+    }
+
+    .form-group.success .form-input:focus {
+      border-color: var(--color-success);
+      box-shadow: 0 0 0 3px rgba(135, 179, 141, 0.1);
+    }
+
+    .form-group.success .input-icon {
+      color: var(--color-success);
+    }
+
+    /* Input States - Disabled */
+    .form-input:disabled {
+      background-color: var(--input-bg-disabled);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+
+    /* Helper Text */
+    .form-helper {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    .form-group.error .form-helper {
+      color: var(--color-danger);
+    }
+
+    .form-group.success .form-helper {
+      color: var(--color-success);
+    }
+
+    /* Textarea */
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: var(--font-primary);
+    }
+
+    /* Select */
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236C757D'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right var(--space-3) center;
+      background-size: var(--size-icon-sm);
+      padding-right: var(--space-10);
+    }
+
+    /* Checkbox and Radio */
+    .form-checkbox,
+    .form-radio {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .form-checkbox input[type="checkbox"],
+    .form-radio input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+    }
+
+    /* Character Count */
+    .char-count {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      text-align: right;
+    }
+
+    /* Demo specific */
+    .form-example {
+      background-color: var(--surface-card);
+      padding: var(--space-6);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+
+    .state-demo {
+      display: grid;
+      gap: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Form Components</h1>
+    <p style="color: var(--text-secondary); margin-top: var(--space-2); margin-bottom: var(--space-8);">
+      Form input components with labels, helper text, validation states, and icons.
+    </p>
+
+    <!-- TEXT INPUTS -->
+    <section class="demo-section">
+      <h2>Text Inputs</h2>
+
+      <h3>Basic Text Input</h3>
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="username">Username</label>
+            <input type="text" id="username" class="form-input" placeholder="Enter your username">
+            <span class="form-helper">Choose a unique username</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group required">
+            <label class="form-label required" for="email">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="you@example.com">
+            <span class="form-helper">We'll never share your email</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Password Input</h3>
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" class="form-input" placeholder="Enter your password">
+            <span class="form-helper">Must be at least 8 characters</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INPUTS WITH ICONS -->
+    <section class="demo-section">
+      <h2>Inputs with Icons</h2>
+
+      <h3>Icon Left</h3>
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="search">Search</label>
+            <div class="input-container input-container-icon-left">
+              <svg class="input-icon input-icon-left" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" id="search" class="form-input" placeholder="Search commands...">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="email-icon">Email</label>
+            <div class="input-container input-container-icon-left">
+              <svg class="input-icon input-icon-left" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <input type="email" id="email-icon" class="form-input" placeholder="you@example.com">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Icon Right</h3>
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="url">Website URL</label>
+            <div class="input-container input-container-icon-right">
+              <input type="url" id="url" class="form-input" placeholder="https://example.com">
+              <svg class="input-icon input-icon-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="api-key">API Key</label>
+            <div class="input-container input-container-icon-right">
+              <input type="text" id="api-key" class="form-input" placeholder="Enter your API key" value="sk_test_1234567890">
+              <svg class="input-icon input-icon-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VALIDATION STATES -->
+    <section class="demo-section">
+      <h2>Validation States</h2>
+
+      <div class="state-demo">
+        <div class="form-example">
+          <h3>Default State</h3>
+          <div class="form-group">
+            <label class="form-label" for="default">Server Name</label>
+            <input type="text" id="default" class="form-input" placeholder="Enter server name">
+            <span class="form-helper">Enter a name for your Discord server</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <h3>Focus State</h3>
+          <div class="form-group">
+            <label class="form-label" for="focused">Server Name</label>
+            <input type="text" id="focused" class="form-input" placeholder="Enter server name" value="My Server" style="border: 2px solid var(--border-focus); box-shadow: 0 0 0 3px rgba(218, 65, 103, 0.1);">
+            <span class="form-helper">Enter a name for your Discord server</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <h3>Error State</h3>
+          <div class="form-group error">
+            <label class="form-label" for="error">Email Address</label>
+            <div class="input-container input-container-icon-right">
+              <input type="email" id="error" class="form-input" placeholder="you@example.com" value="invalid-email">
+              <svg class="input-icon input-icon-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="form-helper">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <h3>Success State</h3>
+          <div class="form-group success">
+            <label class="form-label" for="success">Username</label>
+            <div class="input-container input-container-icon-right">
+              <input type="text" id="success" class="form-input" placeholder="Enter username" value="awesome_user">
+              <svg class="input-icon input-icon-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="form-helper">Username is available!</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <h3>Disabled State</h3>
+          <div class="form-group">
+            <label class="form-label" for="disabled">Server ID</label>
+            <input type="text" id="disabled" class="form-input" placeholder="Auto-generated" value="SVR_123456789" disabled>
+            <span class="form-helper">This field is automatically generated</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEXTAREA -->
+    <section class="demo-section">
+      <h2>Textarea</h2>
+
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="description">Server Description</label>
+            <textarea id="description" class="form-input form-textarea" placeholder="Describe your server..."></textarea>
+            <span class="form-helper">Maximum 500 characters</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea id="message" class="form-input form-textarea" placeholder="Type your message...">This is a sample message that already has some content in it.</textarea>
+            <div class="char-count">45 / 500 characters</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELECT DROPDOWN -->
+    <section class="demo-section">
+      <h2>Select Dropdown</h2>
+
+      <div class="demo-grid">
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="role">User Role</label>
+            <select id="role" class="form-input form-select">
+              <option value="">Select a role...</option>
+              <option value="admin">Administrator</option>
+              <option value="moderator">Moderator</option>
+              <option value="member">Member</option>
+              <option value="guest">Guest</option>
+            </select>
+            <span class="form-helper">Choose the user's permission level</span>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <div class="form-group">
+            <label class="form-label" for="region">Server Region</label>
+            <select id="region" class="form-input form-select">
+              <option value="us-east">US East</option>
+              <option value="us-west">US West</option>
+              <option value="eu-west">EU West</option>
+              <option value="asia">Asia Pacific</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECKBOX AND RADIO -->
+    <section class="demo-section">
+      <h2>Checkbox and Radio Buttons</h2>
+
+      <div class="demo-grid">
+        <div class="form-example">
+          <h3>Checkboxes</h3>
+          <div class="form-group">
+            <label class="form-label">Notification Preferences</label>
+            <label class="form-checkbox">
+              <input type="checkbox" checked>
+              <span>Email notifications</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" checked>
+              <span>Push notifications</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox">
+              <span>SMS notifications</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" disabled>
+              <span>Webhook notifications (Premium only)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-example">
+          <h3>Radio Buttons</h3>
+          <div class="form-group">
+            <label class="form-label">Privacy Setting</label>
+            <label class="form-radio">
+              <input type="radio" name="privacy" value="public" checked>
+              <span>Public - Anyone can join</span>
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="privacy" value="private">
+              <span>Private - Invite only</span>
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="privacy" value="secret">
+              <span>Secret - Hidden from search</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPLEX FORM EXAMPLE -->
+    <section class="demo-section">
+      <h2>Complete Form Example</h2>
+
+      <div class="form-example" style="max-width: 600px;">
+        <h3 style="margin-bottom: var(--space-4);">Create New Bot Command</h3>
+
+        <form>
+          <div class="form-group required">
+            <label class="form-label required" for="command-name">Command Name</label>
+            <div class="input-container input-container-icon-left">
+              <svg class="input-icon input-icon-left" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+              </svg>
+              <input type="text" id="command-name" class="form-input" placeholder="/command-name" required>
+            </div>
+            <span class="form-helper">Use lowercase and hyphens only</span>
+          </div>
+
+          <div class="form-group required">
+            <label class="form-label required" for="command-desc">Description</label>
+            <textarea id="command-desc" class="form-input form-textarea" placeholder="Describe what this command does..." style="min-height: 80px;" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="command-category">Category</label>
+            <select id="command-category" class="form-input form-select">
+              <option value="">Select a category...</option>
+              <option value="moderation">Moderation</option>
+              <option value="fun">Fun & Games</option>
+              <option value="utility">Utility</option>
+              <option value="music">Music</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox">
+              <span>Require administrator permission</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox" checked>
+              <span>Enable command logging</span>
+            </label>
+          </div>
+
+          <div style="display: flex; gap: var(--space-3); margin-top: var(--space-6);">
+            <button type="submit" style="flex: 1; padding: var(--space-3) var(--space-5); background-color: var(--color-primary); color: white; border: none; border-radius: var(--radius-md); font-weight: var(--font-semibold); cursor: pointer;">
+              Create Command
+            </button>
+            <button type="button" style="flex: 1; padding: var(--space-3) var(--space-5); background-color: var(--color-secondary); color: var(--text-primary); border: none; border-radius: var(--radius-md); font-weight: var(--font-semibold); cursor: pointer;">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Log - Discord Bot Admin</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface-primary);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .sidebar-logo {
+      padding: var(--space-6) var(--space-4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      font-size: var(--text-lg);
+      color: white;
+    }
+
+    .logo-text {
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4) 0;
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-label {
+      padding: 0 var(--space-4);
+      margin-bottom: var(--space-2);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: rgba(218, 65, 103, 0.15);
+      color: white;
+      border-left: 3px solid var(--color-primary);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: var(--space-6);
+    }
+
+    .page-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .page-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .page-subtitle {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+
+    /* Filters */
+    .filters-bar {
+      background: var(--surface-card);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-6);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .filter-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .filter-select,
+    .filter-input {
+      padding: var(--space-3) var(--space-4);
+      border: var(--input-border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-family: var(--font-primary);
+      background: white;
+      cursor: pointer;
+    }
+
+    .filter-input {
+      cursor: text;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--surface-card);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+    }
+
+    /* Timeline */
+    .timeline-container {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: var(--space-6);
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-neutral-200);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: var(--space-6);
+      padding-left: var(--space-6);
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -9px;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      background: white;
+      border: 3px solid var(--color-neutral-300);
+    }
+
+    .timeline-item.role-assigned .timeline-marker {
+      border-color: var(--color-success);
+      background: var(--color-success);
+    }
+
+    .timeline-item.role-revoked .timeline-marker {
+      border-color: var(--color-danger);
+      background: var(--color-danger);
+    }
+
+    .timeline-item.account-linked .timeline-marker {
+      border-color: var(--color-info);
+      background: var(--color-info);
+    }
+
+    .timeline-item.admin-command .timeline-marker {
+      border-color: var(--color-gold);
+      background: var(--color-gold);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: var(--space-3);
+    }
+
+    .timeline-title {
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .timeline-time {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .timeline-content {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--space-3);
+    }
+
+    .timeline-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      border-radius: var(--radius-full);
+    }
+
+    .badge.admin {
+      background: rgba(218, 65, 103, 0.1);
+      color: var(--color-primary);
+    }
+
+    .badge.moderator {
+      background: rgba(211, 196, 227, 0.15);
+      color: var(--color-info);
+    }
+
+    .badge.premium {
+      background: rgba(247, 191, 81, 0.15);
+      color: var(--color-gold);
+    }
+
+    .badge.user {
+      background: var(--color-neutral-100);
+      color: var(--text-secondary);
+    }
+
+    .badge.success {
+      background: rgba(135, 179, 141, 0.1);
+      color: var(--color-success);
+    }
+
+    .badge.danger {
+      background: rgba(211, 47, 81, 0.1);
+      color: var(--color-danger);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-state-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state-description {
+      font-size: var(--text-sm);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+      }
+
+      .main-content {
+        margin-left: 60px;
+      }
+
+      .logo-text, .nav-section-label {
+        display: none;
+      }
+
+      .timeline-header {
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .timeline-time {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">DB</div>
+      <span class="logo-text">Discord Bot</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <a href="admin-dashboard-polished.html" class="nav-item">
+          📊 Dashboard
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Management</div>
+        <a href="admin-users.html" class="nav-item">
+          👥 Users
+        </a>
+        <a href="admin-roles.html" class="nav-item">
+          🔐 Roles
+        </a>
+        <a href="admin-invites-polished.html" class="nav-item">
+          🎫 Invite Codes
+        </a>
+        <a href="admin-audit-log.html" class="nav-item active">
+          📋 Audit Log
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Settings</div>
+        <a href="#" class="nav-item">
+          ⚙️ Configuration
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Audit Log</h1>
+      <p class="page-subtitle">Track all security-related events and administrative actions</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Events</div>
+        <div class="stat-value">1,247</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value">23</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Role Changes</div>
+        <div class="stat-value">45</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Failed Attempts</div>
+        <div class="stat-value">8</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Event Type</label>
+          <select class="filter-select" id="event-filter">
+            <option value="">All Events</option>
+            <option value="role-assigned">Role Assigned</option>
+            <option value="role-revoked">Role Revoked</option>
+            <option value="account-linked">Account Linked</option>
+            <option value="admin-command">Admin Command</option>
+            <option value="failed-auth">Failed Authorization</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">User</label>
+          <input type="text" class="filter-input" placeholder="Search by username or Discord ID...">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Admin</label>
+          <select class="filter-select">
+            <option value="">All Admins</option>
+            <option value="john">John Doe</option>
+            <option value="sarah">Sarah Johnson</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Date Range</label>
+          <select class="filter-select">
+            <option value="today">Today</option>
+            <option value="week">Last 7 days</option>
+            <option value="month">Last 30 days</option>
+            <option value="all">All time</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-container">
+      <div class="timeline">
+        <!-- Role Assigned Event -->
+        <div class="timeline-item role-assigned">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Role Assigned: Premium</div>
+              <div class="timeline-content">
+                <strong>Sarah Johnson</strong> assigned the <span class="badge premium">Premium</span> role to <strong>Mike Brown</strong>
+              </div>
+            </div>
+            <div class="timeline-time">2 hours ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 Target User: mike.brown@example.com</div>
+            <div class="meta-item">🔑 Admin: sarah.j@example.com</div>
+            <div class="meta-item">🌐 IP: 192.168.1.45</div>
+          </div>
+        </div>
+
+        <!-- Admin Command Event -->
+        <div class="timeline-item admin-command">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Admin Command Executed</div>
+              <div class="timeline-content">
+                <strong>John Doe</strong> executed <code>/admin generate-code @user123</code>
+              </div>
+            </div>
+            <div class="timeline-time">5 hours ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 User: john.doe@example.com</div>
+            <div class="meta-item">💬 Discord ID: 123456789012345678</div>
+            <div class="meta-item">✅ Status: Success</div>
+          </div>
+        </div>
+
+        <!-- Role Revoked Event -->
+        <div class="timeline-item role-revoked">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Role Revoked: Moderator</div>
+              <div class="timeline-content">
+                <strong>Sarah Johnson</strong> revoked the <span class="badge moderator">Moderator</span> role from <strong>Alex Turner</strong>
+              </div>
+            </div>
+            <div class="timeline-time">1 day ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 Target User: alex.turner@example.com</div>
+            <div class="meta-item">🔑 Admin: sarah.j@example.com</div>
+            <div class="meta-item">📝 Reason: User request</div>
+          </div>
+        </div>
+
+        <!-- Account Linked Event -->
+        <div class="timeline-item account-linked">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Discord Account Linked</div>
+              <div class="timeline-content">
+                <strong>Emily Chen</strong> successfully linked Discord account <code>@emilyc#5678</code>
+              </div>
+            </div>
+            <div class="timeline-time">1 day ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 User: emily.chen@example.com</div>
+            <div class="meta-item">💬 Discord ID: 567890123456789012</div>
+            <div class="meta-item">🎫 Invite Code: XXXX-XXXX-XXXX</div>
+          </div>
+        </div>
+
+        <!-- Role Assigned Event (Admin) -->
+        <div class="timeline-item role-assigned">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Role Assigned: Administrator</div>
+              <div class="timeline-content">
+                <strong>John Doe</strong> assigned the <span class="badge admin">Admin</span> role to <strong>Sarah Johnson</strong>
+                <br><span class="badge success" style="margin-top: var(--space-2);">Confirmation Required</span>
+              </div>
+            </div>
+            <div class="timeline-time">2 days ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 Target User: sarah.j@example.com</div>
+            <div class="meta-item">🔑 Admin: john.doe@example.com</div>
+            <div class="meta-item">✅ Confirmed: Yes</div>
+          </div>
+        </div>
+
+        <!-- Account Linked with Auto-Admin -->
+        <div class="timeline-item account-linked">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Discord Account Linked (Server Admin)</div>
+              <div class="timeline-content">
+                <strong>Sarah Johnson</strong> linked Discord account. <span class="badge admin">Admin</span> role automatically granted (Discord Server Administrator).
+              </div>
+            </div>
+            <div class="timeline-time">3 days ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 User: sarah.j@example.com</div>
+            <div class="meta-item">💬 Discord ID: 456789012345678901</div>
+            <div class="meta-item">🛡️ Discord Role: Server Admin</div>
+          </div>
+        </div>
+
+        <!-- Failed Authorization Event -->
+        <div class="timeline-item role-revoked">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Failed Authorization Attempt</div>
+              <div class="timeline-content">
+                Unlinked Discord user attempted to execute <code>/moderate purge</code> command
+                <br><span class="badge danger" style="margin-top: var(--space-2);">Access Denied</span>
+              </div>
+            </div>
+            <div class="timeline-time">3 days ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">💬 Discord ID: 789012345678901234</div>
+            <div class="meta-item">⚠️ Required: Moderator role</div>
+            <div class="meta-item">📋 Command: /moderate purge</div>
+          </div>
+        </div>
+
+        <!-- Role Assigned Event (Premium) -->
+        <div class="timeline-item role-assigned">
+          <div class="timeline-marker"></div>
+          <div class="timeline-header">
+            <div>
+              <div class="timeline-title">Role Assigned: Premium</div>
+              <div class="timeline-content">
+                <strong>John Doe</strong> assigned the <span class="badge premium">Premium</span> role to <strong>Jane Smith</strong>
+              </div>
+            </div>
+            <div class="timeline-time">5 days ago</div>
+          </div>
+          <div class="timeline-meta">
+            <div class="meta-item">👤 Target User: jane.smith@example.com</div>
+            <div class="meta-item">🔑 Admin: john.doe@example.com</div>
+            <div class="meta-item">🌐 IP: 192.168.1.50</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

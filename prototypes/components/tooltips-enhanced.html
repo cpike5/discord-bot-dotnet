@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Tooltips - Discord Bot UI</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      font-family: var(--font-primary);
+      padding: var(--space-8);
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      background: var(--bg-secondary);
+    }
+
+    h1 {
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .intro {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: var(--space-12);
+      background: var(--bg-primary);
+      padding: var(--space-8);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Demo Areas */
+    .demo-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 250px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-8);
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .position-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: var(--space-16);
+      width: 100%;
+      max-width: 600px;
+      min-height: 400px;
+    }
+
+    .grid-center { grid-column: 2; grid-row: 2; }
+    .grid-top { grid-column: 2; grid-row: 1; }
+    .grid-bottom { grid-column: 2; grid-row: 3; }
+    .grid-left { grid-column: 1; grid-row: 2; }
+    .grid-right { grid-column: 3; grid-row: 2; }
+
+    /* Tooltip Wrapper */
+    .tooltip-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Trigger Buttons */
+    .tooltip-trigger {
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-primary);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .tooltip-trigger:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .tooltip-trigger.secondary {
+      background: var(--color-neutral-200);
+      color: var(--text-primary);
+    }
+
+    .tooltip-trigger.secondary:hover {
+      background: var(--color-neutral-300);
+    }
+
+    .tooltip-trigger.icon-only {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      justify-content: center;
+      background: var(--color-neutral-200);
+      color: var(--text-primary);
+    }
+
+    .tooltip-trigger.icon-only:hover {
+      background: var(--color-neutral-300);
+    }
+
+    .tooltip-trigger.text-link {
+      background: none;
+      color: var(--color-primary);
+      padding: 0;
+      border-bottom: 1px dashed var(--color-primary);
+      border-radius: 0;
+    }
+
+    .tooltip-trigger.text-link:hover {
+      background: none;
+      color: var(--color-primary-hover);
+      border-bottom-color: var(--color-primary-hover);
+    }
+
+    /* Base Tooltip */
+    .tooltip {
+      position: absolute;
+      background: var(--color-neutral-900);
+      color: var(--text-on-dark);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      line-height: 1.4;
+      white-space: nowrap;
+      z-index: var(--z-tooltip);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--transition-fast), visibility var(--transition-fast), transform var(--transition-fast);
+      pointer-events: none;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Show tooltip on hover/focus */
+    .tooltip-wrapper:hover .tooltip,
+    .tooltip-wrapper:focus-within .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Tooltip Sizes */
+    .tooltip.sm {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--text-xs);
+    }
+
+    .tooltip.md {
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--text-sm);
+    }
+
+    .tooltip.lg {
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-base);
+      max-width: 300px;
+      white-space: normal;
+    }
+
+    /* Tooltip Arrow */
+    .tooltip-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    /* Position: Top */
+    .tooltip.top {
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+    }
+
+    .tooltip-wrapper:hover .tooltip.top,
+    .tooltip-wrapper:focus-within .tooltip.top {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .tooltip.top .tooltip-arrow {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px 6px 0 6px;
+      border-color: var(--color-neutral-900) transparent transparent transparent;
+    }
+
+    /* Position: Bottom */
+    .tooltip.bottom {
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .tooltip-wrapper:hover .tooltip.bottom,
+    .tooltip-wrapper:focus-within .tooltip.bottom {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .tooltip.bottom .tooltip-arrow {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 6px 6px 6px;
+      border-color: transparent transparent var(--color-neutral-900) transparent;
+    }
+
+    /* Position: Left */
+    .tooltip.left {
+      right: calc(100% + 8px);
+      top: 50%;
+      transform: translateY(-50%) translateX(4px);
+    }
+
+    .tooltip-wrapper:hover .tooltip.left,
+    .tooltip-wrapper:focus-within .tooltip.left {
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .tooltip.left .tooltip-arrow {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 6px 0 6px 6px;
+      border-color: transparent transparent transparent var(--color-neutral-900);
+    }
+
+    /* Position: Right */
+    .tooltip.right {
+      left: calc(100% + 8px);
+      top: 50%;
+      transform: translateY(-50%) translateX(-4px);
+    }
+
+    .tooltip-wrapper:hover .tooltip.right,
+    .tooltip-wrapper:focus-within .tooltip.right {
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .tooltip.right .tooltip-arrow {
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 6px 6px 6px 0;
+      border-color: transparent var(--color-neutral-900) transparent transparent;
+    }
+
+    /* Light Variant */
+    .tooltip.light {
+      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .tooltip.light.top .tooltip-arrow {
+      border-color: white transparent transparent transparent;
+    }
+
+    .tooltip.light.bottom .tooltip-arrow {
+      border-color: transparent transparent white transparent;
+    }
+
+    .tooltip.light.left .tooltip-arrow {
+      border-color: transparent transparent transparent white;
+    }
+
+    .tooltip.light.right .tooltip-arrow {
+      border-color: transparent white transparent transparent;
+    }
+
+    /* Colored Variants */
+    .tooltip.success {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .tooltip.success .tooltip-arrow {
+      border-top-color: var(--color-success);
+      border-bottom-color: var(--color-success);
+      border-left-color: var(--color-success);
+      border-right-color: var(--color-success);
+    }
+
+    .tooltip.warning {
+      background: var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .tooltip.warning .tooltip-arrow {
+      border-top-color: var(--color-warning);
+      border-bottom-color: var(--color-warning);
+      border-left-color: var(--color-warning);
+      border-right-color: var(--color-warning);
+    }
+
+    .tooltip.danger {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .tooltip.danger .tooltip-arrow {
+      border-top-color: var(--color-danger);
+      border-bottom-color: var(--color-danger);
+      border-left-color: var(--color-danger);
+      border-right-color: var(--color-danger);
+    }
+
+    /* Examples Grid */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .example-item {
+      text-align: center;
+    }
+
+    .example-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-3);
+      font-family: var(--font-mono);
+    }
+  </style>
+</head>
+<body>
+  <h1>Enhanced Tooltip Components</h1>
+  <p class="intro">
+    Tooltips with multiple sizes, positions, and style variants. Hover over or focus on elements to see tooltips.
+  </p>
+
+  <!-- Size Variants -->
+  <section class="section">
+    <h2 class="section-title">Size Variants</h2>
+    <p class="section-description">
+      Tooltips come in three sizes: small, medium (default), and large.
+    </p>
+    <div class="demo-area">
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger">Small Tooltip</button>
+        <div class="tooltip top sm">
+          Small size
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger">Medium Tooltip</button>
+        <div class="tooltip top md">
+          This is a medium tooltip
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger">Large Tooltip</button>
+        <div class="tooltip top lg">
+          This is a large tooltip with more content that can wrap to multiple lines if needed
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Position Variants -->
+  <section class="section">
+    <h2 class="section-title">Position Variants</h2>
+    <p class="section-description">
+      Tooltips can be positioned on all four sides of the trigger element.
+    </p>
+    <div class="demo-area">
+      <div class="position-grid">
+        <div class="grid-top" style="display: flex; justify-content: center;">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Top</button>
+            <div class="tooltip top md">
+              Tooltip on top
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-left" style="display: flex; align-items: center; justify-content: flex-end;">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Left</button>
+            <div class="tooltip left md">
+              Tooltip on left
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-center" style="display: flex; align-items: center; justify-content: center;">
+          <div style="text-align: center; color: var(--text-muted); font-size: var(--text-sm);">
+            Hover over buttons<br>to see tooltips
+          </div>
+        </div>
+
+        <div class="grid-right" style="display: flex; align-items: center;">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Right</button>
+            <div class="tooltip right md">
+              Tooltip on right
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-bottom" style="display: flex; justify-content: center;">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Bottom</button>
+            <div class="tooltip bottom md">
+              Tooltip on bottom
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style Variants -->
+  <section class="section">
+    <h2 class="section-title">Style Variants</h2>
+    <p class="section-description">
+      Different tooltip styles and trigger types.
+    </p>
+    <div class="demo-area">
+      <div class="examples-grid">
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Default Dark</button>
+            <div class="tooltip top md">
+              This is a default dark tooltip
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Default (Dark)</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger">Light Style</button>
+            <div class="tooltip top md light">
+              This is a light tooltip
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Light Variant</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger secondary">Success</button>
+            <div class="tooltip top md success">
+              Action completed successfully!
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Success Color</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger secondary">Warning</button>
+            <div class="tooltip top md warning">
+              Please review before proceeding
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Warning Color</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger secondary">Danger</button>
+            <div class="tooltip top md danger">
+              This action cannot be undone
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Danger Color</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only">ℹ️</button>
+            <div class="tooltip top md">
+              Information tooltip
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Icon Trigger</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only">❓</button>
+            <div class="tooltip top md">
+              Help tooltip
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Help Icon</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only">⚙️</button>
+            <div class="tooltip top md">
+              Settings
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Settings Icon</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trigger Types -->
+  <section class="section">
+    <h2 class="section-title">Trigger Types</h2>
+    <p class="section-description">
+      Various ways to trigger tooltips with different element types.
+    </p>
+    <div class="demo-area" style="min-height: 150px;">
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger">Button Trigger</button>
+        <div class="tooltip bottom md">
+          Tooltip on a button
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger text-link">Inline text trigger</button>
+        <div class="tooltip bottom md">
+          Tooltip on inline text
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger icon-only">🔒</button>
+        <div class="tooltip bottom md">
+          This feature requires admin privileges
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+
+      <div class="tooltip-wrapper">
+        <button class="tooltip-trigger icon-only" disabled style="opacity: 0.5; cursor: not-allowed;">
+          🚫
+        </button>
+        <div class="tooltip bottom md">
+          This action is currently disabled
+          <div class="tooltip-arrow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real-World Examples -->
+  <section class="section">
+    <h2 class="section-title">Real-World Examples</h2>
+    <p class="section-description">
+      Practical tooltip usage scenarios for the Discord bot application.
+    </p>
+    <div class="demo-area">
+      <div class="examples-grid">
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger secondary">
+              <span>🗑️</span> Delete
+            </button>
+            <div class="tooltip top md danger">
+              Permanently delete this invite code
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Delete Warning</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only" style="opacity: 0.5;">
+              📋
+            </button>
+            <div class="tooltip top md">
+              Copy code to clipboard
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Copy Action</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only">
+              ✓
+            </button>
+            <div class="tooltip top md success">
+              Code is active and ready to use
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Status Indicator</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger icon-only">
+              ⏰
+            </button>
+            <div class="tooltip top md warning">
+              Code expires in 2 hours
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Expiration Warning</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <span class="tooltip-trigger text-link">@discord_user</span>
+            <div class="tooltip bottom md lg">
+              <strong>Discord User</strong><br>
+              ID: 123456789012345678<br>
+              Joined: Oct 15, 2025
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">User Info</div>
+        </div>
+
+        <div class="example-item">
+          <div class="tooltip-wrapper">
+            <button class="tooltip-trigger secondary">
+              ⌨️ Shortcuts
+            </button>
+            <div class="tooltip bottom md lg light">
+              <strong>Keyboard Shortcuts</strong><br>
+              Ctrl+K: Generate code<br>
+              Ctrl+F: Search<br>
+              Esc: Close modal
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
+          <div class="example-label">Keyboard Shortcuts</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

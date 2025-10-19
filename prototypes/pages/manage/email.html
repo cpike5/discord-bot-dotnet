@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email - Discord Bot</title>
+    <link rel="stylesheet" href="../../css/tokens.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--color-neutral-50);
+        }
+
+        .container {
+            max-width: var(--container-lg);
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-header h1 {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .page-header p {
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+        }
+
+        .manage-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: var(--space-8);
+        }
+
+        .sidebar {
+            background: var(--surface-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: var(--space-1);
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: var(--space-3) var(--space-4);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: var(--text-sm);
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--color-neutral-50);
+        }
+
+        .sidebar-nav a.active {
+            background: var(--color-primary);
+            color: var(--text-on-primary);
+            font-weight: var(--font-semibold);
+        }
+
+        .content-card {
+            background: var(--surface-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .content-header {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-neutral-200);
+        }
+
+        .content-header h2 {
+            font-size: var(--text-2xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .alert {
+            padding: var(--space-4);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-6);
+            font-size: var(--text-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .alert.success {
+            background-color: rgba(135, 179, 141, 0.1);
+            border: 1px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .alert.info {
+            background-color: rgba(211, 196, 227, 0.1);
+            border: 1px solid var(--color-info);
+            color: var(--color-neutral-700);
+        }
+
+        .alert::before {
+            font-size: var(--text-lg);
+            font-weight: var(--font-bold);
+        }
+
+        .alert.success::before {
+            content: "✓";
+        }
+
+        .alert.info::before {
+            content: "ℹ";
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            max-width: 500px;
+        }
+
+        .form-input {
+            width: 100%;
+            max-width: 500px;
+            padding: var(--input-padding);
+            border: var(--input-border);
+            border-radius: var(--input-radius);
+            font-size: var(--input-font-size);
+            font-family: var(--font-primary);
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            transition: var(--transition-base);
+        }
+
+        .input-group .form-input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        .input-verified {
+            padding: var(--space-3) var(--space-4);
+            background: rgba(135, 179, 141, 0.1);
+            border: var(--input-border);
+            border-left: none;
+            border-top-right-radius: var(--input-radius);
+            border-bottom-right-radius: var(--input-radius);
+            color: var(--color-success);
+            font-weight: var(--font-bold);
+            font-size: var(--text-lg);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border: var(--input-border-focus);
+        }
+
+        .form-input:disabled {
+            background-color: var(--input-bg-disabled);
+            color: var(--text-disabled);
+            cursor: not-allowed;
+        }
+
+        .helper-text {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-top: var(--space-2);
+        }
+
+        .btn {
+            padding: var(--btn-padding-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            font-family: var(--font-primary);
+            border: none;
+            border-radius: var(--btn-border-radius);
+            cursor: pointer;
+            transition: var(--btn-transition);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--text-on-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-link {
+            background: none;
+            color: var(--color-primary);
+            padding: 0;
+            font-weight: var(--font-medium);
+            font-size: var(--text-sm);
+            margin-top: var(--space-2);
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .manage-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                margin-bottom: var(--space-6);
+            }
+
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--space-2);
+            }
+
+            .sidebar-nav li {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Account Settings</h1>
+            <p>Manage your profile and account preferences</p>
+        </div>
+
+        <div class="manage-layout">
+            <aside class="sidebar">
+                <nav>
+                    <ul class="sidebar-nav">
+                        <li><a href="profile.html">Profile</a></li>
+                        <li><a href="email.html" class="active">Email</a></li>
+                        <li><a href="change-password.html">Password</a></li>
+                        <li><a href="two-factor.html">Two-Factor Auth</a></li>
+                        <li><a href="#">Personal Data</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main>
+                <div class="content-card">
+                    <div class="content-header">
+                        <h2>Manage Email</h2>
+                    </div>
+
+                    <!-- Success message - hidden by default -->
+                    <div class="alert success" style="display: none;" id="success-message">
+                        Confirmation link to change email sent. Please check your email.
+                    </div>
+
+                    <form id="email-form">
+                        <div class="form-group">
+                            <label for="current-email" class="form-label">Current Email</label>
+                            <div class="input-group">
+                                <input
+                                    type="email"
+                                    id="current-email"
+                                    name="current-email"
+                                    class="form-input"
+                                    value="user@example.com"
+                                    disabled
+                                >
+                                <span class="input-verified">✓</span>
+                            </div>
+                            <div class="helper-text">
+                                Your email is verified
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-email" class="form-label">New Email</label>
+                            <input
+                                type="email"
+                                id="new-email"
+                                name="new-email"
+                                class="form-input"
+                                placeholder="new.email@example.com"
+                            >
+                            <div class="helper-text">
+                                You will receive a confirmation link at your new email address
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Change Email</button>
+                    </form>
+                </div>
+
+                <!-- Unverified email state (commented out alternative) -->
+                <!--
+                <div class="content-card">
+                    <div class="content-header">
+                        <h2>Manage Email</h2>
+                    </div>
+
+                    <div class="alert info">
+                        Your email is not verified. Please check your inbox for a verification link.
+                    </div>
+
+                    <form>
+                        <div class="form-group">
+                            <label for="current-email" class="form-label">Email</label>
+                            <input
+                                type="email"
+                                id="current-email"
+                                name="current-email"
+                                class="form-input"
+                                value="user@example.com"
+                                disabled
+                            >
+                            <button type="button" class="btn btn-link">Send verification email</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-email" class="form-label">New Email</label>
+                            <input
+                                type="email"
+                                id="new-email"
+                                name="new-email"
+                                class="form-input"
+                                placeholder="new.email@example.com"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Change Email</button>
+                    </form>
+                </div>
+                -->
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('email-form');
+        const successMessage = document.getElementById('success-message');
+        const newEmailInput = document.getElementById('new-email');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!newEmailInput.value) {
+                return;
+            }
+
+            // Show success message
+            successMessage.style.display = 'flex';
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Clear input
+            newEmailInput.value = '';
+
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
