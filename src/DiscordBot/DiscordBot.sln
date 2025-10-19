@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordBot.Blazor", "DiscordBot.Blazor\DiscordBot.Blazor.csproj", "{A7F21450-C291-47C5-B6C6-31DF25F460EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordBot.Core", "DiscordBot.Core\DiscordBot.Core.csproj", "{60F7D003-D653-47B0-A3BD-BB354EDDB895}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7F21450-C291-47C5-B6C6-31DF25F460EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7F21450-C291-47C5-B6C6-31DF25F460EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7F21450-C291-47C5-B6C6-31DF25F460EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7F21450-C291-47C5-B6C6-31DF25F460EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F7D003-D653-47B0-A3BD-BB354EDDB895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F7D003-D653-47B0-A3BD-BB354EDDB895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F7D003-D653-47B0-A3BD-BB354EDDB895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F7D003-D653-47B0-A3BD-BB354EDDB895}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {53196C96-8940-462F-8C65-DF3A117C9F52}
+	EndGlobalSection
+EndGlobal
