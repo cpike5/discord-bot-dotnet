@@ -1,0 +1,111 @@
+@page "/setup/complete"
+@layout SetupLayout
+@inject IFirstTimeSetupService SetupService
+@inject NavigationManager Navigation
+@inject ILogger<Complete> Logger
+
+<PageTitle>Setup Complete - Setup</PageTitle>
+
+<div class="setup-complete">
+    @if (isCompleting)
+    {
+        <div class="setup-progress-indicator">
+            <div class="spinner"></div>
+            <p>Finalizing setup...</p>
+        </div>
+    }
+    else if (errors.Any())
+    {
+        <div class="setup-error">
+            <strong>⚠️ Error Completing Setup:</strong>
+            <ul>
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+    else if (setupComplete)
+    {
+        <div class="success-animation">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#87B38D"/>
+                <path d="M30 50 L45 65 L70 35" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <h2>Setup Complete! 🎉</h2>
+        <p>Your application is now ready to use.</p>
+
+        <div class="setup-summary">
+            <h3>What's been configured:</h3>
+            <ul>
+                <li>✅ Admin account created</li>
+                <li>✅ User roles initialized</li>
+                <li>✅ Database seeded</li>
+            </ul>
+        </div>
+
+        <div class="setup-actions">
+            <button class="btn-primary-setup" @onclick="GoToLogin">
+                Go to Login
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isCompleting = true;
+    private bool setupComplete = false;
+    private List<string> errors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FinalizeSetup();
+    }
+
+    private async Task FinalizeSetup()
+    {
+        try
+        {
+            // Validate setup state before marking complete
+            var validation = await SetupService.ValidateSetupStateAsync();
+
+            if (validation.IsValid)
+            {
+                // Mark setup complete (service will determine admin ID automatically)
+                var success = await SetupService.MarkSetupCompleteAsync(string.Empty);
+
+                if (success)
+                {
+                    setupComplete = true;
+                    Logger.LogInformation("Setup completed successfully");
+                }
+                else
+                {
+                    errors.Add("Failed to mark setup as complete.");
+                }
+            }
+            else
+            {
+                errors.AddRange(validation.Issues);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error finalizing setup");
+            errors.Add("An unexpected error occurred.");
+        }
+        finally
+        {
+            isCompleting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void GoToLogin()
+    {
+        Navigation.NavigateTo("/Account/Login", forceLoad: true);
+    }
+}

@@ -1,0 +1,113 @@
+@page "/setup/seed"
+@layout SetupLayout
+@inject IFirstTimeSetupService SetupService
+@inject NavigationManager Navigation
+@inject ILogger<Seed> Logger
+@implements IDisposable
+
+<PageTitle>Initializing Database - Setup</PageTitle>
+
+<div class="setup-seed">
+    <h2>Initializing Database</h2>
+    <p>Setting up roles and system data...</p>
+
+    @if (isSeeding)
+    {
+        <div class="setup-progress-indicator">
+            <div class="spinner"></div>
+            <p>Please wait...</p>
+        </div>
+    }
+    else if (errors.Any())
+    {
+        <div class="setup-error">
+            <strong>⚠️ Seeding Failed:</strong>
+            <ul>
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+        <div class="setup-actions">
+            <button class="btn-primary-setup" @onclick="RetrySeed">
+                Retry
+            </button>
+        </div>
+    }
+    else if (seedComplete)
+    {
+        <div class="setup-success">
+            <strong>✅ Database Initialized Successfully!</strong>
+            <p>Created @rolesCreated roles.</p>
+        </div>
+        <div class="setup-actions">
+            <button class="btn-primary-setup" @onclick="CompleteSetup">
+                Continue
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isSeeding = true;
+    private bool seedComplete = false;
+    private int rolesCreated = 0;
+    private List<string> errors = new();
+    private CancellationTokenSource? cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await PerformSeed();
+    }
+
+    private async Task PerformSeed()
+    {
+        isSeeding = true;
+        errors.Clear();
+        cts = new CancellationTokenSource();
+
+        try
+        {
+            var result = await SetupService.SeedDatabaseAsync();
+
+            if (result.Success)
+            {
+                rolesCreated = result.RolesCreated;
+                seedComplete = true;
+                Logger.LogInformation("Database seeded successfully");
+            }
+            else
+            {
+                errors = result.Errors;
+                Logger.LogError("Database seeding failed");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during database seeding");
+            errors.Add("An unexpected error occurred during seeding.");
+        }
+        finally
+        {
+            isSeeding = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RetrySeed()
+    {
+        await PerformSeed();
+    }
+
+    private void CompleteSetup()
+    {
+        Navigation.NavigateTo("/setup/admin");
+    }
+
+    public void Dispose()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
+    }
+}

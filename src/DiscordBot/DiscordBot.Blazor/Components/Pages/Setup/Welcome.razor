@@ -1,0 +1,45 @@
+@page "/setup/welcome"
+@layout SetupLayout
+@inject NavigationManager Navigation
+
+<PageTitle>Welcome - Setup</PageTitle>
+
+<div class="setup-welcome">
+    <div class="welcome-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#DA4167" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+        </svg>
+    </div>
+
+    <h2>Welcome to Discord Bot!</h2>
+    <p>This setup wizard will help you configure your application for first use.</p>
+
+    <div class="setup-checklist">
+        <h3>What we'll configure:</h3>
+        <ul>
+            <li>✅ Create your admin account</li>
+            <li>✅ Set up user roles and permissions</li>
+            <li>✅ Initialize the database</li>
+        </ul>
+    </div>
+
+    <div class="setup-notes">
+        <p><strong>⏱️ Estimated time:</strong> 2-3 minutes</p>
+        <p><strong>📝 Note:</strong> You'll need to provide an email and password for the admin account.</p>
+    </div>
+
+    <div class="setup-actions">
+        <button class="btn-primary-setup" @onclick="StartSetup">
+            Get Started
+        </button>
+    </div>
+</div>
+
+@code {
+    private void StartSetup()
+    {
+        Navigation.NavigateTo("/setup/seed");
+    }
+}

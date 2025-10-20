@@ -1,0 +1,142 @@
+@page "/setup/admin"
+@layout SetupLayout
+@using System.ComponentModel.DataAnnotations
+@inject IFirstTimeSetupService SetupService
+@inject NavigationManager Navigation
+@inject ILogger<Admin> Logger
+
+<PageTitle>Create Admin Account - Setup</PageTitle>
+
+<div class="setup-admin">
+    <h2>Create Admin Account</h2>
+    <p>This account will have full access to the application.</p>
+
+    @if (errors.Any())
+    {
+        <div class="setup-error">
+            <strong>⚠️ Error:</strong>
+            <ul>
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <EditForm Model="model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="setup-form-group">
+            <label class="setup-form-label" for="email">Email Address</label>
+            <InputText id="email"
+                       class="setup-form-input"
+                       @bind-Value="model.Email"
+                       placeholder="admin@example.com" />
+            <ValidationMessage For="@(() => model.Email)" class="validation-message" />
+        </div>
+
+        <div class="setup-form-group">
+            <label class="setup-form-label" for="username">Username</label>
+            <InputText id="username"
+                       class="setup-form-input"
+                       @bind-Value="model.Username"
+                       placeholder="admin" />
+            <ValidationMessage For="@(() => model.Username)" class="validation-message" />
+        </div>
+
+        <div class="setup-form-group">
+            <label class="setup-form-label" for="password">Password</label>
+            <InputText id="password"
+                       type="password"
+                       class="setup-form-input"
+                       @bind-Value="model.Password"
+                       placeholder="••••••••" />
+            <ValidationMessage For="@(() => model.Password)" class="validation-message" />
+            <small class="form-text">
+                Password must be at least 6 characters and contain uppercase, lowercase, and numbers.
+            </small>
+        </div>
+
+        <div class="setup-form-group">
+            <label class="setup-form-label" for="confirmPassword">Confirm Password</label>
+            <InputText id="confirmPassword"
+                       type="password"
+                       class="setup-form-input"
+                       @bind-Value="model.ConfirmPassword"
+                       placeholder="••••••••" />
+            <ValidationMessage For="@(() => model.ConfirmPassword)" class="validation-message" />
+        </div>
+
+        <div class="setup-actions">
+            <button type="submit" class="btn-primary-setup" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span>Creating Account...</span>
+                }
+                else
+                {
+                    <span>Create Admin Account</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private AdminSetupModel model = new();
+    private List<string> errors = new();
+    private bool isSubmitting = false;
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errors.Clear();
+
+        try
+        {
+            var result = await SetupService.CreateAdminAccountAsync(
+                model.Email!,
+                model.Username!,
+                model.Password!);
+
+            if (result.Success)
+            {
+                Logger.LogInformation("Admin account created successfully");
+                Navigation.NavigateTo("/setup/complete");
+            }
+            else
+            {
+                errors = result.Errors;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating admin account");
+            errors.Add("An unexpected error occurred. Please try again.");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private class AdminSetupModel
+    {
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Username is required")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        public string? Username { get; set; }
+
+        [Required(ErrorMessage = "Password is required")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string? Password { get; set; }
+
+        [Required(ErrorMessage = "Please confirm your password")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        public string? ConfirmPassword { get; set; }
+    }
+}
