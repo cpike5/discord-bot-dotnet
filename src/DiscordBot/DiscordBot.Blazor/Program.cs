@@ -1,6 +1,7 @@
 using DiscordBot.Blazor.Components;
 using DiscordBot.Blazor.Components.Account;
 using DiscordBot.Blazor.Data;
+using DiscordBot.Blazor.Middleware;
 using DiscordBot.Blazor.Repositories;
 using DiscordBot.Blazor.Services;
 using DiscordBot.Core.Entities;
@@ -53,6 +54,12 @@ namespace DiscordBot.Blazor
             builder.Services.AddScoped<IInviteCodeRepository, InviteCodeRepository>();
             builder.Services.AddScoped<IInviteCodeService, InviteCodeService>();
             builder.Services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
+            builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+            builder.Services.AddScoped<IAdminMaintenanceService, AdminMaintenanceService>();
+            builder.Services.AddScoped<IFirstTimeSetupService, FirstTimeSetupService>();
+
+            // Add controllers for API endpoints
+            builder.Services.AddControllers();
 
             builder.Services.AddDiscordBot(builder.Configuration);
 
@@ -72,6 +79,9 @@ namespace DiscordBot.Blazor
 
             app.UseHttpsRedirection();
 
+            // IMPORTANT: First-time setup middleware must run before static files and authentication
+            app.UseFirstTimeSetup();
+
             app.UseStaticFiles();
             app.UseAntiforgery();
 
@@ -80,6 +90,9 @@ namespace DiscordBot.Blazor
 
             // Add additional endpoints required by the Identity /Account Razor components.
             app.MapAdditionalIdentityEndpoints();
+
+            // Map API controllers
+            app.MapControllers();
 
             app.Run();
         }
