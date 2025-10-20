@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin Account - First Time Setup</title>
+    <link rel="stylesheet" href="setup.css">
+</head>
+<body class="setup-body">
+    <div class="setup-container">
+        <header class="setup-header">
+            <h1>Discord Bot Setup</h1>
+            <p>Let's get your application configured</p>
+        </header>
+
+        <main class="setup-content">
+            <div class="setup-admin">
+                <h2>Create Admin Account</h2>
+                <p>This account will have full access to the application.</p>
+
+                <!-- Example error state (remove display:none to show) -->
+                <div class="setup-error" style="display: none;">
+                    <strong>⚠️ Error:</strong>
+                    <ul>
+                        <li>Password must be at least 6 characters</li>
+                        <li>Email address is already in use</li>
+                    </ul>
+                </div>
+
+                <form>
+                    <div class="setup-form-group">
+                        <label class="setup-form-label" for="email">Email Address</label>
+                        <input type="email"
+                               id="email"
+                               class="setup-form-input"
+                               placeholder="admin@example.com"
+                               required>
+                        <span class="validation-message" style="display: none;">Please enter a valid email address</span>
+                    </div>
+
+                    <div class="setup-form-group">
+                        <label class="setup-form-label" for="username">Username</label>
+                        <input type="text"
+                               id="username"
+                               class="setup-form-input"
+                               placeholder="admin"
+                               required>
+                        <span class="validation-message" style="display: none;">Username must be at least 3 characters</span>
+                    </div>
+
+                    <div class="setup-form-group">
+                        <label class="setup-form-label" for="password">Password</label>
+                        <input type="password"
+                               id="password"
+                               class="setup-form-input"
+                               placeholder="••••••••"
+                               required>
+                        <small class="form-text">
+                            Password must be at least 6 characters and contain uppercase, lowercase, and numbers.
+                        </small>
+                    </div>
+
+                    <div class="setup-form-group">
+                        <label class="setup-form-label" for="confirmPassword">Confirm Password</label>
+                        <input type="password"
+                               id="confirmPassword"
+                               class="setup-form-input"
+                               placeholder="••••••••"
+                               required>
+                        <span class="validation-message" style="display: none;">Passwords do not match</span>
+                    </div>
+
+                    <div class="setup-actions">
+                        <button type="submit" class="btn-primary-setup">
+                            Create Admin Account
+                        </button>
+                        <!-- Disabled state example -->
+                        <!-- <button type="submit" class="btn-primary-setup" disabled>
+                            Creating Account...
+                        </button> -->
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer class="setup-footer">
+            <p>&copy; 2025 Discord Bot. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Basic form navigation for prototype
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.location.href = '03-seed.html';
+        });
+    </script>
+</body>
+</html>

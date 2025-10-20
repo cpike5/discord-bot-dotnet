@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Complete - First Time Setup</title>
+    <link rel="stylesheet" href="setup.css">
+</head>
+<body class="setup-body">
+    <div class="setup-container">
+        <header class="setup-header">
+            <h1>Discord Bot Setup</h1>
+            <p>Let's get your application configured</p>
+        </header>
+
+        <main class="setup-content">
+            <div class="setup-complete">
+                <!-- Finalizing State (shown briefly) -->
+                <div id="finalizing-state">
+                    <div class="setup-progress-indicator">
+                        <div class="spinner"></div>
+                        <p>Finalizing setup...</p>
+                    </div>
+                </div>
+
+                <!-- Success State (hidden initially, shown after finalization) -->
+                <div id="complete-state" style="display: none;">
+                    <div class="success-animation">
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="#87B38D"/>
+                            <path d="M30 50 L45 65 L70 35" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <h2>Setup Complete! 🎉</h2>
+                    <p>Your application is now ready to use.</p>
+
+                    <div class="setup-summary">
+                        <h3>What's been configured:</h3>
+                        <ul>
+                            <li>✅ Admin account created</li>
+                            <li>✅ User roles initialized</li>
+                            <li>✅ Database seeded</li>
+                        </ul>
+                    </div>
+
+                    <div class="setup-actions">
+                        <a href="../../.." class="btn-primary-setup">Go to Login</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="setup-footer">
+            <p>&copy; 2025 Discord Bot. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simulate finalization (1.5 seconds)
+        setTimeout(() => {
+            document.getElementById('finalizing-state').style.display = 'none';
+            document.getElementById('complete-state').style.display = 'block';
+        }, 1500);
+    </script>
+</body>
+</html>

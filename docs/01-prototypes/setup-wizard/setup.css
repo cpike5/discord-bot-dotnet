@@ -1,0 +1,365 @@
+/* Setup Wizard Styles */
+/* Based on the Discord Bot Design System */
+
+/* Color Palette:
+   - Primary Pink: #DA4167
+   - Dark Gray: #555B6E
+   - Light Purple: #D3C4E3
+   - Green: #87B38D
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+}
+
+/* Setup Body - Full Screen Background */
+.setup-body {
+    background: linear-gradient(135deg, #555B6E 0%, #D3C4E3 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Main Container */
+.setup-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 100%;
+    padding: 2.5rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.setup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #D3C4E3;
+}
+
+.setup-header h1 {
+    color: #DA4167;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.setup-header p {
+    color: #555B6E;
+    font-size: 1rem;
+}
+
+/* Content Area */
+.setup-content {
+    margin-bottom: 2rem;
+}
+
+.setup-content h2 {
+    color: #555B6E;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.setup-content p {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+.setup-footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.875rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+/* Welcome Page Specific */
+.setup-welcome {
+    text-align: center;
+}
+
+.welcome-icon {
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.setup-checklist {
+    text-align: left;
+    margin: 2rem auto;
+    max-width: 400px;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.setup-checklist h3 {
+    color: #555B6E;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.setup-checklist ul {
+    list-style: none;
+    padding: 0;
+}
+
+.setup-checklist li {
+    padding: 0.5rem 0;
+    color: #555B6E;
+    font-size: 0.95rem;
+}
+
+.setup-notes {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #FFF9E6;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.setup-notes p {
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.setup-notes p:last-child {
+    margin-bottom: 0;
+}
+
+/* Form Styles */
+.setup-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.setup-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555B6E;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.setup-form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #D3C4E3;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.setup-form-input:focus {
+    outline: none;
+    border-color: #DA4167;
+    box-shadow: 0 0 0 3px rgba(218, 65, 103, 0.1);
+}
+
+.form-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.validation-message {
+    color: #DA4167;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Buttons */
+.setup-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-primary-setup {
+    background-color: #DA4167;
+    border: none;
+    color: white;
+    padding: 0.875rem 2.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.btn-primary-setup:hover {
+    background-color: #c23556;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(218, 65, 103, 0.3);
+}
+
+.btn-primary-setup:active {
+    transform: translateY(0);
+}
+
+.btn-primary-setup:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Alert Boxes */
+.setup-error {
+    background-color: #FEE;
+    border-left: 4px solid #DA4167;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.setup-error strong {
+    color: #DA4167;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.setup-error ul {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.setup-error li {
+    color: #666;
+}
+
+.setup-success {
+    background-color: #EFE;
+    border-left: 4px solid #87B38D;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.setup-success strong {
+    color: #87B38D;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.setup-success p {
+    color: #666;
+    margin: 0;
+}
+
+/* Progress Indicator */
+.setup-progress-indicator {
+    text-align: center;
+    padding: 3rem;
+}
+
+.setup-progress-indicator p {
+    margin-top: 1rem;
+    color: #555B6E;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    border: 4px solid #D3C4E3;
+    border-top: 4px solid #DA4167;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success Animation */
+.success-animation {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.success-animation svg {
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Setup Summary */
+.setup-summary {
+    text-align: left;
+    margin: 2rem auto;
+    max-width: 400px;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.setup-summary h3 {
+    color: #555B6E;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.setup-summary ul {
+    list-style: none;
+    padding: 0;
+}
+
+.setup-summary li {
+    padding: 0.5rem 0;
+    color: #555B6E;
+    font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .setup-container {
+        padding: 1.5rem;
+    }
+
+    .setup-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .setup-content h2 {
+        font-size: 1.25rem;
+    }
+
+    .btn-primary-setup {
+        padding: 0.75rem 2rem;
+        font-size: 0.95rem;
+    }
+}
