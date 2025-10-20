@@ -12,6 +12,11 @@ namespace DiscordBot.Blazor.Data
         /// </summary>
         public DbSet<InviteCode> InviteCodes { get; set; }
 
+        /// <summary>
+        /// Setup status tracking for first-time application setup.
+        /// </summary>
+        public DbSet<SetupStatus> SetupStatus { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -118,6 +123,44 @@ namespace DiscordBot.Blazor.Data
                     .WithMany(u => u.GeneratedInviteCodes)
                     .HasForeignKey(e => e.UsedByApplicationUserId)
                     .OnDelete(DeleteBehavior.SetNull);  // Keep code history if user deleted
+            });
+
+            #endregion
+
+            #region SetupStatus Configuration
+
+            modelBuilder.Entity<SetupStatus>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.IsComplete)
+                    .IsRequired()
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.SetupVersion)
+                    .HasMaxLength(10)
+                    .IsRequired();
+
+                entity.Property(e => e.CompletedAt)
+                    .IsRequired(false);
+
+                entity.Property(e => e.AdminUserId)
+                    .HasMaxLength(450)  // ASP.NET Identity key length
+                    .IsRequired(false);
+
+                // Foreign key to admin user
+                entity.HasOne(e => e.AdminUser)
+                    .WithMany()
+                    .HasForeignKey(e => e.AdminUserId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                // Seed initial record (setup incomplete)
+                entity.HasData(new SetupStatus
+                {
+                    Id = 1,
+                    IsComplete = false,
+                    SetupVersion = "1.0"
+                });
             });
 
             #endregion
