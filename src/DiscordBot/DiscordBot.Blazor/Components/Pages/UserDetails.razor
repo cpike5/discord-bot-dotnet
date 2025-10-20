@@ -1,0 +1,345 @@
+@page "/users/{UserId}"
+@using DiscordBot.Core.Entities
+@using DiscordBot.Core.Services
+@inject IUserManagementService UserManagementService
+@inject NavigationManager Navigation
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+<PageTitle>User Details</PageTitle>
+
+<div class="user-details-container">
+    @if (loading)
+    {
+        <div class="loading">Loading user details...</div>
+    }
+    else if (user == null)
+    {
+        <div class="error-state">
+            <h2>User Not Found</h2>
+            <p>The requested user could not be found.</p>
+            <button class="btn btn-primary" @onclick="BackToUsers">Back to Users</button>
+        </div>
+    }
+    else
+    {
+        <div class="page-header">
+            <div>
+                <button class="btn btn-secondary" @onclick="BackToUsers">← Back</button>
+                <h1 class="page-title">@user.DisplayName</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" @onclick="EditUser">Edit</button>
+                @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                {
+                    <button class="btn btn-primary" @onclick="UnlockUser">Unlock Account</button>
+                }
+                else
+                {
+                    <button class="btn btn-warning" @onclick="LockUser">Lock Account</button>
+                }
+                <button class="btn btn-danger" @onclick="DeleteUser">Delete User</button>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <!-- Profile Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Profile Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">User ID:</span>
+                        <span class="detail-value">@user.Id</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Username:</span>
+                        <span class="detail-value">@user.UserName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">
+                            @user.Email
+                            @if (!user.EmailConfirmed)
+                            {
+                                <span class="badge badge-warning">Unverified</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-success">Verified</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Created:</span>
+                        <span class="detail-value">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Last Login:</span>
+                        <span class="detail-value">@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Never")</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account Status:</span>
+                        <span class="detail-value">
+                            @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                            {
+                                <span class="badge badge-danger">Locked until @user.LockoutEnd.Value.ToString("yyyy-MM-dd HH:mm")</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discord Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Discord Integration</h2>
+                </div>
+                <div class="card-body">
+                    @if (user.IsDiscordLinked)
+                    {
+                        <div class="discord-profile">
+                            @if (!string.IsNullOrEmpty(user.DiscordAvatarUrl))
+                            {
+                                <img src="@user.DiscordAvatarUrl" alt="Discord Avatar" class="discord-avatar-large" />
+                            }
+                            <div class="discord-info">
+                                <div class="detail-row">
+                                    <span class="detail-label">Discord ID:</span>
+                                    <span class="detail-value">@user.DiscordUserId</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Discord Tag:</span>
+                                    <span class="detail-value">@user.DiscordTag</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Linked At:</span>
+                                    <span class="detail-value">@user.DiscordLinkedAt?.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <p>No Discord account linked</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Roles -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Roles</h2>
+                    <button class="btn btn-sm btn-primary" @onclick="ShowAddRoleModal">Add Role</button>
+                </div>
+                <div class="card-body">
+                    @if (roles == null || !roles.Any())
+                    {
+                        <div class="empty-state">
+                            <p>No roles assigned</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="roles-list">
+                            @foreach (var role in roles)
+                            {
+                                <div class="role-item">
+                                    <span class="badge badge-primary">@role</span>
+                                    <button class="btn-icon btn-sm" @onclick="() => RemoveRole(role)" title="Remove">
+                                        ×
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Invite Codes -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Generated Invite Codes</h2>
+                </div>
+                <div class="card-body">
+                    @if (user.GeneratedInviteCodes == null || !user.GeneratedInviteCodes.Any())
+                    {
+                        <div class="empty-state">
+                            <p>No invite codes generated</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="invite-codes-list">
+                            @foreach (var code in user.GeneratedInviteCodes.OrderByDescending(c => c.CreatedAt))
+                            {
+                                <div class="invite-code-item">
+                                    <span class="code">@(code.Code)</span>
+                                    <span class="code-status">
+                                        @if (code.IsUsed)
+                                        {
+                                            <span class="badge badge-success">Used</span>
+                                        }
+                                        else if (code.IsExpired)
+                                        {
+                                            <span class="badge badge-danger">Expired</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-primary">Valid</span>
+                                        }
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showAddRoleModal)
+{
+    <div class="modal-overlay" @onclick="HideAddRoleModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>Add Role</h2>
+                <button class="btn-close" @onclick="HideAddRoleModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Role Name</label>
+                    <input type="text" class="form-control" @bind="newRoleName" placeholder="Enter role name (e.g., Admin, Moderator)" />
+                </div>
+                @if (!string.IsNullOrEmpty(roleError))
+                {
+                    <div class="alert alert-danger">@roleError</div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="HideAddRoleModal">Cancel</button>
+                <button class="btn btn-primary" @onclick="AddRole">Add Role</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+
+    private ApplicationUser? user;
+    private List<string> roles = new();
+    private bool loading = true;
+
+    // Add role modal
+    private bool showAddRoleModal = false;
+    private string newRoleName = string.Empty;
+    private string roleError = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUser();
+    }
+
+    private async Task LoadUser()
+    {
+        loading = true;
+        try
+        {
+            user = await UserManagementService.GetUserByIdAsync(UserId);
+            if (user != null)
+            {
+                var rolesResult = await UserManagementService.GetUserRolesAsync(UserId);
+                roles = rolesResult.ToList();
+            }
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void BackToUsers()
+    {
+        Navigation.NavigateTo("/users");
+    }
+
+    private void EditUser()
+    {
+        Navigation.NavigateTo($"/users/{UserId}/edit");
+    }
+
+    private async Task LockUser()
+    {
+        if (await UserManagementService.LockUserAsync(UserId))
+        {
+            await LoadUser();
+        }
+    }
+
+    private async Task UnlockUser()
+    {
+        if (await UserManagementService.UnlockUserAsync(UserId))
+        {
+            await LoadUser();
+        }
+    }
+
+    private async Task DeleteUser()
+    {
+        // In production, you'd want a confirmation dialog
+        if (await UserManagementService.DeleteUserAsync(UserId))
+        {
+            Navigation.NavigateTo("/users");
+        }
+    }
+
+    private void ShowAddRoleModal()
+    {
+        showAddRoleModal = true;
+        newRoleName = string.Empty;
+        roleError = string.Empty;
+    }
+
+    private void HideAddRoleModal()
+    {
+        showAddRoleModal = false;
+    }
+
+    private async Task AddRole()
+    {
+        roleError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(newRoleName))
+        {
+            roleError = "Role name is required";
+            return;
+        }
+
+        if (await UserManagementService.AddUserToRoleAsync(UserId, newRoleName))
+        {
+            HideAddRoleModal();
+            await LoadUser();
+        }
+        else
+        {
+            roleError = "Failed to add role. Role may not exist.";
+        }
+    }
+
+    private async Task RemoveRole(string roleName)
+    {
+        if (await UserManagementService.RemoveUserFromRoleAsync(UserId, roleName))
+        {
+            await LoadUser();
+        }
+    }
+}

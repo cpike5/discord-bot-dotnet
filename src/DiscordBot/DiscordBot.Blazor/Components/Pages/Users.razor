@@ -1,0 +1,363 @@
+@page "/users"
+@using DiscordBot.Core.Entities
+@using DiscordBot.Core.Services
+@inject IUserManagementService UserManagementService
+@inject NavigationManager Navigation
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+<PageTitle>User Management</PageTitle>
+
+<div class="users-container">
+    <div class="page-header">
+        <h1 class="page-title">User Management</h1>
+        <button class="btn btn-primary" @onclick="ShowCreateModal">
+            <span class="icon">+</span> Create User
+        </button>
+    </div>
+
+    @if (statistics != null)
+    {
+        <div class="statistics-grid">
+            <div class="stat-card">
+                <div class="stat-value">@statistics.GetValueOrDefault("TotalUsers", 0)</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">@statistics.GetValueOrDefault("DiscordLinkedUsers", 0)</div>
+                <div class="stat-label">Discord Linked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">@statistics.GetValueOrDefault("ActiveUsersLast30Days", 0)</div>
+                <div class="stat-label">Active (30d)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">@statistics.GetValueOrDefault("NewUsersLast30Days", 0)</div>
+                <div class="stat-label">New (30d)</div>
+            </div>
+        </div>
+    }
+
+    <div class="search-bar">
+        <input type="text"
+               class="search-input"
+               placeholder="Search users by email, username, or Discord name..."
+               @bind="searchQuery"
+               @bind:event="oninput"
+               @onkeyup="OnSearchKeyUp" />
+        <button class="btn btn-secondary" @onclick="ClearSearch">Clear</button>
+    </div>
+
+    @if (loading)
+    {
+        <div class="loading">Loading users...</div>
+    }
+    else if (users == null || !users.Any())
+    {
+        <div class="empty-state">
+            <p>No users found.</p>
+        </div>
+    }
+    else
+    {
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Discord</th>
+                        <th>Created</th>
+                        <th>Last Login</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    @if (!string.IsNullOrEmpty(user.DiscordAvatarUrl))
+                                    {
+                                        <img src="@user.DiscordAvatarUrl" alt="Avatar" class="user-avatar" />
+                                    }
+                                    <span>@user.UserName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span>@user.Email</span>
+                                @if (!user.EmailConfirmed)
+                                {
+                                    <span class="badge badge-warning">Unverified</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsDiscordLinked)
+                                {
+                                    <span class="discord-tag">@user.DiscordTag</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not linked</span>
+                                }
+                            </td>
+                            <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td>@(user.LastLoginAt?.ToString("yyyy-MM-dd") ?? "Never")</td>
+                            <td>
+                                @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                                {
+                                    <span class="badge badge-danger">Locked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-success">Active</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" @onclick="() => ViewUser(user.Id)" title="View Details">
+                                        <span>👁</span>
+                                    </button>
+                                    <button class="btn-icon" @onclick="() => EditUser(user.Id)" title="Edit">
+                                        <span>✏</span>
+                                    </button>
+                                    @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+                                    {
+                                        <button class="btn-icon" @onclick="() => UnlockUser(user.Id)" title="Unlock">
+                                            <span>🔓</span>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-icon" @onclick="() => LockUser(user.Id)" title="Lock">
+                                            <span>🔒</span>
+                                        </button>
+                                    }
+                                    <button class="btn-icon btn-danger" @onclick="() => DeleteUser(user.Id)" title="Delete">
+                                        <span>🗑</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(currentPage == 0)">
+                Previous
+            </button>
+            <span class="page-info">Page @(currentPage + 1)</span>
+            <button class="btn btn-secondary" @onclick="NextPage" disabled="@(users.Count() < pageSize)">
+                Next
+            </button>
+        </div>
+    }
+</div>
+
+@if (showCreateModal)
+{
+    <div class="modal-overlay" @onclick="HideCreateModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>Create New User</h2>
+                <button class="btn-close" @onclick="HideCreateModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" @bind="newUserEmail" />
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" @bind="newUserUsername" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" @bind="newUserPassword" />
+                </div>
+                @if (!string.IsNullOrEmpty(createError))
+                {
+                    <div class="alert alert-danger">@createError</div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="HideCreateModal">Cancel</button>
+                <button class="btn btn-primary" @onclick="CreateUser">Create</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ApplicationUser> users = new();
+    private Dictionary<string, object>? statistics;
+    private bool loading = true;
+    private string searchQuery = string.Empty;
+    private int currentPage = 0;
+    private int pageSize = 20;
+    private System.Threading.Timer? searchDebounceTimer;
+
+    // Create modal
+    private bool showCreateModal = false;
+    private string newUserEmail = string.Empty;
+    private string newUserUsername = string.Empty;
+    private string newUserPassword = string.Empty;
+    private string createError = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+        await LoadStatistics();
+    }
+
+    private async Task LoadUsers()
+    {
+        loading = true;
+        try
+        {
+            IEnumerable<ApplicationUser> result;
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                result = await UserManagementService.SearchUsersAsync(searchQuery, currentPage * pageSize, pageSize);
+            }
+            else
+            {
+                result = await UserManagementService.GetAllUsersAsync(currentPage * pageSize, pageSize);
+            }
+
+            users = result.ToList();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task LoadStatistics()
+    {
+        statistics = await UserManagementService.GetUserStatisticsAsync();
+    }
+
+    private void OnSearchKeyUp(KeyboardEventArgs e)
+    {
+        searchDebounceTimer?.Dispose();
+        searchDebounceTimer = new System.Threading.Timer(async _ =>
+        {
+            currentPage = 0;
+            await InvokeAsync(async () =>
+            {
+                await LoadUsers();
+                StateHasChanged();
+            });
+        }, null, 500, Timeout.Infinite);
+    }
+
+    private async Task ClearSearch()
+    {
+        searchQuery = string.Empty;
+        currentPage = 0;
+        await LoadUsers();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            await LoadUsers();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        currentPage++;
+        await LoadUsers();
+    }
+
+    private void ViewUser(string userId)
+    {
+        Navigation.NavigateTo($"/users/{userId}");
+    }
+
+    private void EditUser(string userId)
+    {
+        Navigation.NavigateTo($"/users/{userId}/edit");
+    }
+
+    private async Task LockUser(string userId)
+    {
+        if (await UserManagementService.LockUserAsync(userId))
+        {
+            await LoadUsers();
+            await LoadStatistics();
+        }
+    }
+
+    private async Task UnlockUser(string userId)
+    {
+        if (await UserManagementService.UnlockUserAsync(userId))
+        {
+            await LoadUsers();
+            await LoadStatistics();
+        }
+    }
+
+    private async Task DeleteUser(string userId)
+    {
+        // In production, you'd want a confirmation dialog
+        if (await UserManagementService.DeleteUserAsync(userId))
+        {
+            await LoadUsers();
+            await LoadStatistics();
+        }
+    }
+
+    private void ShowCreateModal()
+    {
+        showCreateModal = true;
+        newUserEmail = string.Empty;
+        newUserUsername = string.Empty;
+        newUserPassword = string.Empty;
+        createError = string.Empty;
+    }
+
+    private void HideCreateModal()
+    {
+        showCreateModal = false;
+    }
+
+    private async Task CreateUser()
+    {
+        createError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(newUserEmail) ||
+            string.IsNullOrWhiteSpace(newUserUsername) ||
+            string.IsNullOrWhiteSpace(newUserPassword))
+        {
+            createError = "All fields are required";
+            return;
+        }
+
+        var user = await UserManagementService.CreateUserAsync(newUserEmail, newUserUsername, newUserPassword);
+
+        if (user != null)
+        {
+            HideCreateModal();
+            await LoadUsers();
+            await LoadStatistics();
+        }
+        else
+        {
+            createError = "Failed to create user. Check validation requirements.";
+        }
+    }
+
+    public void Dispose()
+    {
+        searchDebounceTimer?.Dispose();
+    }
+}
