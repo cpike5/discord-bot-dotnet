@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features - Discord Bot</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      line-height: var(--leading-base);
+      color: var(--text-primary);
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--space-4) 0;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-container {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: var(--font-medium);
+      transition: var(--transition-base);
+    }
+
+    .nav-links a:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-links a.active {
+      color: var(--color-primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--color-slate) 0%, #434955 100%);
+      color: white;
+      padding: var(--space-16) var(--space-6);
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: var(--container-md);
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-4);
+    }
+
+    .hero p {
+      font-size: var(--text-lg);
+      opacity: 0.95;
+      margin-bottom: var(--space-8);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-12);
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-number {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .hero-stat-label {
+      font-size: var(--text-base);
+      opacity: 0.9;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6);
+    }
+
+    /* Tabs */
+    .tabs {
+      margin-bottom: var(--space-8);
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    .tab-list {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      padding: var(--space-4) var(--space-6);
+      background: none;
+      border: none;
+      font-family: var(--font-primary);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--transition-base);
+    }
+
+    .tab-button:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-button.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Feature Section */
+    .feature-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .feature-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+
+    .feature-header h2 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-3);
+      color: var(--text-primary);
+    }
+
+    .feature-header p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+
+    .feature-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      transition: var(--transition-base);
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--color-primary);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .feature-icon.primary {
+      background: rgba(218, 65, 103, 0.1);
+    }
+
+    .feature-icon.success {
+      background: rgba(135, 179, 141, 0.1);
+    }
+
+    .feature-icon.gold {
+      background: rgba(254, 215, 102, 0.1);
+    }
+
+    .feature-icon.lavender {
+      background: rgba(211, 196, 227, 0.2);
+    }
+
+    .feature-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .feature-description {
+      color: var(--text-secondary);
+      line-height: var(--leading-lg);
+      margin-bottom: var(--space-3);
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-2);
+      line-height: var(--leading-base);
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      color: var(--color-success);
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+
+    /* Detailed Feature */
+    .detailed-feature {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+      align-items: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .detailed-feature.reverse {
+      direction: rtl;
+    }
+
+    .detailed-feature.reverse > * {
+      direction: ltr;
+    }
+
+    .detailed-feature-content h3 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .detailed-feature-content p {
+      color: var(--text-secondary);
+      line-height: var(--leading-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    .detailed-feature-visual {
+      background: var(--bg-tertiary);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Discord Message Mock (from previous component) */
+    .discord-container {
+      background: #36393f;
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      max-width: 100%;
+    }
+
+    .discord-message {
+      display: flex;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .discord-message:last-child {
+      margin-bottom: 0;
+    }
+
+    .discord-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: white;
+      font-size: var(--text-sm);
+    }
+
+    .discord-content {
+      flex: 1;
+    }
+
+    .discord-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+    }
+
+    .discord-username {
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      font-size: var(--text-base);
+    }
+
+    .discord-bot-badge {
+      background: #5865f2;
+      color: white;
+      font-size: var(--text-xs);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+    }
+
+    .discord-timestamp {
+      color: #72767d;
+      font-size: var(--text-xs);
+    }
+
+    .discord-text {
+      color: #dcddde;
+      font-size: var(--text-base);
+      line-height: var(--leading-lg);
+    }
+
+    .discord-embed {
+      margin-top: var(--space-3);
+      background: #2f3136;
+      border-left: 4px solid var(--color-success);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+    }
+
+    .discord-embed-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      margin-bottom: var(--space-2);
+    }
+
+    .discord-embed-description {
+      font-size: var(--text-sm);
+      color: #dcddde;
+    }
+
+    .discord-inline-code {
+      background: #2f3136;
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #dcddde;
+    }
+
+    /* Command Example */
+    .command-example {
+      background: #2d2d2d;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      margin: var(--space-4) 0;
+    }
+
+    .command-example-title {
+      color: #d4d4d4;
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-3);
+    }
+
+    .command-code {
+      font-family: var(--font-mono);
+      font-size: var(--text-base);
+      color: var(--color-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .command-description {
+      font-size: var(--text-sm);
+      color: #aaa;
+      line-height: var(--leading-base);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #a93454 100%);
+      color: white;
+      padding: var(--space-12) var(--space-6);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      margin-top: var(--space-12);
+    }
+
+    .cta-section h2 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-3);
+    }
+
+    .cta-section p {
+      font-size: var(--text-lg);
+      opacity: 0.95;
+      margin-bottom: var(--space-6);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: var(--space-4) var(--space-8);
+      background: white;
+      color: var(--color-primary);
+      border-radius: var(--radius-md);
+      font-weight: var(--font-semibold);
+      text-decoration: none;
+      transition: var(--transition-base);
+      font-size: var(--text-base);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+      margin-left: var(--space-3);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: var(--text-3xl);
+      }
+
+      .hero-stats {
+        gap: var(--space-6);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .tab-list {
+        gap: var(--space-2);
+      }
+
+      .tab-button {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--text-sm);
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detailed-feature {
+        grid-template-columns: 1fr;
+      }
+
+      .detailed-feature.reverse {
+        direction: ltr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="logo">Discord Bot</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#" class="active">Features</a></li>
+          <li><a href="#">Getting Started</a></li>
+          <li><a href="#">Commands</a></li>
+          <li><a href="#">Login</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Powerful Features for Your Discord Community</h1>
+      <p>Everything you need to manage users, control access, and create a secure Discord-integrated experience</p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-number">5,000+</div>
+          <div class="hero-stat-label">Active Users</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">150+</div>
+          <div class="hero-stat-label">Discord Servers</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number">99.9%</div>
+          <div class="hero-stat-label">Uptime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab-list">
+        <button class="tab-button active" data-tab="all">All Features</button>
+        <button class="tab-button" data-tab="user">User Features</button>
+        <button class="tab-button" data-tab="admin">Admin Features</button>
+      </div>
+    </div>
+
+    <!-- All Features Tab -->
+    <div class="tab-content active" id="all">
+      <!-- Core Features -->
+      <div class="feature-section">
+        <div class="feature-header">
+          <h2>Core Features</h2>
+          <p>Essential functionality for secure user management</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon primary">🔐</div>
+            <h3 class="feature-title">Secure Registration</h3>
+            <p class="feature-description">Invite code-based registration system ensures only authorized Discord members can create accounts.</p>
+            <ul class="feature-list">
+              <li>Discord-linked authentication</li>
+              <li>Time-limited invite codes</li>
+              <li>Email verification required</li>
+              <li>Automatic user validation</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">👥</div>
+            <h3 class="feature-title">User Management</h3>
+            <p class="feature-description">Comprehensive tools for managing users, roles, and permissions across your platform.</p>
+            <ul class="feature-list">
+              <li>User activation/deactivation</li>
+              <li>Role-based access control</li>
+              <li>Bulk user operations</li>
+              <li>Advanced user search</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon gold">🎫</div>
+            <h3 class="feature-title">Invite Code System</h3>
+            <p class="feature-description">Flexible invite code management with expiration, usage tracking, and bulk generation.</p>
+            <ul class="feature-list">
+              <li>Configurable expiration times</li>
+              <li>Single-use or multi-use codes</li>
+              <li>Bulk code generation</li>
+              <li>Usage analytics and tracking</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon lavender">📝</div>
+            <h3 class="feature-title">Audit Logging</h3>
+            <p class="feature-description">Complete audit trail of all administrative actions and user activities.</p>
+            <ul class="feature-list">
+              <li>Detailed activity logs</li>
+              <li>Filter by user or action</li>
+              <li>Searchable log history</li>
+              <li>Export capabilities</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">✓</div>
+            <h3 class="feature-title">Discord Integration</h3>
+            <p class="feature-description">Seamless integration with Discord for authentication and user verification.</p>
+            <ul class="feature-list">
+              <li>Direct message invite delivery</li>
+              <li>Real-time Discord status sync</li>
+              <li>Server membership validation</li>
+              <li>Bot command interface</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon primary">🔒</div>
+            <h3 class="feature-title">Two-Factor Authentication</h3>
+            <p class="feature-description">Enhanced security with optional 2FA for all user accounts.</p>
+            <ul class="feature-list">
+              <li>Authenticator app support</li>
+              <li>Recovery code generation</li>
+              <li>Easy setup process</li>
+              <li>Backup authentication methods</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Features with Examples -->
+      <div class="feature-section">
+        <div class="feature-header">
+          <h2>How It Works</h2>
+          <p>See our features in action</p>
+        </div>
+
+        <!-- Registration Flow -->
+        <div class="detailed-feature">
+          <div class="detailed-feature-content">
+            <h3>Simple Registration Process</h3>
+            <p>Users request an invite code directly from Discord, receive it via DM, and use it to register on your website. The entire process is automated and secure.</p>
+            <div class="command-example">
+              <div class="command-example-title">User runs command in Discord:</div>
+              <div class="command-code">/register</div>
+              <div class="command-description">Bot sends invite code via direct message</div>
+            </div>
+          </div>
+          <div class="detailed-feature-visual">
+            <div class="discord-container">
+              <div class="discord-message">
+                <div class="discord-avatar">DB</div>
+                <div class="discord-content">
+                  <div class="discord-header">
+                    <span class="discord-username">Discord Bot</span>
+                    <span class="discord-bot-badge">Bot</span>
+                    <span class="discord-timestamp">Today at 12:34 PM</span>
+                  </div>
+                  <div class="discord-text">Here's your registration invite code:</div>
+                  <div class="discord-embed">
+                    <div class="discord-embed-title">Invite Code</div>
+                    <div class="discord-embed-description">
+                      Code: <span class="discord-inline-code">ABC123XYZ</span><br>
+                      Expires in 7 days
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Profile -->
+        <div class="detailed-feature reverse">
+          <div class="detailed-feature-content">
+            <h3>Comprehensive User Profiles</h3>
+            <p>Every user has a complete profile showing their Discord information, account status, activity history, and security settings. Users can manage their own profiles easily.</p>
+            <ul class="feature-list">
+              <li>Linked Discord account details</li>
+              <li>Account creation and activity dates</li>
+              <li>Security status (email verified, 2FA enabled)</li>
+              <li>Recent activity feed</li>
+            </ul>
+          </div>
+          <div class="detailed-feature-visual">
+            <div style="text-align: center; color: var(--text-tertiary); font-size: var(--text-base);">
+              <div style="font-size: 4rem; margin-bottom: var(--space-4);">👤</div>
+              <div style="font-weight: var(--font-semibold); margin-bottom: var(--space-2);">User Profile</div>
+              <div style="font-size: var(--text-sm);">Complete account overview<br>with Discord integration</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="detailed-feature">
+          <div class="detailed-feature-content">
+            <h3>Powerful Admin Dashboard</h3>
+            <p>Administrators get a full-featured dashboard with real-time statistics, quick actions, and complete control over users, roles, and invite codes.</p>
+            <ul class="feature-list">
+              <li>Real-time metrics and analytics</li>
+              <li>User and code management tools</li>
+              <li>Role assignment interface</li>
+              <li>Comprehensive audit log viewer</li>
+            </ul>
+          </div>
+          <div class="detailed-feature-visual">
+            <div style="text-align: center; color: var(--text-tertiary); font-size: var(--text-base);">
+              <div style="font-size: 4rem; margin-bottom: var(--space-4);">📊</div>
+              <div style="font-weight: var(--font-semibold); margin-bottom: var(--space-2);">Admin Dashboard</div>
+              <div style="font-size: var(--text-sm);">Complete control panel<br>for system management</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Features Tab -->
+    <div class="tab-content" id="user">
+      <div class="feature-section">
+        <div class="feature-header">
+          <h2>Features for Users</h2>
+          <p>Everything users need to manage their accounts</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon primary">👤</div>
+            <h3 class="feature-title">Profile Management</h3>
+            <p class="feature-description">View and edit your profile information, check account status, and see your activity history.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">📧</div>
+            <h3 class="feature-title">Email Management</h3>
+            <p class="feature-description">Change your email address, verify new emails, and manage email preferences.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon gold">🔒</div>
+            <h3 class="feature-title">Security Settings</h3>
+            <p class="feature-description">Change password, enable two-factor authentication, and manage active sessions.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon lavender">🎮</div>
+            <h3 class="feature-title">Discord Connection</h3>
+            <p class="feature-description">View your linked Discord account and verify your server membership status.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon primary">📚</div>
+            <h3 class="feature-title">Documentation Access</h3>
+            <p class="feature-description">Browse available commands, read guides, and access support resources.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">⚡</div>
+            <h3 class="feature-title">Activity Dashboard</h3>
+            <p class="feature-description">Track your command usage, login history, and account statistics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Features Tab -->
+    <div class="tab-content" id="admin">
+      <div class="feature-section">
+        <div class="feature-header">
+          <h2>Features for Administrators</h2>
+          <p>Advanced tools for managing your community</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon primary">👥</div>
+            <h3 class="feature-title">User Administration</h3>
+            <p class="feature-description">Complete user management including activation, deactivation, role assignment, and detailed user views.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon gold">🎫</div>
+            <h3 class="feature-title">Invite Code Management</h3>
+            <p class="feature-description">Generate, track, and revoke invite codes with full control over expiration and usage limits.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">🛡️</div>
+            <h3 class="feature-title">Role Management</h3>
+            <p class="feature-description">Create and manage roles with granular permissions. Assign roles to users individually or in bulk.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon lavender">📝</div>
+            <h3 class="feature-title">Audit Log Viewer</h3>
+            <p class="feature-description">Comprehensive audit logs with filtering, search, and export capabilities for compliance and security.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon primary">📊</div>
+            <h3 class="feature-title">Analytics Dashboard</h3>
+            <p class="feature-description">Real-time statistics on users, registrations, code usage, and system activity.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon success">⚙️</div>
+            <h3 class="feature-title">System Configuration</h3>
+            <p class="feature-description">Configure system settings, manage Discord bot integration, and customize registration workflows.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <h2>Ready to Get Started?</h2>
+      <p>Join thousands of users already using our Discord bot to manage their communities</p>
+      <div>
+        <a href="#" class="btn">Create Account</a>
+        <a href="#" class="btn secondary">View Documentation</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tab functionality
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+
+        // Remove active class from all tabs and buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding content
+        button.classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

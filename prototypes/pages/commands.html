@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commands Reference - Discord Bot</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      line-height: var(--leading-base);
+      color: var(--text-primary);
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--space-4) 0;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-container {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: var(--font-medium);
+      transition: var(--transition-base);
+    }
+
+    .nav-links a:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-links a.active {
+      color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-6);
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: var(--space-8);
+      padding: var(--space-8) 0;
+    }
+
+    .hero h1 {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .hero p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Search Bar */
+    .search-section {
+      margin-bottom: var(--space-8);
+    }
+
+    .search-bar {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: var(--space-4) var(--space-5);
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-family: var(--font-primary);
+      font-size: var(--text-base);
+      transition: var(--transition-base);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: var(--space-8);
+    }
+
+    .filter-tab {
+      padding: var(--space-2) var(--space-4);
+      background: var(--surface-card);
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-full);
+      font-family: var(--font-primary);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .filter-tab:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+    }
+
+    .badge.user {
+      background: rgba(135, 179, 141, 0.2);
+      color: var(--color-success);
+    }
+
+    .badge.admin {
+      background: rgba(218, 65, 103, 0.2);
+      color: var(--color-primary);
+    }
+
+    .badge.moderator {
+      background: rgba(254, 215, 102, 0.2);
+      color: #d4a800;
+    }
+
+    /* Commands Section */
+    .commands-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .section-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-2xl);
+      flex-shrink: 0;
+    }
+
+    .section-icon.user {
+      background: rgba(135, 179, 141, 0.2);
+    }
+
+    .section-icon.admin {
+      background: rgba(218, 65, 103, 0.2);
+    }
+
+    .section-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+    }
+
+    /* Command Card */
+    .command-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      margin-bottom: var(--space-4);
+      transition: var(--transition-base);
+    }
+
+    .command-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary);
+    }
+
+    .command-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-3);
+      gap: var(--space-4);
+    }
+
+    .command-name-group {
+      flex: 1;
+    }
+
+    .command-name {
+      font-family: var(--font-mono);
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .command-description {
+      color: var(--text-primary);
+      line-height: var(--leading-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Command Details */
+    .command-details {
+      border-top: 1px solid var(--border-light);
+      padding-top: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .detail-row {
+      display: flex;
+      gap: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-label {
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      min-width: 100px;
+      font-size: var(--text-sm);
+    }
+
+    .detail-value {
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+    }
+
+    .detail-value code {
+      background: var(--bg-tertiary);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+    }
+
+    /* Parameters Table */
+    .parameters-table {
+      margin-top: var(--space-4);
+    }
+
+    .parameters-title {
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+      font-size: var(--text-sm);
+    }
+
+    .param-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-2);
+    }
+
+    .param-name {
+      font-family: var(--font-mono);
+      font-weight: var(--font-semibold);
+      color: var(--color-primary);
+      min-width: 120px;
+      font-size: var(--text-sm);
+    }
+
+    .param-description {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      flex: 1;
+    }
+
+    .param-required {
+      color: var(--color-danger);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+    }
+
+    .param-optional {
+      color: var(--text-tertiary);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+    }
+
+    /* Example Box */
+    .example-box {
+      background: #2d2d2d;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .example-title {
+      color: #d4d4d4;
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .example-code {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #d4d4d4;
+      line-height: var(--leading-lg);
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+    }
+
+    .no-results-icon {
+      font-size: 4rem;
+      margin-bottom: var(--space-4);
+      opacity: 0.3;
+    }
+
+    .no-results h3 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .no-results p {
+      color: var(--text-secondary);
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: var(--space-6) var(--space-4);
+      }
+
+      .hero h1 {
+        font-size: var(--text-3xl);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .command-header {
+        flex-direction: column;
+      }
+
+      .detail-row {
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .detail-label {
+        min-width: auto;
+      }
+
+      .param-item {
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .param-name {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="logo">Discord Bot</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Getting Started</a></li>
+          <li><a href="#" class="active">Commands</a></li>
+          <li><a href="#">Login</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Commands Reference</h1>
+      <p>Complete list of available bot commands and their usage</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search commands..."
+          autocomplete="off"
+        >
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">All Commands</button>
+      <button class="filter-tab" data-filter="user">User Commands</button>
+      <button class="filter-tab" data-filter="admin">Admin Commands</button>
+      <button class="filter-tab" data-filter="moderator">Moderator Commands</button>
+    </div>
+
+    <!-- User Commands -->
+    <section class="commands-section" data-category="user">
+      <div class="section-header">
+        <div class="section-icon user">👤</div>
+        <div>
+          <h2 class="section-title">User Commands</h2>
+          <p class="section-description">Available to all registered users</p>
+        </div>
+      </div>
+
+      <!-- Register Command -->
+      <div class="command-card" data-category="user" data-command="/register">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/register</div>
+            <span class="badge user">User</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Request an invite code to register for a web account. The bot will send you a direct message with a unique code that can be used to create your account on the website.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Everyone</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Cooldown</span>
+            <span class="detail-value">5 minutes</span>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/register</div>
+        </div>
+      </div>
+
+      <!-- Profile Command -->
+      <div class="command-card" data-category="user" data-command="/profile">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/profile</div>
+            <span class="badge user">User</span>
+          </div>
+        </div>
+        <p class="command-description">
+          View your account profile information including registration date, account status, and linked Discord information.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Registered Users</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Cooldown</span>
+            <span class="detail-value">None</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-optional">optional</span></div>
+              <div class="param-description">View another user's public profile information</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/profile
+/profile user:@JohnDoe</div>
+        </div>
+      </div>
+
+      <!-- Help Command -->
+      <div class="command-card" data-category="user" data-command="/help">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/help</div>
+            <span class="badge user">User</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Display a list of available commands and helpful information about using the bot. You can also get detailed help for a specific command.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Everyone</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">command <span class="param-optional">optional</span></div>
+              <div class="param-description">Get detailed information about a specific command</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/help
+/help command:register</div>
+        </div>
+      </div>
+
+      <!-- Status Command -->
+      <div class="command-card" data-category="user" data-command="/status">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/status</div>
+            <span class="badge user">User</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Check the current status of your account, including verification status, active sessions, and any pending actions.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Registered Users</span>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/status</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Commands -->
+    <section class="commands-section" data-category="admin">
+      <div class="section-header">
+        <div class="section-icon admin">⚙️</div>
+        <div>
+          <h2 class="section-title">Admin Commands</h2>
+          <p class="section-description">Restricted to administrators only</p>
+        </div>
+      </div>
+
+      <!-- Users Command -->
+      <div class="command-card" data-category="admin" data-command="/users">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/users</div>
+            <span class="badge admin">Admin</span>
+          </div>
+        </div>
+        <p class="command-description">
+          View and manage registered users. Display a list of users with filtering options, or get detailed information about a specific user.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">action <span class="param-required">required</span></div>
+              <div class="param-description">Action to perform: <code>list</code>, <code>view</code>, <code>activate</code>, <code>deactivate</code></div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-optional">optional</span></div>
+              <div class="param-description">Target user (required for view, activate, deactivate actions)</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/users action:list
+/users action:view user:@JohnDoe
+/users action:deactivate user:@Spammer</div>
+        </div>
+      </div>
+
+      <!-- Invite-codes Command -->
+      <div class="command-card" data-category="admin" data-command="/invite-codes">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/invite-codes</div>
+            <span class="badge admin">Admin</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Manage invite codes. View all active, expired, or used codes. Generate bulk codes or revoke existing ones.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">action <span class="param-required">required</span></div>
+              <div class="param-description">Action to perform: <code>list</code>, <code>generate</code>, <code>revoke</code></div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">status <span class="param-optional">optional</span></div>
+              <div class="param-description">Filter codes by status: <code>active</code>, <code>used</code>, <code>expired</code></div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">count <span class="param-optional">optional</span></div>
+              <div class="param-description">Number of codes to generate (1-10, default: 1)</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/invite-codes action:list
+/invite-codes action:list status:active
+/invite-codes action:generate count:5</div>
+        </div>
+      </div>
+
+      <!-- Roles Command -->
+      <div class="command-card" data-category="admin" data-command="/roles">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/roles</div>
+            <span class="badge admin">Admin</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Manage user roles and permissions. Assign or remove roles from users to control their access levels.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">action <span class="param-required">required</span></div>
+              <div class="param-description">Action to perform: <code>assign</code>, <code>remove</code>, <code>list</code></div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-optional">optional</span></div>
+              <div class="param-description">Target user (required for assign/remove)</div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">role <span class="param-optional">optional</span></div>
+              <div class="param-description">Role name: <code>Admin</code>, <code>Moderator</code>, <code>User</code></div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/roles action:list
+/roles action:assign user:@JohnDoe role:Moderator
+/roles action:remove user:@JohnDoe role:Moderator</div>
+        </div>
+      </div>
+
+      <!-- Audit Command -->
+      <div class="command-card" data-category="admin" data-command="/audit">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/audit</div>
+            <span class="badge admin">Admin</span>
+          </div>
+        </div>
+        <p class="command-description">
+          View audit logs of administrative actions, user activities, and system events. Filter by date, user, or action type.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">days <span class="param-optional">optional</span></div>
+              <div class="param-description">Number of days to look back (default: 7, max: 30)</div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-optional">optional</span></div>
+              <div class="param-description">Filter logs for a specific user</div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">action <span class="param-optional">optional</span></div>
+              <div class="param-description">Filter by action type</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/audit
+/audit days:30
+/audit user:@JohnDoe days:7</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Moderator Commands -->
+    <section class="commands-section" data-category="moderator">
+      <div class="section-header">
+        <div class="section-icon moderator">🛡️</div>
+        <div>
+          <h2 class="section-title">Moderator Commands</h2>
+          <p class="section-description">Available to moderators and administrators</p>
+        </div>
+      </div>
+
+      <!-- Warn Command -->
+      <div class="command-card" data-category="moderator" data-command="/warn">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/warn</div>
+            <span class="badge moderator">Moderator</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Issue a warning to a user for policy violations. Warnings are logged and visible to administrators.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Moderator, Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-required">required</span></div>
+              <div class="param-description">User to warn</div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">reason <span class="param-required">required</span></div>
+              <div class="param-description">Reason for the warning</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/warn user:@BadUser reason:Spam in chat</div>
+        </div>
+      </div>
+
+      <!-- Kick Command -->
+      <div class="command-card" data-category="moderator" data-command="/kick">
+        <div class="command-header">
+          <div class="command-name-group">
+            <div class="command-name">/kick</div>
+            <span class="badge moderator">Moderator</span>
+          </div>
+        </div>
+        <p class="command-description">
+          Remove a user from the server. The user can rejoin with a new invite link. This action is logged.
+        </p>
+        <div class="command-details">
+          <div class="detail-row">
+            <span class="detail-label">Permission</span>
+            <span class="detail-value">Moderator, Administrator</span>
+          </div>
+          <div class="parameters-table">
+            <div class="parameters-title">Parameters:</div>
+            <div class="param-item">
+              <div class="param-name">user <span class="param-required">required</span></div>
+              <div class="param-description">User to kick</div>
+            </div>
+            <div class="param-item">
+              <div class="param-name">reason <span class="param-required">required</span></div>
+              <div class="param-description">Reason for the kick</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example Usage:</div>
+          <div class="example-code">/kick user:@Troublemaker reason:Repeated policy violations</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- No Results Message -->
+    <div class="no-results hidden">
+      <div class="no-results-icon">🔍</div>
+      <h3>No commands found</h3>
+      <p>Try adjusting your search or filter</p>
+    </div>
+  </main>
+
+  <script>
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const commandCards = document.querySelectorAll('.command-card');
+    const sections = document.querySelectorAll('.commands-section');
+    const noResults = document.querySelector('.no-results');
+
+    // Filter functionality
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    let currentFilter = 'all';
+
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Update active tab
+        filterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Set current filter
+        currentFilter = tab.getAttribute('data-filter');
+
+        // Apply filter
+        applyFilters();
+      });
+    });
+
+    // Search functionality
+    searchInput.addEventListener('input', (e) => {
+      applyFilters();
+    });
+
+    function applyFilters() {
+      const searchTerm = searchInput.value.toLowerCase();
+      let visibleCount = 0;
+
+      // Filter command cards
+      commandCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const commandName = card.getAttribute('data-command').toLowerCase();
+        const commandText = card.textContent.toLowerCase();
+
+        const matchesFilter = currentFilter === 'all' || category === currentFilter;
+        const matchesSearch = searchTerm === '' ||
+                             commandName.includes(searchTerm) ||
+                             commandText.includes(searchTerm);
+
+        if (matchesFilter && matchesSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // Show/hide sections based on visible cards
+      sections.forEach(section => {
+        const category = section.getAttribute('data-category');
+        const visibleCards = section.querySelectorAll('.command-card:not(.hidden)');
+
+        if (currentFilter === 'all' || currentFilter === category) {
+          if (visibleCards.length > 0) {
+            section.classList.remove('hidden');
+          } else {
+            section.classList.add('hidden');
+          }
+        } else {
+          section.classList.add('hidden');
+        }
+      });
+
+      // Show no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+
+    // Initialize
+    applyFilters();
+  </script>
+</body>
+</html>

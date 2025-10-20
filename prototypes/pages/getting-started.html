@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started - Discord Bot</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      line-height: var(--leading-base);
+      color: var(--text-primary);
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--space-4) 0;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-container {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: var(--font-medium);
+      transition: var(--transition-base);
+    }
+
+    .nav-links a:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-links a.active {
+      color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-6);
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: var(--space-12);
+      padding: var(--space-8) 0;
+    }
+
+    .hero h1 {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .hero p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Progress Overview */
+    .progress-overview {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-8);
+      margin-bottom: var(--space-12);
+    }
+
+    .progress-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+
+    /* Step Indicator Styles */
+    .step-indicator {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      padding: var(--space-2) 0;
+    }
+
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-neutral-300);
+      z-index: 0;
+    }
+
+    .step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-neutral-100);
+      border: 3px solid var(--color-neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-neutral-500);
+      margin-bottom: var(--space-3);
+      transition: var(--transition-base);
+    }
+
+    .step-item.completed .step-circle {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: white;
+    }
+
+    .step-item.active .step-circle {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(218, 65, 103, 0.2);
+    }
+
+    .step-item.completed .step-circle::after {
+      content: '✓';
+      font-size: var(--text-xl);
+    }
+
+    .step-item.completed .step-number {
+      display: none;
+    }
+
+    .step-content {
+      text-align: center;
+      max-width: 150px;
+    }
+
+    .step-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .step-item.upcoming .step-title {
+      color: var(--color-neutral-500);
+    }
+
+    .step-description {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .step-item.upcoming .step-description {
+      color: var(--color-neutral-400);
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .section-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+
+    .section-title-group h2 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+    }
+
+    .section-content {
+      padding-left: calc(48px + var(--space-3));
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .card h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-lg);
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Discord Container */
+    .discord-container {
+      background: #36393f;
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      margin: var(--space-4) 0;
+    }
+
+    .discord-message {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .discord-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: white;
+      font-size: var(--text-sm);
+    }
+
+    .discord-content {
+      flex: 1;
+    }
+
+    .discord-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+    }
+
+    .discord-username {
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      font-size: var(--text-base);
+    }
+
+    .discord-bot-badge {
+      background: #5865f2;
+      color: white;
+      font-size: var(--text-xs);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+    }
+
+    .discord-timestamp {
+      color: #72767d;
+      font-size: var(--text-xs);
+    }
+
+    .discord-text {
+      color: #dcddde;
+      font-size: var(--text-base);
+      line-height: var(--leading-lg);
+    }
+
+    .discord-embed {
+      margin-top: var(--space-3);
+      background: #2f3136;
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      max-width: 520px;
+    }
+
+    .discord-embed-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      margin-bottom: var(--space-2);
+    }
+
+    .discord-embed-description {
+      font-size: var(--text-sm);
+      color: #dcddde;
+      margin-bottom: var(--space-3);
+    }
+
+    .discord-embed-field {
+      margin-bottom: var(--space-2);
+    }
+
+    .discord-embed-field-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      margin-bottom: var(--space-1);
+    }
+
+    .discord-embed-field-value {
+      font-size: var(--text-sm);
+      color: #dcddde;
+    }
+
+    .discord-inline-code {
+      background: #2f3136;
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #dcddde;
+    }
+
+    /* Code Block */
+    .code-block {
+      background: #2d2d2d;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin: var(--space-4) 0;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #d4d4d4;
+      line-height: var(--leading-lg);
+    }
+
+    /* List */
+    .instruction-list {
+      list-style: none;
+      counter-reset: instruction;
+    }
+
+    .instruction-list li {
+      counter-increment: instruction;
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-8);
+      position: relative;
+    }
+
+    .instruction-list li::before {
+      content: counter(instruction);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-lavender);
+      color: var(--color-slate);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-semibold);
+      font-size: var(--text-sm);
+    }
+
+    /* Tabs */
+    .tabs {
+      margin-bottom: var(--space-6);
+    }
+
+    .tab-list {
+      display: flex;
+      gap: var(--space-2);
+      border-bottom: 2px solid var(--border-light);
+      margin-bottom: var(--space-6);
+    }
+
+    .tab-button {
+      padding: var(--space-3) var(--space-5);
+      background: none;
+      border: none;
+      font-family: var(--font-primary);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--transition-base);
+    }
+
+    .tab-button:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-button.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Alert Box */
+    .alert {
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      margin: var(--space-4) 0;
+      border-left: 4px solid;
+    }
+
+    .alert.info {
+      background: rgba(211, 196, 227, 0.1);
+      border-left-color: var(--color-info);
+      color: var(--text-primary);
+    }
+
+    .alert.warning {
+      background: rgba(254, 215, 102, 0.1);
+      border-left-color: var(--color-warning);
+      color: var(--text-primary);
+    }
+
+    .alert.success {
+      background: rgba(135, 179, 141, 0.1);
+      border-left-color: var(--color-success);
+      color: var(--text-primary);
+    }
+
+    .alert-title {
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    /* FAQ Accordion */
+    .faq {
+      margin-top: var(--space-8);
+    }
+
+    .faq-item {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: var(--space-4);
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: var(--font-primary);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-question:hover {
+      background: var(--bg-secondary);
+    }
+
+    .faq-icon {
+      color: var(--color-primary);
+      font-size: var(--text-xl);
+      transition: var(--transition-base);
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      padding: 0 var(--space-4) var(--space-4);
+      color: var(--text-secondary);
+      line-height: var(--leading-lg);
+      display: none;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: var(--space-6) var(--space-4);
+      }
+
+      .hero h1 {
+        font-size: var(--text-3xl);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .step-indicator {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .step-indicator::before {
+        top: 0;
+        bottom: 0;
+        left: 24px;
+        width: 2px;
+        height: auto;
+        right: auto;
+      }
+
+      .step-item {
+        flex-direction: row;
+        align-items: flex-start;
+        margin-bottom: var(--space-6);
+      }
+
+      .step-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .step-circle {
+        margin-bottom: 0;
+        margin-right: var(--space-4);
+      }
+
+      .step-content {
+        text-align: left;
+        max-width: none;
+      }
+
+      .section-content {
+        padding-left: 0;
+      }
+
+      .discord-embed {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="logo">Discord Bot</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#" class="active">Getting Started</a></li>
+          <li><a href="#">Commands</a></li>
+          <li><a href="#">Login</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Getting Started</h1>
+      <p>Follow this guide to set up your account and start using the Discord bot</p>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="progress-overview">
+      <h2 class="progress-title">Registration Progress</h2>
+      <div class="step-indicator">
+        <div class="step-item upcoming">
+          <div class="step-circle">
+            <span class="step-number">1</span>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Get Invite Code</div>
+            <div class="step-description">Request from Discord</div>
+          </div>
+        </div>
+
+        <div class="step-item upcoming">
+          <div class="step-circle">
+            <span class="step-number">2</span>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Create Account</div>
+            <div class="step-description">Register on website</div>
+          </div>
+        </div>
+
+        <div class="step-item upcoming">
+          <div class="step-circle">
+            <span class="step-number">3</span>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Verify Email</div>
+            <div class="step-description">Confirm your email</div>
+          </div>
+        </div>
+
+        <div class="step-item upcoming">
+          <div class="step-circle">
+            <span class="step-number">4</span>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Start Using</div>
+            <div class="step-description">Access dashboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <div class="section-title-group">
+          <h2>Join Discord Server and Request Invite Code</h2>
+          <p class="section-subtitle">Get your unique registration code from the bot</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <div class="card">
+          <h3>Join the Discord Server</h3>
+          <p>First, you need to join our Discord server. Use the invite link provided or find the server in Discord's server discovery.</p>
+
+          <div class="alert info">
+            <div class="alert-title">💡 Need an invite link?</div>
+            <p>If you don't have an invite link, ask your server administrator or check the project documentation.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Request Your Invite Code</h3>
+          <p>Once you're in the server, use the <span class="discord-inline-code">/register</span> command to request your invite code. The bot will send you a direct message.</p>
+
+          <div class="code-block">
+<pre>/register</pre>
+          </div>
+
+          <div class="discord-container">
+            <div class="discord-message">
+              <div class="discord-avatar">DB</div>
+              <div class="discord-content">
+                <div class="discord-header">
+                  <span class="discord-username">Discord Bot</span>
+                  <span class="discord-bot-badge">Bot</span>
+                  <span class="discord-timestamp">Today at 12:34 PM</span>
+                </div>
+                <div class="discord-text">
+                  Here's your registration invite code:
+                </div>
+                <div class="discord-embed">
+                  <div class="discord-embed-title">Invite Code</div>
+                  <div class="discord-embed-description">
+                    Use this code to complete your registration on the website.
+                  </div>
+                  <div class="discord-embed-field">
+                    <div class="discord-embed-field-name">Code</div>
+                    <div class="discord-embed-field-value"><span class="discord-inline-code">ABC123XYZ</span></div>
+                  </div>
+                  <div class="discord-embed-field">
+                    <div class="discord-embed-field-name">Expires</div>
+                    <div class="discord-embed-field-value">7 days from now</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert warning">
+            <div class="alert-title">⚠ Important</div>
+            <p>Keep your invite code secure and don't share it with others. Each code can only be used once and expires after 7 days.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <div class="section-title-group">
+          <h2>Create Your Web Account</h2>
+          <p class="section-subtitle">Register on the website using your invite code</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <div class="card">
+          <h3>Go to Registration Page</h3>
+          <p>Visit the registration page and fill out the form with the following information:</p>
+
+          <ul class="instruction-list">
+            <li><strong>Email Address:</strong> Use a valid email address you have access to</li>
+            <li><strong>Password:</strong> Create a strong password (minimum 8 characters)</li>
+            <li><strong>Confirm Password:</strong> Re-enter your password</li>
+            <li><strong>Invite Code:</strong> Paste the code you received from the Discord bot</li>
+          </ul>
+
+          <div class="alert info">
+            <div class="alert-title">💡 Password Requirements</div>
+            <p>Your password must be at least 8 characters long and include a mix of uppercase letters, lowercase letters, numbers, and special characters.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Submit Registration</h3>
+          <p>After filling out all fields, click the "Register" button. If your invite code is valid and all information is correct, your account will be created.</p>
+
+          <div class="alert success">
+            <div class="alert-title">✓ Success!</div>
+            <p>If registration is successful, you'll be redirected to check your email for verification.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <div class="section-title-group">
+          <h2>Verify Your Email Address</h2>
+          <p class="section-subtitle">Confirm your account to activate all features</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <div class="card">
+          <h3>Check Your Email</h3>
+          <p>After registering, check your email inbox for a verification message. The email will contain a link to verify your account.</p>
+
+          <ul class="instruction-list">
+            <li>Look for an email from our system (check spam folder if needed)</li>
+            <li>Click the verification link in the email</li>
+            <li>You'll be redirected to a confirmation page</li>
+            <li>Your account is now fully activated!</li>
+          </ul>
+
+          <div class="alert warning">
+            <div class="alert-title">⚠ Didn't receive the email?</div>
+            <p>If you don't see the email within a few minutes, check your spam folder. You can also request a new verification email from the login page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <div class="section-title-group">
+          <h2>Access Your Dashboard</h2>
+          <p class="section-subtitle">Log in and start using the system</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <div class="card">
+          <h3>Log In to Your Account</h3>
+          <p>Once your email is verified, you can log in with your email and password. You'll be taken to your personal dashboard where you can:</p>
+
+          <ul class="instruction-list">
+            <li>View your Discord account information</li>
+            <li>Manage your profile settings</li>
+            <li>Update your password and email</li>
+            <li>Enable two-factor authentication (recommended)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>What's Next?</h3>
+          <p>Now that your account is set up, you can explore the available commands and features. Check out the Commands Reference to see what the bot can do!</p>
+
+          <div class="alert success">
+            <div class="alert-title">🎉 You're all set!</div>
+            <p>Your account is fully configured and ready to use. Welcome aboard!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section class="section">
+      <h2 style="font-size: var(--text-2xl); font-weight: var(--font-bold); margin-bottom: var(--space-6);">Troubleshooting</h2>
+
+      <div class="tabs">
+        <div class="tab-list">
+          <button class="tab-button active" data-tab="dm-issues">Can't Receive DMs</button>
+          <button class="tab-button" data-tab="code-issues">Invalid Code</button>
+          <button class="tab-button" data-tab="email-issues">Email Issues</button>
+        </div>
+
+        <div class="tab-content active" id="dm-issues">
+          <div class="card">
+            <h3>I'm not receiving DMs from the bot</h3>
+            <p>If the bot cannot send you a direct message, it's likely due to your Discord privacy settings. Here's how to fix it:</p>
+            <ul class="instruction-list">
+              <li>Right-click on the server name in Discord</li>
+              <li>Select "Privacy Settings"</li>
+              <li>Enable "Allow direct messages from server members"</li>
+              <li>Try the <span class="discord-inline-code">/register</span> command again</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-content" id="code-issues">
+          <div class="card">
+            <h3>My invite code isn't working</h3>
+            <p>If your invite code is being rejected, it could be due to:</p>
+            <ul class="instruction-list">
+              <li><strong>Expired Code:</strong> Codes expire after 7 days. Request a new one with <span class="discord-inline-code">/register</span></li>
+              <li><strong>Already Used:</strong> Each code can only be used once. If you already registered, try logging in instead</li>
+              <li><strong>Typo:</strong> Double-check that you copied the entire code correctly</li>
+              <li><strong>Not Linked to Discord:</strong> The code must be used by the same Discord account that requested it</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-content" id="email-issues">
+          <div class="card">
+            <h3>I didn't receive the verification email</h3>
+            <p>If you haven't received your verification email:</p>
+            <ul class="instruction-list">
+              <li><strong>Check Spam Folder:</strong> The email might have been filtered as spam</li>
+              <li><strong>Wait a Few Minutes:</strong> Email delivery can sometimes be delayed</li>
+              <li><strong>Check Email Address:</strong> Make sure you entered the correct email during registration</li>
+              <li><strong>Request New Email:</strong> You can request a new verification email from the login page</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <h2 style="font-size: var(--text-2xl); font-weight: var(--font-bold); margin-bottom: var(--space-6);">Frequently Asked Questions</h2>
+
+      <div class="faq">
+        <div class="faq-item">
+          <button class="faq-question">
+            Do I need to be in the Discord server to use the website?
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Yes, you need to be a member of the Discord server to request an invite code and maintain access to the system. If you leave the server, your account may be deactivated.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Can I change my Discord account after registration?
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Your Discord account is permanently linked during registration. If you need to change it, please contact an administrator.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            How long do invite codes last?
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Invite codes expire 7 days after being issued. If your code expires, you can request a new one using the /register command in Discord.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Is two-factor authentication required?
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Two-factor authentication (2FA) is optional but highly recommended for account security. You can enable it from your account settings after logging in.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            What if I forget my password?
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            You can reset your password using the "Forgot Password" link on the login page. You'll receive a password reset email with instructions.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Tab functionality
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+
+        // Remove active class from all tabs and buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding content
+        button.classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+      });
+    });
+
+    // FAQ accordion functionality
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const faqItem = question.parentElement;
+        faqItem.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

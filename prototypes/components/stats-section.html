@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats/Metrics Section - Component</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      padding: var(--space-8);
+      line-height: var(--leading-base);
+    }
+
+    .demo-container {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+      font-size: var(--text-base);
+    }
+
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .example-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      margin-bottom: var(--space-6);
+    }
+
+    .example-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .example-description {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-6);
+      margin: var(--space-6) 0;
+    }
+
+    .stats-grid.two-column {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .stats-grid.four-column {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    /* Stat Card */
+    .stat-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-6);
+      text-align: center;
+      transition: var(--transition-base);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-3xl);
+      margin: 0 auto var(--space-4);
+    }
+
+    .stat-icon.primary {
+      background: rgba(218, 65, 103, 0.1);
+    }
+
+    .stat-icon.success {
+      background: rgba(135, 179, 141, 0.1);
+    }
+
+    .stat-icon.gold {
+      background: rgba(254, 215, 102, 0.1);
+    }
+
+    .stat-icon.lavender {
+      background: rgba(211, 196, 227, 0.2);
+    }
+
+    .stat-number {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+
+    .stat-number.primary {
+      color: var(--color-primary);
+    }
+
+    .stat-number.success {
+      color: var(--color-success);
+    }
+
+    .stat-number.gold {
+      color: #d4a800;
+    }
+
+    .stat-label {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      font-weight: var(--font-medium);
+    }
+
+    .stat-sublabel {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--space-1);
+    }
+
+    /* Stat Change Indicator */
+    .stat-change {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      margin-top: var(--space-2);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .stat-change.positive {
+      color: var(--color-success);
+      background: rgba(135, 179, 141, 0.1);
+    }
+
+    .stat-change.negative {
+      color: var(--color-danger);
+      background: rgba(218, 65, 103, 0.1);
+    }
+
+    .stat-change.neutral {
+      color: var(--text-tertiary);
+      background: var(--bg-tertiary);
+    }
+
+    /* Compact Stat Card */
+    .stat-card.compact {
+      padding: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      text-align: left;
+    }
+
+    .stat-card.compact .stat-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0;
+      font-size: var(--text-2xl);
+      flex-shrink: 0;
+    }
+
+    .stat-card.compact .stat-content {
+      flex: 1;
+    }
+
+    .stat-card.compact .stat-number {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-card.compact .stat-label {
+      font-size: var(--text-sm);
+    }
+
+    /* Minimal Style */
+    .stat-card.minimal {
+      border: none;
+      background: transparent;
+      padding: var(--space-4);
+    }
+
+    .stat-card.minimal:hover {
+      transform: none;
+      box-shadow: none;
+      background: var(--bg-secondary);
+    }
+
+    /* Hero Stats Section */
+    .hero-stats {
+      background: linear-gradient(135deg, var(--color-slate) 0%, #434955 100%);
+      color: white;
+      padding: var(--space-12) var(--space-6);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-8);
+    }
+
+    .hero-stats .stats-grid {
+      margin-top: var(--space-8);
+    }
+
+    .hero-stats .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-stats .stat-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-stats .stat-number {
+      color: white;
+    }
+
+    .hero-stats .stat-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-stats .stat-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-stats-title {
+      text-align: center;
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-2);
+    }
+
+    .hero-stats-subtitle {
+      text-align: center;
+      font-size: var(--text-lg);
+      opacity: 0.9;
+    }
+
+    /* Divider with Icon */
+    .stat-divider {
+      width: 2px;
+      height: 100%;
+      background: var(--border-light);
+      margin: 0 var(--space-4);
+    }
+
+    /* Large Featured Stat */
+    .featured-stat {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--space-8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .featured-stat::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-gold));
+    }
+
+    .featured-stat .stat-number {
+      font-size: 5rem;
+      margin-bottom: var(--space-3);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .featured-stat .stat-label {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    /* Inline Stats */
+    .inline-stats {
+      display: flex;
+      gap: var(--space-8);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .inline-stat {
+      text-align: center;
+    }
+
+    .inline-stat-number {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+
+    .inline-stat-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      font-weight: var(--font-medium);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: var(--space-4);
+      }
+
+      .stats-grid.four-column {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+
+      .featured-stat .stat-number {
+        font-size: 3.5rem;
+      }
+
+      .inline-stats {
+        gap: var(--space-6);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid,
+      .stats-grid.two-column,
+      .stats-grid.four-column {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card.compact {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .stat-card.compact .stat-icon {
+        margin-bottom: var(--space-3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Stats/Metrics Section</h1>
+    <p class="description">Components for displaying statistics, metrics, and key performance indicators</p>
+
+    <!-- Default Stats Grid -->
+    <div class="section">
+      <h2 class="section-title">Default Stats Grid</h2>
+      <div class="example-card">
+        <p class="example-title">Platform Overview</p>
+        <p class="example-description">Three-column grid with icons and numbers</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon success">👥</div>
+            <div class="stat-number success">1,234</div>
+            <div class="stat-label">Active Users</div>
+            <div class="stat-change positive">↑ 12% this month</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon primary">🤖</div>
+            <div class="stat-number primary">45</div>
+            <div class="stat-label">Discord Servers</div>
+            <div class="stat-change positive">↑ 5 new</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon gold">⚡</div>
+            <div class="stat-number gold">89.2K</div>
+            <div class="stat-label">Commands Executed</div>
+            <div class="stat-sublabel">Last 30 days</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Four Column Stats -->
+    <div class="section">
+      <h2 class="section-title">Four Column Stats</h2>
+      <div class="example-card">
+        <p class="example-title">Quick Metrics</p>
+        <p class="example-description">Compact four-column layout for dashboards</p>
+
+        <div class="stats-grid four-column">
+          <div class="stat-card">
+            <div class="stat-icon success">✓</div>
+            <div class="stat-number">98.5%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon primary">📊</div>
+            <div class="stat-number">2,567</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon gold">🎫</div>
+            <div class="stat-number">156</div>
+            <div class="stat-label">Active Codes</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon lavender">📝</div>
+            <div class="stat-number">1.2K</div>
+            <div class="stat-label">Audit Logs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compact Stats -->
+    <div class="section">
+      <h2 class="section-title">Compact Stats Cards</h2>
+      <div class="example-card">
+        <p class="example-title">Horizontal Layout</p>
+        <p class="example-description">Space-efficient horizontal card design</p>
+
+        <div class="stats-grid two-column">
+          <div class="stat-card compact">
+            <div class="stat-icon success">👥</div>
+            <div class="stat-content">
+              <div class="stat-number">1,234</div>
+              <div class="stat-label">Registered Users</div>
+              <div class="stat-change positive">↑ 8.2%</div>
+            </div>
+          </div>
+
+          <div class="stat-card compact">
+            <div class="stat-icon primary">🔐</div>
+            <div class="stat-content">
+              <div class="stat-number">892</div>
+              <div class="stat-label">Verified Accounts</div>
+              <div class="stat-change positive">↑ 12%</div>
+            </div>
+          </div>
+
+          <div class="stat-card compact">
+            <div class="stat-icon gold">⚡</div>
+            <div class="stat-content">
+              <div class="stat-number">15.3K</div>
+              <div class="stat-label">API Requests</div>
+              <div class="stat-change neutral">→ 0%</div>
+            </div>
+          </div>
+
+          <div class="stat-card compact">
+            <div class="stat-icon lavender">💬</div>
+            <div class="stat-content">
+              <div class="stat-number">3,421</div>
+              <div class="stat-label">Bot Messages</div>
+              <div class="stat-change negative">↓ 2.1%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Stats Section -->
+    <div class="section">
+      <h2 class="section-title">Hero Stats Section</h2>
+      <div class="example-card">
+        <p class="example-title">Landing Page Stats</p>
+        <p class="example-description">Eye-catching stats for landing pages with gradient background</p>
+
+        <div class="hero-stats">
+          <h2 class="hero-stats-title">Trusted by thousands</h2>
+          <p class="hero-stats-subtitle">Join our growing community of Discord users</p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-number">5,000+</div>
+              <div class="stat-label">Active Users</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">🌐</div>
+              <div class="stat-number">150+</div>
+              <div class="stat-label">Discord Servers</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">⚡</div>
+              <div class="stat-number">99.9%</div>
+              <div class="stat-label">Uptime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Large Stat -->
+    <div class="section">
+      <h2 class="section-title">Featured Large Stat</h2>
+      <div class="example-card">
+        <p class="example-title">Highlight Key Metric</p>
+        <p class="example-description">Large featured stat with gradient number</p>
+
+        <div class="featured-stat">
+          <div class="stat-number">10,000+</div>
+          <div class="stat-label">Commands Executed Daily</div>
+          <div class="stat-sublabel">Across all servers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline Stats -->
+    <div class="section">
+      <h2 class="section-title">Inline Stats</h2>
+      <div class="example-card">
+        <p class="example-title">Simple Inline Display</p>
+        <p class="example-description">Minimal horizontal stats for compact spaces</p>
+
+        <div class="inline-stats">
+          <div class="inline-stat">
+            <div class="inline-stat-number">2.5K</div>
+            <div class="inline-stat-label">Users</div>
+          </div>
+          <div class="inline-stat">
+            <div class="inline-stat-number">45</div>
+            <div class="inline-stat-label">Servers</div>
+          </div>
+          <div class="inline-stat">
+            <div class="inline-stat-number">98.5%</div>
+            <div class="inline-stat-label">Uptime</div>
+          </div>
+          <div class="inline-stat">
+            <div class="inline-stat-number">15K</div>
+            <div class="inline-stat-label">Commands</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimal Style -->
+    <div class="section">
+      <h2 class="section-title">Minimal Style Stats</h2>
+      <div class="example-card">
+        <p class="example-title">Clean Minimal Design</p>
+        <p class="example-description">Borderless cards with subtle hover effect</p>
+
+        <div class="stats-grid">
+          <div class="stat-card minimal">
+            <div class="stat-number primary">256</div>
+            <div class="stat-label">New Registrations</div>
+            <div class="stat-sublabel">This week</div>
+          </div>
+
+          <div class="stat-card minimal">
+            <div class="stat-number success">1,892</div>
+            <div class="stat-label">Active Sessions</div>
+            <div class="stat-sublabel">Right now</div>
+          </div>
+
+          <div class="stat-card minimal">
+            <div class="stat-number gold">4.8</div>
+            <div class="stat-label">Average Rating</div>
+            <div class="stat-sublabel">Out of 5 stars</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mixed Stats Example -->
+    <div class="section">
+      <h2 class="section-title">Dashboard Example</h2>
+      <div class="example-card">
+        <p class="example-title">User Dashboard Stats</p>
+        <p class="example-description">Real-world example combining different stat styles</p>
+
+        <div class="stats-grid four-column">
+          <div class="stat-card">
+            <div class="stat-icon success">✓</div>
+            <div class="stat-number">Active</div>
+            <div class="stat-label">Account Status</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon primary">📅</div>
+            <div class="stat-number">127</div>
+            <div class="stat-label">Days Active</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon gold">⚡</div>
+            <div class="stat-number">1,543</div>
+            <div class="stat-label">Commands Used</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon lavender">🔒</div>
+            <div class="stat-number">Enabled</div>
+            <div class="stat-label">2FA Security</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

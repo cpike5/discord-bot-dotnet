@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiscordBot - Powerful Community Management</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: white;
+      color: var(--text-primary);
+      padding-top: 70px;
+    }
+
+    /* ============================================
+       NAVBAR STYLES
+       ============================================ */
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--z-sticky);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--color-neutral-200);
+      transition: var(--transition-base);
+    }
+
+    .navbar-container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: var(--font-bold);
+      font-size: var(--text-xl);
+      transition: var(--transition-fast);
+    }
+
+    .navbar-brand:hover {
+      color: var(--color-primary);
+    }
+
+    .navbar-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: var(--font-bold);
+      font-size: var(--text-lg);
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      list-style: none;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-weight: var(--font-medium);
+      font-size: var(--text-base);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      color: var(--color-primary);
+      background: var(--color-neutral-100);
+    }
+
+    .nav-link.active {
+      color: var(--color-primary);
+      background: rgba(218, 65, 103, 0.1);
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .navbar-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-2);
+    }
+
+    .navbar-toggle span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: var(--color-neutral-700);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+    }
+
+    .navbar-mobile {
+      display: none;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid var(--color-neutral-200);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-4) var(--space-6);
+      z-index: var(--z-sticky);
+    }
+
+    .navbar-mobile .navbar-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+    }
+
+    .navbar-mobile .navbar-actions {
+      margin-top: var(--space-4);
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .navbar-mobile .btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ============================================
+       BUTTON STYLES
+       ============================================ */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      text-decoration: none;
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      font-family: var(--font-primary);
+    }
+
+    .btn-outline {
+      color: var(--color-primary);
+      background: transparent;
+      border: 2px solid var(--color-primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--color-primary);
+      border: 2px solid var(--color-neutral-200);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary);
+      background: rgba(218, 65, 103, 0.05);
+    }
+
+    .btn-lg {
+      padding: var(--space-4) var(--space-6);
+      font-size: var(--text-lg);
+    }
+
+    /* ============================================
+       HERO SECTION
+       ============================================ */
+
+    .hero {
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #FFFFFF 0%, var(--color-neutral-50) 100%);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(218, 65, 103, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(211, 196, 227, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-container {
+      position: relative;
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: var(--space-16) var(--space-6);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: center;
+      z-index: 1;
+    }
+
+    .hero-content {
+      max-width: 600px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(218, 65, 103, 0.1);
+      color: var(--color-primary);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-6);
+    }
+
+    .hero-badge::before {
+      content: '✨';
+      font-size: var(--text-base);
+    }
+
+    .hero-title {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: var(--space-6);
+    }
+
+    .hero-title .highlight {
+      color: var(--color-primary);
+    }
+
+    .hero-description {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: var(--leading-lg);
+      margin-bottom: var(--space-8);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-10);
+    }
+
+    .hero-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .hero-feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .hero-feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--color-sage);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--text-sm);
+      flex-shrink: 0;
+    }
+
+    .hero-feature-text {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      font-weight: var(--font-medium);
+    }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-graphic {
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--color-lavender) 0%, var(--color-sage) 100%);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      box-shadow: var(--shadow-xl);
+      animation: float 6s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-graphic::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.3) 100%);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* ============================================
+       FEATURES SECTION
+       ============================================ */
+
+    .features-section {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: var(--space-16) var(--space-6);
+      background: white;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .features-badge {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      background: rgba(135, 179, 141, 0.1);
+      color: var(--color-sage);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-4);
+    }
+
+    .features-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .features-description {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: var(--leading-lg);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--color-neutral-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8);
+      transition: var(--transition-base);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-lavender) 100%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: var(--transition-base);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-primary);
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: var(--space-5);
+    }
+
+    .feature-card:nth-child(1) .feature-icon {
+      background: linear-gradient(135deg, rgba(218, 65, 103, 0.1) 0%, rgba(218, 65, 103, 0.2) 100%);
+    }
+
+    .feature-card:nth-child(2) .feature-icon {
+      background: linear-gradient(135deg, rgba(135, 179, 141, 0.1) 0%, rgba(135, 179, 141, 0.2) 100%);
+    }
+
+    .feature-card:nth-child(3) .feature-icon {
+      background: linear-gradient(135deg, rgba(254, 215, 102, 0.1) 0%, rgba(254, 215, 102, 0.2) 100%);
+    }
+
+    .feature-card:nth-child(4) .feature-icon {
+      background: linear-gradient(135deg, rgba(211, 196, 227, 0.1) 0%, rgba(211, 196, 227, 0.2) 100%);
+    }
+
+    .feature-card:nth-child(5) .feature-icon {
+      background: linear-gradient(135deg, rgba(85, 91, 110, 0.1) 0%, rgba(85, 91, 110, 0.2) 100%);
+    }
+
+    .feature-card:nth-child(6) .feature-icon {
+      background: linear-gradient(135deg, rgba(218, 65, 103, 0.1) 0%, rgba(135, 179, 141, 0.2) 100%);
+    }
+
+    .feature-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .feature-description {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-base);
+    }
+
+    /* ============================================
+       CTA SECTION
+       ============================================ */
+
+    .cta-section {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+      color: white;
+      padding: var(--space-16) var(--space-6);
+      text-align: center;
+    }
+
+    .cta-container {
+      max-width: var(--container-md);
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-4);
+    }
+
+    .cta-description {
+      font-size: var(--text-lg);
+      line-height: var(--leading-lg);
+      margin-bottom: var(--space-8);
+      opacity: 0.95;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-white {
+      background: white;
+      color: var(--color-primary);
+    }
+
+    .btn-white:hover {
+      background: var(--color-neutral-100);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline-white {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline-white:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+
+    .footer {
+      background: var(--surface-primary);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    .footer a:hover {
+      color: var(--color-lavender);
+    }
+
+    .footer-main {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6);
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-8);
+    }
+
+    .footer-brand {
+      max-width: 350px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .footer-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      color: white;
+      font-weight: var(--font-bold);
+    }
+
+    .footer-logo-text {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: white;
+    }
+
+    .footer-description {
+      font-size: var(--text-sm);
+      line-height: var(--leading-base);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: var(--space-5);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .footer-social-link {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      transition: var(--transition-fast);
+    }
+
+    .footer-social-link:hover {
+      background: var(--color-primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-links-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: white;
+      margin-bottom: var(--space-4);
+    }
+
+    .footer-links-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .footer-links-list li {
+      font-size: var(--text-sm);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: var(--space-6) var(--space-6);
+    }
+
+    .footer-bottom-container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .footer-copyright {
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-legal {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+
+    .footer-legal li {
+      font-size: var(--text-sm);
+    }
+
+    /* ============================================
+       RESPONSIVE DESIGN
+       ============================================ */
+
+    @media (max-width: 1024px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-features {
+        justify-content: center;
+      }
+
+      .hero-visual {
+        order: -1;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-nav.desktop-only {
+        display: none;
+      }
+
+      .navbar-actions.desktop-only {
+        display: none;
+      }
+
+      .navbar-toggle {
+        display: flex;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-container {
+        padding: var(--space-12) var(--space-6);
+      }
+
+      .hero-title {
+        font-size: var(--text-3xl);
+      }
+
+      .hero-description {
+        font-size: var(--text-base);
+      }
+
+      .hero-features {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-graphic {
+        max-width: 300px;
+        font-size: 60px;
+      }
+
+      .features-section {
+        padding: var(--space-12) var(--space-6);
+      }
+
+      .features-title {
+        font-size: var(--text-2xl);
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+      }
+
+      .feature-card {
+        padding: var(--space-6);
+      }
+
+      .cta-section {
+        padding: var(--space-12) var(--space-6);
+      }
+
+      .cta-title {
+        font-size: var(--text-2xl);
+      }
+
+      .cta-actions {
+        flex-direction: column;
+      }
+
+      .cta-actions .btn {
+        width: 100%;
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr;
+        padding: var(--space-8) var(--space-6);
+      }
+
+      .footer-bottom-container {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-legal {
+        flex-direction: column;
+        gap: var(--space-3);
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-container">
+      <a href="#" class="navbar-brand">
+        <div class="navbar-logo">DB</div>
+        <span>DiscordBot</span>
+      </a>
+
+      <ul class="navbar-nav desktop-only">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#docs" class="nav-link">Documentation</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+      </ul>
+
+      <div class="navbar-actions desktop-only">
+        <a href="login.html" class="btn btn-outline">Login</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
+
+      <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="navbar-mobile" id="navbarMobile">
+    <ul class="navbar-nav">
+      <li><a href="#home" class="nav-link active">Home</a></li>
+      <li><a href="#features" class="nav-link">Features</a></li>
+      <li><a href="#docs" class="nav-link">Documentation</a></li>
+      <li><a href="#about" class="nav-link">About</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <a href="login.html" class="btn btn-outline">Login</a>
+      <a href="register.html" class="btn btn-primary">Get Started</a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          New Feature Available
+        </div>
+
+        <h1 class="hero-title">
+          Powerful Discord Bot for <span class="highlight">Community Management</span>
+        </h1>
+
+        <p class="hero-description">
+          Streamline your Discord server with secure user registration, role management, and invite code systems.
+          Built for communities that value security and organization.
+        </p>
+
+        <div class="hero-actions">
+          <a href="register.html" class="btn btn-primary btn-lg">
+            <span>Get Started Free</span>
+            <span>→</span>
+          </a>
+          <a href="#features" class="btn btn-secondary btn-lg">
+            <span>▶</span>
+            <span>Learn More</span>
+          </a>
+        </div>
+
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feature-icon">✓</div>
+            <span class="hero-feature-text">Secure Registration</span>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">✓</div>
+            <span class="hero-feature-text">Role Management</span>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">✓</div>
+            <span class="hero-feature-text">Invite Code System</span>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">✓</div>
+            <span class="hero-feature-text">User Dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-graphic">
+          🤖
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="features-header">
+      <span class="features-badge">Features</span>
+      <h2 class="features-title">Everything You Need to Manage Your Community</h2>
+      <p class="features-description">
+        A comprehensive suite of tools designed to streamline Discord server management,
+        enhance security, and improve user experience.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3 class="feature-title">Secure Registration</h3>
+        <p class="feature-description">
+          Invite-code based registration system ensures only authorized users can access your community.
+          Protect your server from unwanted members.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3 class="feature-title">User Management</h3>
+        <p class="feature-description">
+          Complete admin dashboard for managing users, roles, and permissions.
+          Track activity and moderate your community efficiently.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎟️</div>
+        <h3 class="feature-title">Invite Code System</h3>
+        <p class="feature-description">
+          Generate, track, and manage invite codes with usage limits and expiration dates.
+          Full audit trail for accountability.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">Discord Integration</h3>
+        <p class="feature-description">
+          Seamless integration with Discord OAuth2. Users link their Discord accounts
+          for automatic role synchronization.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Analytics & Insights</h3>
+        <p class="feature-description">
+          Track registration trends, invite code performance, and user activity.
+          Make data-driven decisions for your community.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3 class="feature-title">Notifications</h3>
+        <p class="feature-description">
+          Automated Discord notifications for registrations, role changes, and security events.
+          Stay informed in real-time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-container">
+      <h2 class="cta-title">Ready to Get Started?</h2>
+      <p class="cta-description">
+        Join thousands of Discord communities using our bot to manage their servers.
+        Set up takes less than 5 minutes.
+      </p>
+      <div class="cta-actions">
+        <a href="register.html" class="btn btn-white btn-lg">
+          <span>Get Started Free</span>
+          <span>→</span>
+        </a>
+        <a href="#docs" class="btn btn-outline-white btn-lg">
+          View Documentation
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">DB</div>
+          <span class="footer-logo-text">DiscordBot</span>
+        </div>
+        <p class="footer-description">
+          A powerful Discord bot for community management with secure registration,
+          role management, and invite code systems.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="Discord">💬</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter">🐦</a>
+          <a href="#" class="footer-social-link" aria-label="GitHub">🐙</a>
+          <a href="#" class="footer-social-link" aria-label="Email">📧</a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4 class="footer-links-title">Product</h4>
+        <ul class="footer-links-list">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#docs">Documentation</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#changelog">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4 class="footer-links-title">Company</h4>
+        <ul class="footer-links-list">
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4 class="footer-links-title">Legal</h4>
+        <ul class="footer-links-list">
+          <li><a href="#privacy">Privacy Policy</a></li>
+          <li><a href="#terms">Terms of Service</a></li>
+          <li><a href="#cookies">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-container">
+        <p class="footer-copyright">
+          © 2025 DiscordBot. All rights reserved.
+        </p>
+        <ul class="footer-legal">
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="#terms">Terms</a></li>
+          <li><a href="#cookies">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Mobile menu toggle
+    const navbarToggle = document.getElementById('navbarToggle');
+    const navbarMobile = document.getElementById('navbarMobile');
+    let mobileMenuOpen = false;
+
+    navbarToggle.addEventListener('click', function() {
+      mobileMenuOpen = !mobileMenuOpen;
+      navbarMobile.style.display = mobileMenuOpen ? 'block' : 'none';
+    });
+
+    // Close mobile menu when clicking a link
+    const mobileNavLinks = navbarMobile.querySelectorAll('.nav-link');
+    mobileNavLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        navbarMobile.style.display = 'none';
+        mobileMenuOpen = false;
+      });
+    });
+
+    // Close mobile menu when window is resized above mobile breakpoint
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        navbarMobile.style.display = 'none';
+        mobileMenuOpen = false;
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#' || href === '#home') {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            const offsetTop = target.offsetTop - 70;
+            window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

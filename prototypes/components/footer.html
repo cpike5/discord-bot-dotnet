@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footer - Component</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-neutral-50);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Demo spacer to push footer to bottom */
+    .demo-content {
+      flex: 1;
+      padding: var(--space-12) var(--space-6);
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    .demo-content h1 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .demo-content p {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-base);
+    }
+
+    /* ============================================
+       FOOTER STYLES
+       ============================================ */
+
+    .footer {
+      background: var(--surface-primary);
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: auto;
+    }
+
+    .footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    .footer a:hover {
+      color: var(--color-lavender);
+    }
+
+    /* Footer Main Content */
+    .footer-main {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6);
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-8);
+    }
+
+    /* Footer Brand Section */
+    .footer-brand {
+      max-width: 350px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .footer-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      color: white;
+      font-weight: var(--font-bold);
+    }
+
+    .footer-logo-text {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: white;
+    }
+
+    .footer-description {
+      font-size: var(--text-sm);
+      line-height: var(--leading-base);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: var(--space-5);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .footer-social-link {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      transition: var(--transition-fast);
+    }
+
+    .footer-social-link:hover {
+      background: var(--color-primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Footer Links Sections */
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-links-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: white;
+      margin-bottom: var(--space-4);
+    }
+
+    .footer-links-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .footer-links-list li {
+      font-size: var(--text-sm);
+    }
+
+    /* Newsletter Section */
+    .footer-newsletter {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-newsletter-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: white;
+      margin-bottom: var(--space-3);
+    }
+
+    .footer-newsletter-text {
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-sm);
+    }
+
+    .footer-newsletter-form {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .footer-newsletter-input {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: var(--text-sm);
+      font-family: var(--font-primary);
+      transition: var(--transition-fast);
+    }
+
+    .footer-newsletter-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-newsletter-input:focus {
+      outline: none;
+      border-color: var(--color-lavender);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .footer-newsletter-button {
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      font-family: var(--font-primary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .footer-newsletter-button:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Footer Bottom */
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: var(--space-6) var(--space-6);
+    }
+
+    .footer-bottom-container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .footer-copyright {
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-legal {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+
+    .footer-legal li {
+      font-size: var(--text-sm);
+    }
+
+    /* ============================================
+       RESPONSIVE DESIGN
+       ============================================ */
+
+    @media (max-width: 1024px) {
+      .footer-main {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-8);
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .footer-main {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+        padding: var(--space-8) var(--space-6);
+      }
+
+      .footer-newsletter-form {
+        flex-direction: column;
+      }
+
+      .footer-newsletter-button {
+        width: 100%;
+      }
+
+      .footer-bottom-container {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-legal {
+        flex-direction: column;
+        gap: var(--space-3);
+        align-items: center;
+      }
+    }
+
+    /* Demo Notes */
+    .demo-notes {
+      background: white;
+      padding: var(--space-6);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-6);
+      border: 1px solid var(--color-neutral-200);
+    }
+
+    .demo-notes h3 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .demo-notes ul {
+      list-style: disc;
+      padding-left: var(--space-6);
+    }
+
+    .demo-notes li {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo Content -->
+  <div class="demo-content">
+    <h1>Footer Component</h1>
+    <p>
+      This is a comprehensive footer component for the public-facing landing page.
+      It includes branding, navigation links, social media, newsletter signup, and legal links.
+    </p>
+
+    <div class="demo-notes">
+      <h3>Features</h3>
+      <ul>
+        <li><strong>Multi-Column Layout:</strong> 4 columns on desktop (Brand, Links x3), responsive on mobile</li>
+        <li><strong>Brand Section:</strong> Logo, description, and social media links</li>
+        <li><strong>Navigation Sections:</strong> Organized links for Products, Company, Resources, etc.</li>
+        <li><strong>Newsletter Signup:</strong> Email input with subscribe button</li>
+        <li><strong>Social Media Icons:</strong> Hover effects with elevation</li>
+        <li><strong>Footer Bottom:</strong> Copyright and legal links (Privacy, Terms, etc.)</li>
+        <li><strong>Dark Theme:</strong> Uses slate color from design tokens</li>
+        <li><strong>Responsive:</strong> 4 → 2 → 1 columns on smaller screens</li>
+      </ul>
+    </div>
+
+    <div class="demo-notes" style="margin-top: var(--space-6);">
+      <h3>Implementation Notes</h3>
+      <ul>
+        <li>Uses <code>--surface-primary</code> (slate) for background</li>
+        <li>Grid layout: 4 columns (desktop) → 2 columns (tablet) → 1 column (mobile)</li>
+        <li>Newsletter form requires backend integration for email collection</li>
+        <li>Social icons use emojis - replace with icon fonts or SVGs</li>
+        <li>Links are placeholders - update with actual URLs</li>
+        <li>White text with transparency for visual hierarchy</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <!-- Footer Main Content -->
+    <div class="footer-main">
+      <!-- Brand Section -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">DB</div>
+          <span class="footer-logo-text">DiscordBot</span>
+        </div>
+        <p class="footer-description">
+          A powerful Discord bot for community management with secure registration,
+          role management, and invite code systems. Built for communities that value
+          security and organization.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="Discord">💬</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter">🐦</a>
+          <a href="#" class="footer-social-link" aria-label="GitHub">🐙</a>
+          <a href="#" class="footer-social-link" aria-label="Email">📧</a>
+        </div>
+      </div>
+
+      <!-- Product Links -->
+      <div class="footer-links">
+        <h4 class="footer-links-title">Product</h4>
+        <ul class="footer-links-list">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#docs">Documentation</a></li>
+          <li><a href="#commands">Commands</a></li>
+          <li><a href="#changelog">Changelog</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Links -->
+      <div class="footer-links">
+        <h4 class="footer-links-title">Company</h4>
+        <ul class="footer-links-list">
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#team">Team</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="footer-newsletter">
+        <h4 class="footer-newsletter-title">Stay Updated</h4>
+        <p class="footer-newsletter-text">
+          Get the latest updates, tips, and feature announcements.
+        </p>
+        <form class="footer-newsletter-form" onsubmit="return false;">
+          <input
+            type="email"
+            class="footer-newsletter-input"
+            placeholder="Enter your email"
+            aria-label="Email address"
+          >
+          <button type="submit" class="footer-newsletter-button">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-container">
+        <p class="footer-copyright">
+          © 2025 DiscordBot. All rights reserved.
+        </p>
+        <ul class="footer-legal">
+          <li><a href="#privacy">Privacy Policy</a></li>
+          <li><a href="#terms">Terms of Service</a></li>
+          <li><a href="#cookies">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

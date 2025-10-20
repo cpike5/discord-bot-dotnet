@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step Indicator - Component</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      padding: var(--space-8);
+      line-height: var(--leading-base);
+    }
+
+    .demo-container {
+      max-width: var(--container-lg);
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+      font-size: var(--text-base);
+    }
+
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .example-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      margin-bottom: var(--space-6);
+    }
+
+    .example-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .example-description {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Step Indicator Container */
+    .step-indicator {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      padding: var(--space-2) 0;
+    }
+
+    /* Connecting Line */
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-neutral-300);
+      z-index: 0;
+    }
+
+    /* Step Item */
+    .step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Step Circle */
+    .step-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-neutral-100);
+      border: 3px solid var(--color-neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-neutral-500);
+      margin-bottom: var(--space-3);
+      transition: var(--transition-base);
+    }
+
+    /* Step States */
+    .step-item.completed .step-circle {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: white;
+    }
+
+    .step-item.active .step-circle {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(218, 65, 103, 0.2);
+    }
+
+    .step-item.upcoming .step-circle {
+      background: var(--color-neutral-100);
+      border-color: var(--color-neutral-300);
+      color: var(--color-neutral-500);
+    }
+
+    /* Checkmark for completed steps */
+    .step-item.completed .step-circle::after {
+      content: '✓';
+      font-size: var(--text-xl);
+    }
+
+    .step-item.completed .step-number {
+      display: none;
+    }
+
+    /* Step Content */
+    .step-content {
+      text-align: center;
+      max-width: 150px;
+    }
+
+    .step-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .step-item.upcoming .step-title {
+      color: var(--color-neutral-500);
+    }
+
+    .step-description {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-sm);
+    }
+
+    .step-item.upcoming .step-description {
+      color: var(--color-neutral-400);
+    }
+
+    /* Compact Variant */
+    .step-indicator.compact .step-circle {
+      width: 36px;
+      height: 36px;
+      font-size: var(--text-base);
+    }
+
+    .step-indicator.compact::before {
+      top: 18px;
+    }
+
+    .step-indicator.compact .step-content {
+      max-width: 120px;
+    }
+
+    .step-indicator.compact .step-title {
+      font-size: var(--text-sm);
+    }
+
+    .step-indicator.compact .step-description {
+      font-size: var(--text-xs);
+    }
+
+    /* Vertical Variant */
+    .step-indicator.vertical {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .step-indicator.vertical::before {
+      top: 0;
+      bottom: 0;
+      left: 24px;
+      width: 2px;
+      height: auto;
+      right: auto;
+    }
+
+    .step-indicator.vertical .step-item {
+      flex-direction: row;
+      align-items: flex-start;
+      margin-bottom: var(--space-6);
+    }
+
+    .step-indicator.vertical .step-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-indicator.vertical .step-circle {
+      margin-bottom: 0;
+      margin-right: var(--space-4);
+      flex-shrink: 0;
+    }
+
+    .step-indicator.vertical .step-content {
+      text-align: left;
+      max-width: none;
+    }
+
+    /* Numbered Variant (no connecting line) */
+    .step-indicator.numbered::before {
+      display: none;
+    }
+
+    .step-indicator.numbered .step-item {
+      flex: none;
+      margin-right: var(--space-6);
+    }
+
+    .step-indicator.numbered .step-item:last-child {
+      margin-right: 0;
+    }
+
+    /* Progress Bar Variant */
+    .progress-steps {
+      margin-bottom: var(--space-8);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--color-neutral-200);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-6);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.5s ease;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-block;
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      margin-left: var(--space-2);
+    }
+
+    .status-badge.completed {
+      background: rgba(135, 179, 141, 0.2);
+      color: var(--color-success);
+    }
+
+    .status-badge.active {
+      background: rgba(218, 65, 103, 0.2);
+      color: var(--color-primary);
+    }
+
+    .status-badge.upcoming {
+      background: var(--color-neutral-200);
+      color: var(--color-neutral-600);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: var(--space-4);
+      }
+
+      /* Auto switch to vertical on mobile */
+      .step-indicator:not(.vertical) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .step-indicator:not(.vertical)::before {
+        top: 0;
+        bottom: 0;
+        left: 24px;
+        width: 2px;
+        height: auto;
+        right: auto;
+      }
+
+      .step-indicator:not(.vertical) .step-item {
+        flex-direction: row;
+        align-items: flex-start;
+        margin-bottom: var(--space-6);
+        flex: none;
+      }
+
+      .step-indicator:not(.vertical) .step-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .step-indicator:not(.vertical) .step-circle {
+        margin-bottom: 0;
+        margin-right: var(--space-4);
+      }
+
+      .step-indicator:not(.vertical) .step-content {
+        text-align: left;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Step Indicator Component</h1>
+    <p class="description">Progress indicators for multi-step processes and guides</p>
+
+    <!-- Default Horizontal Steps -->
+    <div class="section">
+      <h2 class="section-title">Default Horizontal Steps</h2>
+      <div class="example-card">
+        <p class="example-title">Registration Progress</p>
+        <p class="example-description">Standard horizontal step indicator showing user progress</p>
+
+        <div class="step-indicator">
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Get Invite Code</div>
+              <div class="step-description">Request code from Discord bot</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Enter Information</div>
+              <div class="step-description">Fill out registration form</div>
+            </div>
+          </div>
+
+          <div class="step-item active">
+            <div class="step-circle">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Verify Email</div>
+              <div class="step-description">Confirm your email address</div>
+            </div>
+          </div>
+
+          <div class="step-item upcoming">
+            <div class="step-circle">
+              <span class="step-number">4</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Complete</div>
+              <div class="step-description">Access your dashboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compact Variant -->
+    <div class="section">
+      <h2 class="section-title">Compact Variant</h2>
+      <div class="example-card">
+        <p class="example-title">Smaller Step Indicator</p>
+        <p class="example-description">Space-efficient version for tight layouts</p>
+
+        <div class="step-indicator compact">
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Request</div>
+              <div class="step-description">Get invite</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Register</div>
+              <div class="step-description">Create account</div>
+            </div>
+          </div>
+
+          <div class="step-item active">
+            <div class="step-circle">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Verify</div>
+              <div class="step-description">Confirm email</div>
+            </div>
+          </div>
+
+          <div class="step-item upcoming">
+            <div class="step-circle">
+              <span class="step-number">4</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Done</div>
+              <div class="step-description">Start using</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vertical Steps -->
+    <div class="section">
+      <h2 class="section-title">Vertical Steps</h2>
+      <div class="example-card">
+        <p class="example-title">Setup Guide</p>
+        <p class="example-description">Vertical layout with more detailed descriptions</p>
+
+        <div class="step-indicator vertical">
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Join Discord Server <span class="status-badge completed">Completed</span></div>
+              <div class="step-description">Join our Discord server and find the #registration channel. This is where you'll interact with the bot to get started.</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Request Invite Code <span class="status-badge completed">Completed</span></div>
+              <div class="step-description">Use the /register command in Discord. The bot will send you a DM with a unique invite code. Keep this code secure!</div>
+            </div>
+          </div>
+
+          <div class="step-item active">
+            <div class="step-circle">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Create Web Account <span class="status-badge active">In Progress</span></div>
+              <div class="step-description">Visit the registration page and enter your email, password, and the invite code from Discord. Make sure to use a valid email address.</div>
+            </div>
+          </div>
+
+          <div class="step-item upcoming">
+            <div class="step-circle">
+              <span class="step-number">4</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Verify Email <span class="status-badge upcoming">Pending</span></div>
+              <div class="step-description">Check your email inbox for a verification link. Click the link to confirm your account and activate all features.</div>
+            </div>
+          </div>
+
+          <div class="step-item upcoming">
+            <div class="step-circle">
+              <span class="step-number">5</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Access Dashboard <span class="status-badge upcoming">Pending</span></div>
+              <div class="step-description">Once verified, log in to your dashboard to manage your profile, view your Discord connection, and explore features.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Numbered Steps (No Lines) -->
+    <div class="section">
+      <h2 class="section-title">Numbered Steps (No Connecting Lines)</h2>
+      <div class="example-card">
+        <p class="example-title">Quick Start</p>
+        <p class="example-description">Simple numbered steps without connecting lines</p>
+
+        <div class="step-indicator numbered">
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Install</div>
+              <div class="step-description">Add bot to server</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Configure</div>
+              <div class="step-description">Set permissions</div>
+            </div>
+          </div>
+
+          <div class="step-item active">
+            <div class="step-circle">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Use</div>
+              <div class="step-description">Start commands</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- With Progress Bar -->
+    <div class="section">
+      <h2 class="section-title">With Progress Bar</h2>
+      <div class="example-card">
+        <p class="example-title">Account Setup Progress</p>
+        <p class="example-description">Steps combined with a visual progress bar</p>
+
+        <div class="progress-steps">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%;"></div>
+          </div>
+
+          <div class="step-indicator compact">
+            <div class="step-item completed">
+              <div class="step-circle">
+                <span class="step-number">1</span>
+              </div>
+              <div class="step-content">
+                <div class="step-title">Account</div>
+              </div>
+            </div>
+
+            <div class="step-item completed">
+              <div class="step-circle">
+                <span class="step-number">2</span>
+              </div>
+              <div class="step-content">
+                <div class="step-title">Profile</div>
+              </div>
+            </div>
+
+            <div class="step-item active">
+              <div class="step-circle">
+                <span class="step-number">3</span>
+              </div>
+              <div class="step-content">
+                <div class="step-title">Discord</div>
+              </div>
+            </div>
+
+            <div class="step-item upcoming">
+              <div class="step-circle">
+                <span class="step-number">4</span>
+              </div>
+              <div class="step-content">
+                <div class="step-title">Complete</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Completed -->
+    <div class="section">
+      <h2 class="section-title">All Steps Completed</h2>
+      <div class="example-card">
+        <p class="example-title">Successful Registration</p>
+        <p class="example-description">All steps completed successfully</p>
+
+        <div class="step-indicator">
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Request Code</div>
+              <div class="step-description">Get invite from bot</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Register</div>
+              <div class="step-description">Create account</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Verify</div>
+              <div class="step-description">Confirm email</div>
+            </div>
+          </div>
+
+          <div class="step-item completed">
+            <div class="step-circle">
+              <span class="step-number">4</span>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Complete</div>
+              <div class="step-description">All done!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

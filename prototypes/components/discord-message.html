@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Message Mock - Component</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--bg-secondary);
+      padding: var(--space-8);
+      line-height: var(--leading-base);
+    }
+
+    .demo-container {
+      max-width: var(--container-md);
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .description {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+      font-size: var(--text-base);
+    }
+
+    .section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Discord Message Container */
+    .discord-container {
+      background: #36393f;
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Discord Message */
+    .discord-message {
+      display: flex;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .discord-message:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Avatar */
+    .discord-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-slate);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: white;
+      font-size: var(--text-sm);
+    }
+
+    .discord-avatar.bot {
+      background: var(--color-primary);
+    }
+
+    /* Message Content */
+    .discord-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .discord-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+    }
+
+    .discord-username {
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      font-size: var(--text-base);
+    }
+
+    .discord-bot-badge {
+      background: #5865f2;
+      color: white;
+      font-size: var(--text-xs);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+    }
+
+    .discord-timestamp {
+      color: #72767d;
+      font-size: var(--text-xs);
+    }
+
+    .discord-text {
+      color: #dcddde;
+      font-size: var(--text-base);
+      line-height: var(--leading-lg);
+      word-wrap: break-word;
+    }
+
+    /* Discord Embed */
+    .discord-embed {
+      margin-top: var(--space-3);
+      background: #2f3136;
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      max-width: 520px;
+    }
+
+    .discord-embed.success {
+      border-left-color: var(--color-success);
+    }
+
+    .discord-embed.warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .discord-embed.info {
+      border-left-color: #5865f2;
+    }
+
+    .discord-embed-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      margin-bottom: var(--space-2);
+    }
+
+    .discord-embed-description {
+      font-size: var(--text-sm);
+      color: #dcddde;
+      line-height: var(--leading-base);
+      margin-bottom: var(--space-3);
+    }
+
+    .discord-embed-field {
+      margin-bottom: var(--space-3);
+    }
+
+    .discord-embed-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .discord-embed-field-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: #ffffff;
+      margin-bottom: var(--space-1);
+    }
+
+    .discord-embed-field-value {
+      font-size: var(--text-sm);
+      color: #dcddde;
+      line-height: var(--leading-base);
+    }
+
+    .discord-embed-footer {
+      font-size: var(--text-xs);
+      color: #72767d;
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid #40444b;
+    }
+
+    /* Code Block */
+    .discord-code {
+      background: #2f3136;
+      border: 1px solid #202225;
+      border-radius: var(--radius-sm);
+      padding: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #dcddde;
+      margin: var(--space-2) 0;
+      overflow-x: auto;
+    }
+
+    /* Inline Code */
+    .discord-inline-code {
+      background: #2f3136;
+      border-radius: var(--radius-sm);
+      padding: 2px 4px;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: #dcddde;
+    }
+
+    /* User Mention */
+    .discord-mention {
+      background: rgba(88, 101, 242, 0.3);
+      color: #c9cdfb;
+      padding: 0 2px;
+      border-radius: var(--radius-sm);
+      font-weight: var(--font-medium);
+    }
+
+    /* Button in Discord */
+    .discord-button {
+      display: inline-block;
+      background: #5865f2;
+      color: white;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-weight: var(--font-medium);
+      font-size: var(--text-sm);
+      border: none;
+      cursor: pointer;
+      margin-top: var(--space-3);
+      text-decoration: none;
+    }
+
+    .discord-button:hover {
+      background: #4752c4;
+    }
+
+    .discord-button.success {
+      background: var(--color-success);
+    }
+
+    .discord-button.success:hover {
+      background: #6d9972;
+    }
+
+    .discord-button.danger {
+      background: var(--color-danger);
+    }
+
+    .discord-button.danger:hover {
+      background: #a02950;
+    }
+
+    /* Example Cards for context */
+    .example-card {
+      background: var(--surface-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      margin-bottom: var(--space-6);
+    }
+
+    .example-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .example-description {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: var(--space-4);
+      }
+
+      .discord-embed {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Discord Message Mock</h1>
+    <p class="description">Discord-styled message components for documentation and examples</p>
+
+    <!-- Basic Bot Message -->
+    <div class="section">
+      <h2 class="section-title">Basic Bot Message</h2>
+      <div class="example-card">
+        <p class="example-title">Simple DM from Bot</p>
+        <p class="example-description">A basic message showing bot communication</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-text">
+                Welcome! Your account has been successfully created. You can now access the dashboard at https://bot.example.com
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bot Message with Embed -->
+    <div class="section">
+      <h2 class="section-title">Bot Message with Embed</h2>
+      <div class="example-card">
+        <p class="example-title">Invite Code DM</p>
+        <p class="example-description">Embedded message with structured information</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-text">
+                Here's your registration invite code:
+              </div>
+              <div class="discord-embed">
+                <div class="discord-embed-title">Invite Code</div>
+                <div class="discord-embed-description">
+                  Use this code to complete your registration on the website.
+                </div>
+                <div class="discord-embed-field">
+                  <div class="discord-embed-field-name">Code</div>
+                  <div class="discord-embed-field-value"><span class="discord-inline-code">ABC123XYZ</span></div>
+                </div>
+                <div class="discord-embed-field">
+                  <div class="discord-embed-field-name">Expires</div>
+                  <div class="discord-embed-field-value">7 days from now</div>
+                </div>
+                <div class="discord-embed-footer">Keep this code secure and do not share it with others</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div class="section">
+      <h2 class="section-title">Success Notification</h2>
+      <div class="example-card">
+        <p class="example-title">Account Verified</p>
+        <p class="example-description">Success state with green accent</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-embed success">
+                <div class="discord-embed-title">✓ Account Verified</div>
+                <div class="discord-embed-description">
+                  Your Discord account has been successfully linked! You now have access to all features.
+                </div>
+                <div class="discord-embed-field">
+                  <div class="discord-embed-field-name">Discord Username</div>
+                  <div class="discord-embed-field-value">User#1234</div>
+                </div>
+                <div class="discord-embed-field">
+                  <div class="discord-embed-field-name">Account Status</div>
+                  <div class="discord-embed-field-value">Active</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="section">
+      <h2 class="section-title">Warning Message</h2>
+      <div class="example-card">
+        <p class="example-title">Security Alert</p>
+        <p class="example-description">Warning state with gold accent</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-embed warning">
+                <div class="discord-embed-title">⚠ Security Notice</div>
+                <div class="discord-embed-description">
+                  Your invite code will expire in 24 hours. Please complete your registration soon.
+                </div>
+                <div class="discord-embed-field">
+                  <div class="discord-embed-field-name">Action Required</div>
+                  <div class="discord-embed-field-value">Visit the registration page and enter your code</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Command Example -->
+    <div class="section">
+      <h2 class="section-title">Command Interaction</h2>
+      <div class="example-card">
+        <p class="example-title">User Command with Bot Response</p>
+        <p class="example-description">Shows command usage and bot response</p>
+
+        <div class="discord-container">
+          <!-- User Message -->
+          <div class="discord-message">
+            <div class="discord-avatar">U</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">User</span>
+                <span class="discord-timestamp">Today at 12:33 PM</span>
+              </div>
+              <div class="discord-text">
+                <span class="discord-inline-code">/register</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bot Response -->
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:33 PM</span>
+              </div>
+              <div class="discord-embed info">
+                <div class="discord-embed-title">Registration Started</div>
+                <div class="discord-embed-description">
+                  I've sent you a DM with your invite code. Please check your direct messages to continue.
+                </div>
+                <div class="discord-embed-footer">If you don't see the message, make sure your DMs are enabled</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Example -->
+    <div class="section">
+      <h2 class="section-title">Code Block Example</h2>
+      <div class="example-card">
+        <p class="example-title">Technical Information</p>
+        <p class="example-description">Message with code formatting</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-text">
+                Here's how to use the invite code in your registration:
+              </div>
+              <div class="discord-code">1. Go to https://bot.example.com/register
+2. Enter your email address
+3. Paste the invite code: ABC123XYZ
+4. Complete the registration form
+5. You'll receive a confirmation email</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mention Example -->
+    <div class="section">
+      <h2 class="section-title">User Mention</h2>
+      <div class="example-card">
+        <p class="example-title">Notification with Mention</p>
+        <p class="example-description">Message mentioning a user</p>
+
+        <div class="discord-container">
+          <div class="discord-message">
+            <div class="discord-avatar bot">DB</div>
+            <div class="discord-content">
+              <div class="discord-header">
+                <span class="discord-username">Discord Bot</span>
+                <span class="discord-bot-badge">Bot</span>
+                <span class="discord-timestamp">Today at 12:34 PM</span>
+              </div>
+              <div class="discord-text">
+                Hey <span class="discord-mention">@User</span>! Your account has been approved by an administrator. You now have full access to the system.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
