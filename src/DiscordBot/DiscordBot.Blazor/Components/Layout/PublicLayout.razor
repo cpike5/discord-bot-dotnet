@@ -1,11 +1,13 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<div class="page-layout">
-    <Sidebar />
+<div class="public-layout">
+    <PublicNavbar />
 
-    <main class="main-content">
+    <main class="public-content">
         @Body
     </main>
+
+    <Footer />
 </div>
 
 <div id="blazor-error-ui">

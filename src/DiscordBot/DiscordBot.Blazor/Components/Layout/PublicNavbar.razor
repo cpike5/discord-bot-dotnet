@@ -1,0 +1,74 @@
+<nav class="navbar" id="navbar">
+    <div class="navbar-container">
+        <!-- Logo/Brand -->
+        <a href="/" class="navbar-brand">
+            <div class="navbar-logo">DB</div>
+            <span>DiscordBot</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <ul class="navbar-nav desktop-only">
+            <li><NavLink href="/" class="nav-link" Match="NavLinkMatch.All">Home</NavLink></li>
+            <li><NavLink href="/features" class="nav-link">Features</NavLink></li>
+            <li><NavLink href="/docs" class="nav-link">Documentation</NavLink></li>
+            <li><NavLink href="/commands" class="nav-link">Commands</NavLink></li>
+            <li><NavLink href="/about" class="nav-link">About</NavLink></li>
+        </ul>
+
+        <!-- Desktop Actions -->
+        <div class="navbar-actions desktop-only">
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/Account/Manage" class="btn btn-outline">Profile</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/Account/Login" class="btn btn-outline">Login</a>
+                    <a href="/Account/Register" class="btn btn-primary">Get Started</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggle" @onclick="ToggleMobileMenu" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="navbar-mobile @(mobileMenuOpen ? "open" : "")" id="navbarMobile">
+    <ul class="navbar-nav">
+        <li><NavLink href="/" class="nav-link" Match="NavLinkMatch.All" @onclick="CloseMobileMenu">Home</NavLink></li>
+        <li><NavLink href="/features" class="nav-link" @onclick="CloseMobileMenu">Features</NavLink></li>
+        <li><NavLink href="/docs" class="nav-link" @onclick="CloseMobileMenu">Documentation</NavLink></li>
+        <li><NavLink href="/commands" class="nav-link" @onclick="CloseMobileMenu">Commands</NavLink></li>
+        <li><NavLink href="/about" class="nav-link" @onclick="CloseMobileMenu">About</NavLink></li>
+    </ul>
+    <div class="navbar-actions">
+        <AuthorizeView>
+            <Authorized>
+                <a href="/Account/Manage" class="btn btn-outline" @onclick="CloseMobileMenu">Profile</a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/Account/Login" class="btn btn-outline" @onclick="CloseMobileMenu">Login</a>
+                <a href="/Account/Register" class="btn btn-primary" @onclick="CloseMobileMenu">Get Started</a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private bool mobileMenuOpen = false;
+
+    private void ToggleMobileMenu()
+    {
+        mobileMenuOpen = !mobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        mobileMenuOpen = false;
+    }
+}

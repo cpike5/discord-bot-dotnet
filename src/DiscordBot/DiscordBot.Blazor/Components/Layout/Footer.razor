@@ -1,0 +1,95 @@
+<footer class="footer">
+    <!-- Footer Main Content -->
+    <div class="footer-main">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <div class="footer-logo-icon">DB</div>
+                <span class="footer-logo-text">DiscordBot</span>
+            </div>
+            <p class="footer-description">
+                A powerful Discord bot for community management with secure registration,
+                role management, and invite code systems. Built for communities that value
+                security and organization.
+            </p>
+            <div class="footer-social">
+                <a href="#" class="footer-social-link" aria-label="Discord">💬</a>
+                <a href="#" class="footer-social-link" aria-label="Twitter">🐦</a>
+                <a href="#" class="footer-social-link" aria-label="GitHub">🐙</a>
+                <a href="#" class="footer-social-link" aria-label="Email">📧</a>
+            </div>
+        </div>
+
+        <!-- Product Links -->
+        <div class="footer-links">
+            <h4 class="footer-links-title">Product</h4>
+            <ul class="footer-links-list">
+                <li><a href="/features">Features</a></li>
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="/docs">Documentation</a></li>
+                <li><a href="/commands">Commands</a></li>
+                <li><a href="/changelog">Changelog</a></li>
+            </ul>
+        </div>
+
+        <!-- Company Links -->
+        <div class="footer-links">
+            <h4 class="footer-links-title">Company</h4>
+            <ul class="footer-links-list">
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/team">Team</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer-newsletter">
+            <h4 class="footer-newsletter-title">Stay Updated</h4>
+            <p class="footer-newsletter-text">
+                Get the latest updates, tips, and feature announcements.
+            </p>
+            <form class="footer-newsletter-form" @onsubmit="HandleNewsletterSubmit" @onsubmit:preventDefault>
+                <input
+                    type="email"
+                    class="footer-newsletter-input"
+                    placeholder="Enter your email"
+                    aria-label="Email address"
+                    @bind="newsletterEmail"
+                />
+                <button type="submit" class="footer-newsletter-button">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+        <div class="footer-bottom-container">
+            <p class="footer-copyright">
+                © @DateTime.Now.Year DiscordBot. All rights reserved.
+            </p>
+            <ul class="footer-legal">
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms of Service</a></li>
+                <li><a href="/cookies">Cookie Policy</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private string newsletterEmail = "";
+
+    private void HandleNewsletterSubmit()
+    {
+        // TODO: Implement newsletter subscription logic
+        // For now, just clear the input
+        if (!string.IsNullOrWhiteSpace(newsletterEmail))
+        {
+            // Add your newsletter subscription logic here
+            newsletterEmail = "";
+        }
+    }
+}

@@ -1,0 +1,225 @@
+/* ============================================
+   NAVBAR STYLES
+   ============================================ */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-neutral-200);
+    transition: var(--transition-base);
+}
+
+.navbar-container {
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+/* Logo Section */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: var(--font-bold);
+    font-size: var(--text-xl);
+    transition: var(--transition-fast);
+}
+
+.navbar-brand:hover {
+    color: var(--color-primary);
+}
+
+.navbar-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+}
+
+/* Navigation Links */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav.mobile-only {
+    display: none;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+    font-size: var(--text-base);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-neutral-100);
+}
+
+.nav-link.active {
+    color: var(--color-primary);
+    background: rgba(218, 65, 103, 0.1);
+}
+
+/* CTA Buttons */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.btn {
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.btn-outline {
+    color: var(--color-primary);
+    background: transparent;
+    border: 2px solid var(--color-primary);
+}
+
+.btn-outline:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Mobile Menu Toggle */
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2);
+}
+
+.navbar-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: var(--color-neutral-700);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.navbar-toggle:hover span {
+    background: var(--color-primary);
+}
+
+/* Mobile Menu */
+.navbar-mobile {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: white;
+    border-bottom: 1px solid var(--color-neutral-200);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-4) var(--space-6);
+    z-index: var(--z-dropdown);
+}
+
+.navbar-mobile.open {
+    display: block;
+    animation: slideDown 250ms ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.navbar-mobile .navbar-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+}
+
+.navbar-mobile .nav-link {
+    width: 100%;
+    text-align: left;
+}
+
+.navbar-mobile .navbar-actions {
+    margin-top: var(--space-4);
+    flex-direction: column;
+    width: 100%;
+}
+
+.navbar-mobile .btn {
+    width: 100%;
+    text-align: center;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .navbar-nav.desktop-only {
+        display: none;
+    }
+
+    .navbar-actions.desktop-only {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: flex;
+    }
+}
