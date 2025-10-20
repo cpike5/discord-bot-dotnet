@@ -417,4 +417,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /.claude
-src/DiscordBot/DiscordBot.Blazor/DiscordBot.db
+src/DiscordBot/DiscordBot.Blazor/DiscordBot.db*
