@@ -1,10 +1,15 @@
 using DiscordBot.Blazor.Components;
 using DiscordBot.Blazor.Components.Account;
 using DiscordBot.Blazor.Data;
+using DiscordBot.Blazor.Repositories;
+using DiscordBot.Blazor.Services;
+using DiscordBot.Core.Entities;
+using DiscordBot.Core.Extensions;
+using DiscordBot.Core.Repositories;
+using DiscordBot.Core.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using DiscordBot.Core.Extensions;
 
 namespace DiscordBot.Blazor
 {
@@ -32,16 +37,22 @@ namespace DiscordBot.Blazor
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlite(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>() // Add role support
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+            // Register invite code and authorization services
+            builder.Services.AddMemoryCache(); // Required for UserAuthorizationService caching
+            builder.Services.AddScoped<IInviteCodeRepository, InviteCodeRepository>();
+            builder.Services.AddScoped<IInviteCodeService, InviteCodeService>();
+            builder.Services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
 
             builder.Services.AddDiscordBot(builder.Configuration);
 

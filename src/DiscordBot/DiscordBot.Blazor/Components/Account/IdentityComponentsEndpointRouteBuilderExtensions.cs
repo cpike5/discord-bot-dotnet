@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using DiscordBot.Blazor.Components.Account.Pages;
 using DiscordBot.Blazor.Components.Account.Pages.Manage;
-using DiscordBot.Blazor.Data;
+using DiscordBot.Core.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;

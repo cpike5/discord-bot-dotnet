@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using DiscordBot.Blazor.Data;
+using DiscordBot.Core.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;

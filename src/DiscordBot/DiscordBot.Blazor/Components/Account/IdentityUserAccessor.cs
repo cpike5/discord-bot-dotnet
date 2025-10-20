@@ -1,4 +1,4 @@
-using DiscordBot.Blazor.Data;
+using DiscordBot.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace DiscordBot.Blazor.Components.Account
