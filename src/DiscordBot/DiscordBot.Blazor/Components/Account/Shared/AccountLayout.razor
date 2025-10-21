@@ -2,6 +2,11 @@
 @layout DiscordBot.Blazor.Components.Layout.MainLayout
 @inject NavigationManager NavigationManager
 
+<HeadContent>
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/account-pages.css" />
+</HeadContent>
+
 @if (HttpContext is null)
 {
     <p>Loading...</p>

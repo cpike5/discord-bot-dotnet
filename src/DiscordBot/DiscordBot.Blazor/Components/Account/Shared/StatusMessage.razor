@@ -1,7 +1,7 @@
 ﻿@if (!string.IsNullOrEmpty(DisplayMessage))
 {
-    var statusMessageClass = DisplayMessage.StartsWith("Error") ? "danger" : "success";
-    <div class="alert alert-@statusMessageClass" role="alert">
+    var statusClass = GetStatusClass(DisplayMessage);
+    <div class="alert @statusClass" role="alert">
         @DisplayMessage
     </div>
 }
@@ -25,5 +25,16 @@
         {
             HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
         }
+    }
+
+    private string GetStatusClass(string message)
+    {
+        if (message.StartsWith("Error", StringComparison.OrdinalIgnoreCase))
+            return "error";
+        if (message.Contains("warning", StringComparison.OrdinalIgnoreCase))
+            return "warning";
+        if (message.Contains("info", StringComparison.OrdinalIgnoreCase))
+            return "info";
+        return "success";
     }
 }

@@ -1,0 +1,256 @@
+/**
+ * Design Tokens
+ *
+ * CSS custom properties for the Discord bot web application.
+ * Based on design standards v1.0
+ * Last Updated: 2025-10-18
+ *
+ * Usage: var(--token-name)
+ */
+
+:root {
+  /* ============================================
+     PRIMARY COLOR PALETTE
+     ============================================ */
+
+  /* Base colors from Coolors palette */
+  --color-slate: #555B6E;
+  --color-rose: #DA4167;
+  --color-lavender: #D3C4E3;
+  --color-sage: #87B38D;
+  --color-gold: #FED766;
+
+  /* ============================================
+     SEMANTIC COLORS
+     ============================================ */
+
+  --color-primary: var(--color-rose);
+  --color-secondary: var(--color-lavender);
+  --color-success: var(--color-sage);
+  --color-warning: var(--color-gold);
+  --color-danger: #C2335D;
+  --color-info: var(--color-lavender);
+
+  /* ============================================
+     NEUTRAL SCALE
+     ============================================ */
+
+  --color-neutral-50: #F8F9FA;
+  --color-neutral-100: #F1F3F5;
+  --color-neutral-200: #E9ECEF;
+  --color-neutral-300: #DEE2E6;
+  --color-neutral-400: #CED4DA;
+  --color-neutral-500: #ADB5BD;
+  --color-neutral-600: #6C757D;
+  --color-neutral-700: #495057;
+  --color-neutral-800: #343A40;
+  --color-neutral-900: #212529;
+
+  /* ============================================
+     SURFACE COLORS
+     ============================================ */
+
+  --surface-primary: var(--color-slate);
+  --surface-secondary: var(--color-neutral-100);
+  --surface-card: #FFFFFF;
+  --surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ============================================
+     TYPOGRAPHY - FONT FAMILIES
+     ============================================ */
+
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
+
+  /* ============================================
+     TYPOGRAPHY - FONT SIZES
+     ============================================ */
+
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+
+  /* ============================================
+     TYPOGRAPHY - LINE HEIGHTS
+     ============================================ */
+
+  --leading-xs: 1rem;      /* 16px */
+  --leading-sm: 1.25rem;   /* 20px */
+  --leading-base: 1.5rem;  /* 24px */
+  --leading-lg: 1.75rem;   /* 28px */
+  --leading-xl: 1.75rem;   /* 28px */
+  --leading-2xl: 2rem;     /* 32px */
+  --leading-3xl: 2.25rem;  /* 36px */
+  --leading-4xl: 2.5rem;   /* 40px */
+
+  /* ============================================
+     TYPOGRAPHY - FONT WEIGHTS
+     ============================================ */
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ============================================
+     SPACING SCALE
+     ============================================ */
+
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ============================================
+     SIZING - COMPONENT SIZES
+     ============================================ */
+
+  /* Input and button sizes */
+  --size-input-sm: 32px;
+  --size-input-md: 40px;
+  --size-input-lg: 48px;
+
+  /* Icon sizes */
+  --size-icon-sm: 16px;
+  --size-icon-md: 24px;
+  --size-icon-lg: 32px;
+
+  /* ============================================
+     SIZING - CONTAINER SIZES
+     ============================================ */
+
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --sidebar-width: 200px;
+
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ============================================
+     SHADOWS
+     ============================================ */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* ============================================
+     TRANSITIONS
+     ============================================ */
+
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* ============================================
+     Z-INDEX SCALE
+     ============================================ */
+
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-toast: 1500;
+  --z-tooltip: 2000;
+
+  /* ============================================
+     COMPONENT-SPECIFIC TOKENS - BUTTONS
+     ============================================ */
+
+  --btn-padding-sm: var(--space-2) var(--space-3);
+  --btn-padding-md: var(--space-3) var(--space-5);
+  --btn-padding-lg: var(--space-4) var(--space-6);
+
+  /* ============================================
+     COMPONENT-SPECIFIC TOKENS - CARDS
+     ============================================ */
+
+  --card-padding: var(--space-6);
+  --card-bg: var(--surface-card);
+  --card-border: 1px solid var(--color-neutral-200);
+  --card-radius: var(--radius-md);
+  --card-shadow: var(--shadow-md);
+
+  /* ============================================
+     COMPONENT-SPECIFIC TOKENS - FORMS
+     ============================================ */
+
+  --input-border: 1px solid var(--color-neutral-300);
+  --input-border-focus: 2px solid var(--color-primary);
+  --input-bg: #FFFFFF;
+  --input-bg-disabled: var(--color-neutral-100);
+  --input-padding: var(--space-3) var(--space-4);
+  --input-radius: var(--radius-md);
+  --input-font-size: var(--text-base);
+
+  /* ============================================
+     ADDITIONAL UTILITY TOKENS
+     ============================================ */
+
+  /* Border colors */
+  --border-light: var(--color-neutral-200);
+  --border-medium: var(--color-neutral-300);
+  --border-dark: var(--color-neutral-400);
+
+  /* Text colors */
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-muted: var(--color-neutral-500);
+  --text-disabled: var(--color-neutral-400);
+  --text-on-dark: #FFFFFF;
+
+  /* Background colors */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: var(--color-neutral-50);
+  --bg-tertiary: var(--color-neutral-100);
+  --bg-disabled: var(--color-neutral-200);
+
+  /* Modal specific tokens */
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --modal-bg: #FFFFFF;
+  --modal-radius: var(--radius-lg);
+  --modal-shadow: var(--shadow-xl);
+  --modal-max-width: 600px;
+
+  /* Button specific tokens */
+  --btn-border-radius: var(--radius-md);
+  --btn-font-weight: var(--font-semibold);
+  --btn-transition: var(--transition-base);
+  --text-on-primary: #FFFFFF;
+  --color-primary-hover: #C2335D;
+  --text-tertiary: var(--color-neutral-500);
+
+  /* Table specific tokens */
+  --table-border: 1px solid var(--color-neutral-200);
+  --table-header-bg: var(--color-neutral-50);
+  --table-row-hover: var(--color-neutral-50);
+  --table-padding: var(--space-3) var(--space-4);
+
+  /* Badge specific tokens */
+  --badge-radius: var(--radius-full);
+  --badge-font-size: var(--text-xs);
+  --badge-font-weight: var(--font-semibold);
+}

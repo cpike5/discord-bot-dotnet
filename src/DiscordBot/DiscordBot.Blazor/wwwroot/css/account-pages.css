@@ -1,0 +1,508 @@
+/**
+ * Account Pages Stylesheet
+ *
+ * Custom styles for Account management and authentication pages.
+ * Uses design tokens from tokens.css
+ * Based on prototypes v1.0
+ * Last Updated: 2025-10-20
+ */
+
+/* ============================================
+   LAYOUT - ACCOUNT TABS
+   ============================================ */
+
+/* Account page h1 styling - ensure consistent spacing with other pages */
+h1 {
+    margin: 0 0 var(--space-6) 0;
+}
+
+.account-tabs {
+    margin: 0 0 var(--space-6) 0;
+    border-bottom: 1px solid var(--color-neutral-200);
+}
+
+/* ============================================
+   NAVIGATION - ACCOUNT TAB ITEMS
+   ============================================ */
+
+.account-tabs-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+.account-tabs-nav li {
+    /* No margin needed */
+}
+
+.account-tabs-nav a {
+    display: block;
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    border-bottom: 2px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.account-tabs-nav a:hover {
+    color: var(--text-primary);
+}
+
+.account-tabs-nav a.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: var(--font-semibold);
+}
+
+/* ============================================
+   CONTENT - CARDS
+   ============================================ */
+
+.content-card {
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-6);
+}
+
+.content-header {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.content-header h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.content-header h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+/* ============================================
+   ALERTS & STATUS MESSAGES
+   ============================================ */
+
+.alert {
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-6);
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.alert::before {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+}
+
+.alert.success {
+    background-color: rgba(135, 179, 141, 0.1);
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
+}
+
+.alert.success::before {
+    content: "✓";
+}
+
+.alert.error {
+    background-color: rgba(211, 47, 81, 0.1);
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+}
+
+.alert.error::before {
+    content: "⚠";
+}
+
+.alert.warning {
+    background-color: rgba(254, 215, 102, 0.1);
+    border: 1px solid var(--color-warning);
+    color: #a68600;
+}
+
+.alert.warning::before {
+    content: "⚠";
+}
+
+.alert.info {
+    background-color: rgba(211, 196, 227, 0.1);
+    border: 1px solid var(--color-info);
+    color: var(--color-neutral-700);
+}
+
+.alert.info::before {
+    content: "ℹ";
+}
+
+.alert strong {
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+.alert p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   STATUS CARDS
+   ============================================ */
+
+.status-card {
+    background: var(--color-neutral-50);
+    border-left: 4px solid var(--color-success);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-6);
+}
+
+.status-card.disabled {
+    border-left-color: var(--color-neutral-400);
+}
+
+.status-card h4 {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.status-card p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ============================================
+   FORMS - FORM GROUPS
+   ============================================ */
+
+.form-group {
+    margin-bottom: var(--space-6);
+}
+
+/* ============================================
+   FORMS - LABELS
+   ============================================ */
+
+.form-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.form-label.required::after {
+    content: " *";
+    color: var(--color-danger);
+}
+
+/* ============================================
+   FORMS - INPUTS
+   ============================================ */
+
+.form-input {
+    width: 100%;
+    max-width: 500px;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--input-radius);
+    font-size: var(--input-font-size);
+    font-family: var(--font-primary);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.form-input:focus {
+    outline: none;
+    border: var(--input-border-focus);
+}
+
+.form-input:disabled {
+    background-color: var(--input-bg-disabled);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+.form-input.error {
+    border-color: var(--color-danger);
+}
+
+.form-input.error:focus {
+    border: 2px solid var(--color-danger);
+}
+
+/* ============================================
+   FORMS - INPUT GROUPS
+   ============================================ */
+
+.input-group {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+}
+
+.input-group .form-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.input-verified {
+    padding: var(--space-3) var(--space-4);
+    background: rgba(135, 179, 141, 0.1);
+    border: var(--input-border);
+    border-left: none;
+    border-top-right-radius: var(--input-radius);
+    border-bottom-right-radius: var(--input-radius);
+    color: var(--color-success);
+    font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+}
+
+/* ============================================
+   FORMS - HELPER TEXT & ERRORS
+   ============================================ */
+
+.helper-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: var(--space-2);
+}
+
+.error-message {
+    font-size: var(--text-sm);
+    color: var(--color-danger);
+    margin-top: var(--space-2);
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* ============================================
+   FORMS - PASSWORD STRENGTH INDICATOR
+   ============================================ */
+
+.password-strength {
+    margin-top: var(--space-2);
+}
+
+.strength-bar {
+    height: 4px;
+    background: var(--color-neutral-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-2);
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: var(--transition-base);
+    border-radius: var(--radius-full);
+}
+
+.strength-fill.weak {
+    width: 33%;
+    background: var(--color-danger);
+}
+
+.strength-fill.medium {
+    width: 66%;
+    background: var(--color-warning);
+}
+
+.strength-fill.strong {
+    width: 100%;
+    background: var(--color-success);
+}
+
+.strength-text {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   BUTTONS - BASE
+   ============================================ */
+
+.btn {
+    padding: var(--btn-padding-md);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    font-family: var(--font-primary);
+    border: none;
+    border-radius: var(--btn-border-radius);
+    cursor: pointer;
+    transition: var(--btn-transition);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   BUTTONS - PRIMARY
+   ============================================ */
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--text-on-primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* ============================================
+   BUTTONS - SECONDARY
+   ============================================ */
+
+.btn-secondary {
+    background: var(--color-neutral-100);
+    color: var(--text-primary);
+    border: 1px solid var(--color-neutral-300);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--color-neutral-200);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* ============================================
+   BUTTONS - DANGER
+   ============================================ */
+
+.btn-danger {
+    background: var(--color-danger);
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #a82b53;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-danger:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* ============================================
+   BUTTONS - LINK STYLE
+   ============================================ */
+
+.btn-link {
+    background: none;
+    color: var(--color-primary);
+    padding: 0;
+    font-weight: var(--font-medium);
+    font-size: var(--text-sm);
+    margin-top: var(--space-2);
+    border: none;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ============================================
+   BUTTONS - BUTTON GROUPS
+   ============================================ */
+
+.btn-group {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--badge-font-size);
+    font-weight: var(--badge-font-weight);
+    border-radius: var(--badge-radius);
+    margin-left: var(--space-2);
+}
+
+.badge.enabled {
+    background: rgba(135, 179, 141, 0.2);
+    color: var(--color-success);
+}
+
+.badge.disabled {
+    background: var(--color-neutral-200);
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+.recovery-codes-info {
+    background: var(--color-neutral-50);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-6);
+}
+
+.recovery-codes-info p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
