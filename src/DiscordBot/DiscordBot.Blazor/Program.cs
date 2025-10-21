@@ -11,6 +11,7 @@ using DiscordBot.Core.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace DiscordBot.Blazor
 {
@@ -19,6 +20,15 @@ namespace DiscordBot.Blazor
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Configure Serilog
+            builder.Services.AddSerilog(loggerConfig =>
+            {
+                loggerConfig.ReadFrom.Configuration(builder.Configuration);
+                loggerConfig.Enrich.FromLogContext();
+                loggerConfig.WriteTo.Console();
+            });
+
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
