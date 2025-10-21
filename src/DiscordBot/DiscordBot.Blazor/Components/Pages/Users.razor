@@ -3,7 +3,7 @@
 @using DiscordBot.Core.Services
 @inject IUserManagementService UserManagementService
 @inject NavigationManager Navigation
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin,SuperAdmin")]
 
 <PageTitle>User Management</PageTitle>
 
@@ -240,6 +240,7 @@
     private async Task LoadStatistics()
     {
         statistics = await UserManagementService.GetUserStatisticsAsync();
+        StateHasChanged();
     }
 
     private void OnSearchKeyUp(KeyboardEventArgs e)

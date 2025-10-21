@@ -10,7 +10,7 @@ namespace DiscordBot.Blazor.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class UserManagementController : ControllerBase
     {
         private readonly IUserManagementService _userManagementService;

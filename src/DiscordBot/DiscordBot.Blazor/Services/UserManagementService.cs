@@ -485,6 +485,8 @@ namespace DiscordBot.Blazor.Services
             try
             {
                 var stats = new Dictionary<string, object>();
+                var now = DateTimeOffset.UtcNow;
+                var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
 
                 // Total users
                 stats["TotalUsers"] = await _userManager.Users.CountAsync();
@@ -497,12 +499,14 @@ namespace DiscordBot.Blazor.Services
                 stats["EmailConfirmedUsers"] = await _userManager.Users
                     .CountAsync(u => u.EmailConfirmed);
 
-                // Locked users
-                stats["LockedUsers"] = await _userManager.Users
-                    .CountAsync(u => u.LockoutEnd.HasValue && u.LockoutEnd > DateTimeOffset.UtcNow);
+                // Locked users (client-side evaluation needed for DateTimeOffset comparison)
+                var usersWithLockout = await _userManager.Users
+                    .Where(u => u.LockoutEnd.HasValue)
+                    .Select(u => u.LockoutEnd)
+                    .ToListAsync();
+                stats["LockedUsers"] = usersWithLockout.Count(lockoutEnd => lockoutEnd > now);
 
                 // Users created in last 30 days
-                var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
                 stats["NewUsersLast30Days"] = await _userManager.Users
                     .CountAsync(u => u.CreatedAt >= thirtyDaysAgo);
 

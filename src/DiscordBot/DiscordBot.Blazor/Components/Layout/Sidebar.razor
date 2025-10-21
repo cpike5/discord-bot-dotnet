@@ -86,8 +86,10 @@
 
     private string GetUserRole(System.Security.Claims.ClaimsPrincipal user)
     {
-        if (user.IsInRole("Administrator"))
-            return "Administrator";
+        if (user.IsInRole("SuperAdmin"))
+            return "SuperAdmin";
+        if (user.IsInRole("Admin"))
+            return "Admin";
         if (user.IsInRole("Moderator"))
             return "Moderator";
         return "User";
