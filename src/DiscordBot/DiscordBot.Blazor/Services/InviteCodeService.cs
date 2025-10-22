@@ -1,3 +1,4 @@
+using DiscordBot.Core.DTOs;
 using DiscordBot.Core.Entities;
 using DiscordBot.Core.Repositories;
 using DiscordBot.Core.Services;
@@ -267,6 +268,35 @@ namespace DiscordBot.Blazor.Services
             }
 
             return sb.ToString();
+        }
+
+        /// <inheritdoc />
+        public async Task<InviteCodeStatistics> GetStatisticsAsync()
+        {
+            var allCodes = await _inviteCodeRepository.GetAllAsync();
+            var now = DateTime.UtcNow;
+
+            return new InviteCodeStatistics
+            {
+                ActiveCount = allCodes.Count(c => !c.IsUsed && c.ExpiresAt > now),
+                UsedCount = allCodes.Count(c => c.IsUsed),
+                ExpiredCount = allCodes.Count(c => !c.IsUsed && c.ExpiresAt <= now),
+                RevokedCount = 0 // For MVP, we don't track revoked separately - they're included in ExpiredCount
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<(IEnumerable<InviteCode> Codes, int TotalCount)> GetPagedAsync(
+            int page, int pageSize, string? statusFilter = null, string? searchTerm = null)
+        {
+            if (page < 1)
+                throw new ArgumentException("Page must be greater than 0", nameof(page));
+
+            if (pageSize < 1)
+                throw new ArgumentException("Page size must be greater than 0", nameof(pageSize));
+
+            var skip = (page - 1) * pageSize;
+            return await _inviteCodeRepository.GetPagedAsync(skip, pageSize, statusFilter, searchTerm);
         }
     }
 }

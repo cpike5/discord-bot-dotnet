@@ -1,3 +1,4 @@
+using DiscordBot.Core.DTOs;
 using DiscordBot.Core.Entities;
 
 namespace DiscordBot.Core.Services
@@ -75,5 +76,23 @@ namespace DiscordBot.Core.Services
         /// <param name="daysOld">Delete expired codes older than this many days (default: 7)</param>
         /// <returns>Number of codes deleted</returns>
         Task<int> CleanupExpiredCodesAsync(int daysOld = 7);
+
+        /// <summary>
+        /// Retrieves statistical counts for invite codes (active, used, expired, revoked).
+        /// Used for dashboard display in the admin interface.
+        /// </summary>
+        /// <returns>Statistics object containing counts for different code states</returns>
+        Task<InviteCodeStatistics> GetStatisticsAsync();
+
+        /// <summary>
+        /// Retrieves a paginated list of invite codes with optional filtering and search.
+        /// </summary>
+        /// <param name="page">Page number (1-based)</param>
+        /// <param name="pageSize">Number of items per page</param>
+        /// <param name="statusFilter">Filter by status: "active", "used", "expired", or null for all</param>
+        /// <param name="searchTerm">Search term to filter by code or Discord username</param>
+        /// <returns>Tuple containing the list of codes and total count for pagination</returns>
+        Task<(IEnumerable<InviteCode> Codes, int TotalCount)> GetPagedAsync(
+            int page, int pageSize, string? statusFilter = null, string? searchTerm = null);
     }
 }

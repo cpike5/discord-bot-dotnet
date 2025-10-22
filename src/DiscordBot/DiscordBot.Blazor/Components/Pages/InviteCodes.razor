@@ -1,0 +1,437 @@
+@page "/invite-codes"
+@using DiscordBot.Core.DTOs
+@using DiscordBot.Core.Entities
+@using DiscordBot.Core.Services
+@inject IInviteCodeService InviteCodeService
+@inject IJSRuntime JS
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin,SuperAdmin")]
+
+<PageTitle>Invite Code Management</PageTitle>
+
+<div class="invitecodes-container">
+    <div class="page-header">
+        <h1 class="page-title">Invite Code Management</h1>
+        <button class="btn btn-primary" @onclick="ShowGenerateModal">
+            <span class="icon">+</span> Generate Code
+        </button>
+    </div>
+
+    @if (statistics != null)
+    {
+        <div class="statistics-grid">
+            <div class="stat-card stat-active">
+                <div class="stat-value">@statistics.ActiveCount</div>
+                <div class="stat-label">ACTIVE</div>
+            </div>
+            <div class="stat-card stat-used">
+                <div class="stat-value">@statistics.UsedCount</div>
+                <div class="stat-label">USED</div>
+            </div>
+            <div class="stat-card stat-expired">
+                <div class="stat-value">@statistics.ExpiredCount</div>
+                <div class="stat-label">EXPIRED</div>
+            </div>
+            <div class="stat-card stat-revoked">
+                <div class="stat-value">@statistics.RevokedCount</div>
+                <div class="stat-label">REVOKED</div>
+            </div>
+        </div>
+    }
+
+    <div class="toolbar">
+        <input type="text"
+               class="search-input"
+               placeholder="Search by code or Discord username..."
+               @bind="searchQuery"
+               @bind:event="oninput"
+               @onkeyup="OnSearchKeyUp" />
+        <select class="filter-select" @bind="statusFilter" @bind:after="OnFilterChanged">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="used">Used</option>
+            <option value="expired">Expired</option>
+        </select>
+        <button class="btn btn-secondary" @onclick="ClearFilters">Clear</button>
+    </div>
+
+    @if (loading)
+    {
+        <div class="loading">Loading invite codes...</div>
+    }
+    else if (codes == null || !codes.Any())
+    {
+        <div class="empty-state">
+            <p>No invite codes found.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="invitecodes-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Discord User</th>
+                        <th>Created</th>
+                        <th>Expires</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inviteCode in codes)
+                    {
+                        <tr>
+                            <td>
+                                <code class="code-badge">@inviteCode.Code</code>
+                            </td>
+                            <td>@inviteCode.DiscordUsername</td>
+                            <td>@inviteCode.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>@inviteCode.ExpiresAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge badge-@GetStatusClass(inviteCode)">@GetStatus(inviteCode)</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm" @onclick="() => CopyCode(inviteCode.Code)" title="Copy to clipboard">
+                                        📋 Copy
+                                    </button>
+                                    @if (!inviteCode.IsUsed && !inviteCode.IsExpired)
+                                    {
+                                        <button class="btn-sm btn-danger" @onclick="() => ShowRevokeModal(inviteCode)" title="Revoke code">
+                                            🚫 Revoke
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(currentPage == 1)">
+                Previous
+            </button>
+            <span class="page-info">Page @currentPage of @Math.Max(1, (int)Math.Ceiling((double)totalCount / pageSize))</span>
+            <button class="btn btn-secondary" @onclick="NextPage" disabled="@(currentPage * pageSize >= totalCount)">
+                Next
+            </button>
+        </div>
+
+        <div class="results-info">
+            Showing @((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, totalCount) of @totalCount
+        </div>
+    }
+</div>
+
+@* Generate Code Modal *@
+@if (showGenerateModal)
+{
+    <div class="modal-overlay" @onclick="HideGenerateModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>Generate Invite Code</h2>
+                <button class="btn-close" @onclick="HideGenerateModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Discord Username</label>
+                    <input type="text" class="form-control" @bind="newCodeUsername" placeholder="Enter Discord username" />
+                </div>
+                @if (!string.IsNullOrEmpty(generateError))
+                {
+                    <div class="alert alert-danger">@generateError</div>
+                }
+                @if (generatedCode != null)
+                {
+                    <div class="alert alert-success">
+                        <p>Code generated successfully!</p>
+                        <div class="generated-code">
+                            <code>@generatedCode.Code</code>
+                            <button class="btn-sm" @onclick="() => CopyCode(generatedCode.Code)">📋 Copy</button>
+                        </div>
+                        <p class="text-muted">Expires: @generatedCode.ExpiresAt.ToString("MMM dd, yyyy HH:mm")</p>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="HideGenerateModal">Close</button>
+                @if (generatedCode == null)
+                {
+                    <button class="btn btn-primary" @onclick="GenerateCode">Generate</button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@* Revoke Code Modal *@
+@if (showRevokeModal && codeToRevoke != null)
+{
+    <div class="modal-overlay" @onclick="HideRevokeModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h2>Revoke Invite Code</h2>
+                <button class="btn-close" @onclick="HideRevokeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to revoke this invite code?</p>
+                <div class="code-details">
+                    <code>@codeToRevoke.Code</code>
+                    <p class="text-muted">Discord User: @codeToRevoke.DiscordUsername</p>
+                </div>
+                @if (!string.IsNullOrEmpty(revokeError))
+                {
+                    <div class="alert alert-danger">@revokeError</div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="HideRevokeModal">Cancel</button>
+                <button class="btn btn-danger" @onclick="RevokeCode">Revoke</button>
+            </div>
+        </div>
+    </div>
+}
+
+@* Copy Success Feedback *@
+@if (showCopyFeedback)
+{
+    <div class="copy-feedback">
+        ✓ Copied to clipboard!
+    </div>
+}
+
+@code {
+    private List<InviteCode> codes = new();
+    private InviteCodeStatistics? statistics;
+    private bool loading = true;
+    private string searchQuery = string.Empty;
+    private string statusFilter = string.Empty;
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalCount = 0;
+    private System.Threading.Timer? searchDebounceTimer;
+
+    // Generate modal
+    private bool showGenerateModal = false;
+    private string newCodeUsername = string.Empty;
+    private InviteCode? generatedCode = null;
+    private string generateError = string.Empty;
+
+    // Revoke modal
+    private bool showRevokeModal = false;
+    private InviteCode? codeToRevoke = null;
+    private string revokeError = string.Empty;
+
+    // Copy feedback
+    private bool showCopyFeedback = false;
+    private System.Threading.Timer? copyFeedbackTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCodes();
+        await LoadStatistics();
+    }
+
+    private async Task LoadCodes()
+    {
+        loading = true;
+        try
+        {
+            var result = await InviteCodeService.GetPagedAsync(
+                currentPage,
+                pageSize,
+                string.IsNullOrWhiteSpace(statusFilter) ? null : statusFilter,
+                string.IsNullOrWhiteSpace(searchQuery) ? null : searchQuery
+            );
+
+            codes = result.Codes.ToList();
+            totalCount = result.TotalCount;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task LoadStatistics()
+    {
+        statistics = await InviteCodeService.GetStatisticsAsync();
+        StateHasChanged();
+    }
+
+    private void OnSearchKeyUp(KeyboardEventArgs e)
+    {
+        searchDebounceTimer?.Dispose();
+        searchDebounceTimer = new System.Threading.Timer(async _ =>
+        {
+            currentPage = 1;
+            await InvokeAsync(async () =>
+            {
+                await LoadCodes();
+                StateHasChanged();
+            });
+        }, null, 300, Timeout.Infinite);
+    }
+
+    private async Task OnFilterChanged()
+    {
+        currentPage = 1;
+        await LoadCodes();
+    }
+
+    private async Task ClearFilters()
+    {
+        searchQuery = string.Empty;
+        statusFilter = string.Empty;
+        currentPage = 1;
+        await LoadCodes();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadCodes();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage * pageSize < totalCount)
+        {
+            currentPage++;
+            await LoadCodes();
+        }
+    }
+
+    private string GetStatus(InviteCode code)
+    {
+        if (code.IsUsed) return "Used";
+        if (code.IsExpired) return "Expired";
+        return "Active";
+    }
+
+    private string GetStatusClass(InviteCode code)
+    {
+        if (code.IsUsed) return "used";
+        if (code.IsExpired) return "expired";
+        return "active";
+    }
+
+    private async Task CopyCode(string code)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", code);
+            ShowCopyFeedback();
+        }
+        catch (Exception)
+        {
+            // Fallback or error handling
+        }
+    }
+
+    private void ShowCopyFeedback()
+    {
+        showCopyFeedback = true;
+        StateHasChanged();
+
+        copyFeedbackTimer?.Dispose();
+        copyFeedbackTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showCopyFeedback = false;
+                StateHasChanged();
+            });
+        }, null, 2000, Timeout.Infinite);
+    }
+
+    private void ShowGenerateModal()
+    {
+        showGenerateModal = true;
+        newCodeUsername = string.Empty;
+        generatedCode = null;
+        generateError = string.Empty;
+    }
+
+    private void HideGenerateModal()
+    {
+        showGenerateModal = false;
+    }
+
+    private async Task GenerateCode()
+    {
+        generateError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(newCodeUsername))
+        {
+            generateError = "Discord username is required";
+            return;
+        }
+
+        try
+        {
+            // For admin-generated codes, we use a placeholder Discord user ID
+            // In a real scenario, you might want to look up the actual Discord user ID
+            generatedCode = await InviteCodeService.GenerateCodeAsync(0, newCodeUsername, 24);
+
+            await LoadCodes();
+            await LoadStatistics();
+        }
+        catch (Exception ex)
+        {
+            generateError = $"Failed to generate code: {ex.Message}";
+        }
+    }
+
+    private void ShowRevokeModal(InviteCode code)
+    {
+        showRevokeModal = true;
+        codeToRevoke = code;
+        revokeError = string.Empty;
+    }
+
+    private void HideRevokeModal()
+    {
+        showRevokeModal = false;
+        codeToRevoke = null;
+    }
+
+    private async Task RevokeCode()
+    {
+        revokeError = string.Empty;
+
+        if (codeToRevoke == null) return;
+
+        try
+        {
+            var success = await InviteCodeService.RevokeCodeAsync(codeToRevoke.Code);
+
+            if (success)
+            {
+                HideRevokeModal();
+                await LoadCodes();
+                await LoadStatistics();
+            }
+            else
+            {
+                revokeError = "Failed to revoke code. It may already be used or expired.";
+            }
+        }
+        catch (Exception ex)
+        {
+            revokeError = $"Error revoking code: {ex.Message}";
+        }
+    }
+
+    public void Dispose()
+    {
+        searchDebounceTimer?.Dispose();
+        copyFeedbackTimer?.Dispose();
+    }
+}

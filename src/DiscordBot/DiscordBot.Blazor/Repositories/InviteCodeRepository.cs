@@ -108,5 +108,57 @@ namespace DiscordBot.Blazor.Repositories
             return await _context.InviteCodes
                 .AnyAsync(ic => ic.Code == code);
         }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<InviteCode>> GetAllAsync()
+        {
+            return await _context.InviteCodes
+                .Include(ic => ic.UsedByApplicationUser)
+                .OrderByDescending(ic => ic.CreatedAt)
+                .ToListAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task<(IEnumerable<InviteCode> Codes, int TotalCount)> GetPagedAsync(
+            int skip,
+            int take,
+            string? statusFilter = null,
+            string? searchTerm = null)
+        {
+            var query = _context.InviteCodes
+                .Include(ic => ic.UsedByApplicationUser)
+                .AsNoTracking();
+            var now = DateTime.UtcNow;
+
+            // Filter by status
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                query = statusFilter.ToLower() switch
+                {
+                    "active" => query.Where(c => !c.IsUsed && c.ExpiresAt > now),
+                    "used" => query.Where(c => c.IsUsed),
+                    "expired" => query.Where(c => !c.IsUsed && c.ExpiresAt <= now),
+                    _ => query
+                };
+            }
+
+            // Search by code or username
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var searchLower = searchTerm.ToLower();
+                query = query.Where(c =>
+                    c.Code.ToLower().Contains(searchLower) ||
+                    c.DiscordUsername.ToLower().Contains(searchLower));
+            }
+
+            var totalCount = await query.CountAsync();
+            var codes = await query
+                .OrderByDescending(c => c.CreatedAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return (codes, totalCount);
+        }
     }
 }
